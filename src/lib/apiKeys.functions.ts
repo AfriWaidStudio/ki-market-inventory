@@ -25,14 +25,16 @@ export const createApiKey = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => CreateKeyInput.parse(d))
   .handler(async ({ data, context }) => {
     const { encryptString } = await import("./crypto.server");
-    const encKey = encryptString(data.api_key);
-    const encSecret = encryptString(data.api_secret);
+    // bytea columns: send as \x-prefixed hex string
+    const toHex = (b: Buffer) => "\\x" + b.toString("hex");
+    const encKey = toHex(encryptString(data.api_key));
+    const encSecret = toHex(encryptString(data.api_secret));
     const { error } = await context.supabase.from("market_inventory_api_keys").insert({
       user_id: context.userId,
       exchange: data.exchange,
       key_label: data.key_label,
-      encrypted_key: encKey,
-      encrypted_secret: encSecret,
+      encrypted_key: encKey as unknown as string,
+      encrypted_secret: encSecret as unknown as string,
       permissions: "read_only",
     });
     if (error) throw new Error(error.message);

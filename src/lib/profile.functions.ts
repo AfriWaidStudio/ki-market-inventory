@@ -22,7 +22,7 @@ export const updateProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => UpdateInput.parse(d))
   .handler(async ({ data, context }) => {
-    const payload: Record<string, unknown> = {};
+    const payload: { display_name?: string | null; preferred_currency?: string } = {};
     if (data.display_name !== undefined) payload.display_name = data.display_name;
     if (data.preferred_currency !== undefined) payload.preferred_currency = data.preferred_currency;
     const { error } = await context.supabase

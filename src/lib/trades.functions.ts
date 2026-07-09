@@ -152,7 +152,17 @@ export const markClosed = createServerFn({ method: "POST" })
       expectedProfit: t.expected_profit != null ? Number(t.expected_profit) : null,
       durationMinutes,
     });
-    const update: Record<string, unknown> = {
+    const update: {
+      actual_sell_price: number;
+      final_fees: number;
+      actual_profit: number;
+      sell_time: string;
+      duration_minutes: number;
+      status: "closed";
+      ki_accuracy_verdict: string;
+      lesson_learned: string;
+      sell_exchange?: string;
+    } = {
       actual_sell_price: data.actual_sell_price,
       final_fees: data.final_fees,
       actual_profit: analysis.actualProfit,
