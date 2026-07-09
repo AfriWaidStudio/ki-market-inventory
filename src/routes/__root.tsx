@@ -77,14 +77,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "KI Market Inventory — Waides KI arbitrage command center" },
+      { name: "description", content: "Track P2P and arbitrage trades across Binance, Bybit, OKX. Konsmik Intelligence explains every opportunity. Tracking-only; no auto-execution." },
+      { name: "author", content: "Waides KI" },
+      { property: "og:title", content: "KI Market Inventory" },
+      { property: "og:description", content: "P2P & arbitrage command center powered by Konsmik Intelligence." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {

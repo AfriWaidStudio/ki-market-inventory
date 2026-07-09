@@ -24,7 +24,7 @@ function AnalyticsPage() {
     <AppShell title="Analytics">
       <div className="grid gap-4 sm:grid-cols-3 mb-6">
         <StatCard label="Closed trades" value={`${d.profitByDay.length} days tracked`} />
-        <StatCard label="KI accuracy" value={`${(d.kiAccuracy * 100).toFixed(1)}%`} tone="info" />
+        <StatCard label="KI accuracy" value={`${(d.kiAccuracy * 100).toFixed(1)}%`} tone="profit" />
         <StatCard label="Best hour" value={bestHourLabel(d.profitByHour)} />
       </div>
 
