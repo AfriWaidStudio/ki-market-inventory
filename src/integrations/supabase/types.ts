@@ -14,16 +14,389 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      market_inventory_api_keys: {
+        Row: {
+          created_at: string
+          encrypted_key: string
+          encrypted_secret: string
+          exchange: string
+          id: string
+          key_label: string
+          permissions: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          encrypted_key: string
+          encrypted_secret: string
+          exchange: string
+          id?: string
+          key_label: string
+          permissions?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          encrypted_key?: string
+          encrypted_secret?: string
+          exchange?: string
+          id?: string
+          key_label?: string
+          permissions?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      market_inventory_audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      market_inventory_daily_reports: {
+        Row: {
+          avg_duration_minutes: number | null
+          best_route: string | null
+          created_at: string
+          id: string
+          report_date: string
+          total_profit: number
+          trade_count: number
+          user_id: string
+          win_rate: number | null
+        }
+        Insert: {
+          avg_duration_minutes?: number | null
+          best_route?: string | null
+          created_at?: string
+          id?: string
+          report_date: string
+          total_profit?: number
+          trade_count?: number
+          user_id: string
+          win_rate?: number | null
+        }
+        Update: {
+          avg_duration_minutes?: number | null
+          best_route?: string | null
+          created_at?: string
+          id?: string
+          report_date?: string
+          total_profit?: number
+          trade_count?: number
+          user_id?: string
+          win_rate?: number | null
+        }
+        Relationships: []
+      }
+      market_inventory_exchange_accounts: {
+        Row: {
+          created_at: string
+          exchange: string
+          id: string
+          is_active: boolean
+          label: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          exchange: string
+          id?: string
+          is_active?: boolean
+          label?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          exchange?: string
+          id?: string
+          is_active?: boolean
+          label?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      market_inventory_price_snapshots: {
+        Row: {
+          asset: string
+          captured_at: string
+          currency: string
+          exchange: string
+          id: string
+          liquidity_score: number | null
+          merchant_count: number | null
+          merchant_rating: number | null
+          price: number
+          side: string
+          user_id: string
+        }
+        Insert: {
+          asset?: string
+          captured_at?: string
+          currency?: string
+          exchange: string
+          id?: string
+          liquidity_score?: number | null
+          merchant_count?: number | null
+          merchant_rating?: number | null
+          price: number
+          side: string
+          user_id: string
+        }
+        Update: {
+          asset?: string
+          captured_at?: string
+          currency?: string
+          exchange?: string
+          id?: string
+          liquidity_score?: number | null
+          merchant_count?: number | null
+          merchant_rating?: number | null
+          price?: number
+          side?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      market_inventory_risk_alerts: {
+        Row: {
+          created_at: string
+          dismissed_at: string | null
+          id: string
+          message: string
+          related_trade_id: string | null
+          severity: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dismissed_at?: string | null
+          id?: string
+          message: string
+          related_trade_id?: string | null
+          severity: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dismissed_at?: string | null
+          id?: string
+          message?: string
+          related_trade_id?: string | null
+          severity?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_risk_alerts_related_trade_id_fkey"
+            columns: ["related_trade_id"]
+            isOneToOne: false
+            referencedRelation: "market_inventory_trades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      market_inventory_trade_notes: {
+        Row: {
+          created_at: string
+          id: string
+          note: string
+          trade_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note: string
+          trade_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note?: string
+          trade_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_trade_notes_trade_id_fkey"
+            columns: ["trade_id"]
+            isOneToOne: false
+            referencedRelation: "market_inventory_trades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      market_inventory_trades: {
+        Row: {
+          actual_profit: number | null
+          actual_sell_price: number | null
+          amount: number
+          asset: string
+          buy_exchange: string
+          buy_price: number
+          buy_time: string
+          confidence_score: number | null
+          created_at: string
+          currency: string
+          duration_minutes: number | null
+          estimated_fees: number
+          expected_profit: number | null
+          expected_sell_price: number | null
+          final_fees: number | null
+          id: string
+          ki_accuracy_verdict: string | null
+          ki_reasoning: string | null
+          lesson_learned: string | null
+          risk_score: number | null
+          route: string | null
+          sell_exchange: string
+          sell_time: string | null
+          status: Database["public"]["Enums"]["trade_status"]
+          updated_at: string
+          user_id: string
+          user_notes: string | null
+        }
+        Insert: {
+          actual_profit?: number | null
+          actual_sell_price?: number | null
+          amount: number
+          asset?: string
+          buy_exchange: string
+          buy_price: number
+          buy_time?: string
+          confidence_score?: number | null
+          created_at?: string
+          currency?: string
+          duration_minutes?: number | null
+          estimated_fees?: number
+          expected_profit?: number | null
+          expected_sell_price?: number | null
+          final_fees?: number | null
+          id?: string
+          ki_accuracy_verdict?: string | null
+          ki_reasoning?: string | null
+          lesson_learned?: string | null
+          risk_score?: number | null
+          route?: string | null
+          sell_exchange: string
+          sell_time?: string | null
+          status?: Database["public"]["Enums"]["trade_status"]
+          updated_at?: string
+          user_id: string
+          user_notes?: string | null
+        }
+        Update: {
+          actual_profit?: number | null
+          actual_sell_price?: number | null
+          amount?: number
+          asset?: string
+          buy_exchange?: string
+          buy_price?: number
+          buy_time?: string
+          confidence_score?: number | null
+          created_at?: string
+          currency?: string
+          duration_minutes?: number | null
+          estimated_fees?: number
+          expected_profit?: number | null
+          expected_sell_price?: number | null
+          final_fees?: number | null
+          id?: string
+          ki_accuracy_verdict?: string | null
+          ki_reasoning?: string | null
+          lesson_learned?: string | null
+          risk_score?: number | null
+          route?: string | null
+          sell_exchange?: string
+          sell_time?: string | null
+          status?: Database["public"]["Enums"]["trade_status"]
+          updated_at?: string
+          user_id?: string
+          user_notes?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          preferred_currency: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          preferred_currency?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          preferred_currency?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      trade_status: "active" | "closed" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +523,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      trade_status: ["active", "closed", "cancelled"],
+    },
   },
 } as const
