@@ -90,7 +90,7 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
             <h1 className="text-lg font-semibold tracking-tight">{title ?? "Market Inventory"}</h1>
             <p className="text-xs text-muted-foreground">Tracking & decision support — no auto-execution</p>
           </div>
-          <div className="flex md:hidden gap-1">
+          <div className="flex md:hidden gap-1 overflow-x-auto max-w-[60vw]">
             {NAV.map(({ to, icon: Icon }) => (
               <Link
                 key={to}
