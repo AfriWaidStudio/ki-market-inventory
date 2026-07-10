@@ -17,6 +17,7 @@ import { Route as AuthenticatedTradesRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedScannerRouteImport } from './routes/_authenticated/scanner'
 import { Route as AuthenticatedRiskCenterRouteImport } from './routes/_authenticated/risk-center'
+import { Route as AuthenticatedJournalRouteImport } from './routes/_authenticated/journal'
 import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
@@ -62,6 +63,11 @@ const AuthenticatedRiskCenterRoute = AuthenticatedRiskCenterRouteImport.update({
   path: '/risk-center',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedJournalRoute = AuthenticatedJournalRouteImport.update({
+  id: '/journal',
+  path: '/journal',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedHistoryRoute = AuthenticatedHistoryRouteImport.update({
   id: '/history',
   path: '/history',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/chat': typeof AuthenticatedChatRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/history': typeof AuthenticatedHistoryRoute
+  '/journal': typeof AuthenticatedJournalRoute
   '/risk-center': typeof AuthenticatedRiskCenterRoute
   '/scanner': typeof AuthenticatedScannerRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/chat': typeof AuthenticatedChatRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/history': typeof AuthenticatedHistoryRoute
+  '/journal': typeof AuthenticatedJournalRoute
   '/risk-center': typeof AuthenticatedRiskCenterRoute
   '/scanner': typeof AuthenticatedScannerRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/history': typeof AuthenticatedHistoryRoute
+  '/_authenticated/journal': typeof AuthenticatedJournalRoute
   '/_authenticated/risk-center': typeof AuthenticatedRiskCenterRoute
   '/_authenticated/scanner': typeof AuthenticatedScannerRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
@@ -142,6 +151,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dashboard'
     | '/history'
+    | '/journal'
     | '/risk-center'
     | '/scanner'
     | '/settings'
@@ -156,6 +166,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dashboard'
     | '/history'
+    | '/journal'
     | '/risk-center'
     | '/scanner'
     | '/settings'
@@ -171,6 +182,7 @@ export interface FileRouteTypes {
     | '/_authenticated/chat'
     | '/_authenticated/dashboard'
     | '/_authenticated/history'
+    | '/_authenticated/journal'
     | '/_authenticated/risk-center'
     | '/_authenticated/scanner'
     | '/_authenticated/settings'
@@ -244,6 +256,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRiskCenterRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/journal': {
+      id: '/_authenticated/journal'
+      path: '/journal'
+      fullPath: '/journal'
+      preLoaderRoute: typeof AuthenticatedJournalRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/history': {
       id: '/_authenticated/history'
       path: '/history'
@@ -298,6 +317,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
+  AuthenticatedJournalRoute: typeof AuthenticatedJournalRoute
   AuthenticatedRiskCenterRoute: typeof AuthenticatedRiskCenterRoute
   AuthenticatedScannerRoute: typeof AuthenticatedScannerRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
@@ -309,6 +329,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
+  AuthenticatedJournalRoute: AuthenticatedJournalRoute,
   AuthenticatedRiskCenterRoute: AuthenticatedRiskCenterRoute,
   AuthenticatedScannerRoute: AuthenticatedScannerRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
