@@ -11,6 +11,12 @@ import {
   MessageSquare,
   Settings,
   LogOut,
+  ShieldAlert,
+  BookOpen,
+  Search,
+  Wallet,
+  Bell,
+  LifeBuoy,
 } from "lucide-react";
 
 const NAV = [
@@ -18,8 +24,14 @@ const NAV = [
   { to: "/scanner", label: "Scanner", icon: Radar },
   { to: "/trades", label: "Active Trades", icon: Activity },
   { to: "/history", label: "History", icon: History },
+  { to: "/journal", label: "Journal", icon: BookOpen },
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
+  { to: "/risk-center", label: "Risk Center", icon: ShieldAlert },
   { to: "/chat", label: "Ask KI", icon: MessageSquare },
+  { to: "/search", label: "Search", icon: Search },
+  { to: "/wallet", label: "Smaisika", icon: Wallet },
+  { to: "/notifications", label: "Notifications", icon: Bell },
+  { to: "/help", label: "Help", icon: LifeBuoy },
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
@@ -78,7 +90,7 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
             <h1 className="text-lg font-semibold tracking-tight">{title ?? "Market Inventory"}</h1>
             <p className="text-xs text-muted-foreground">Tracking & decision support — no auto-execution</p>
           </div>
-          <div className="flex md:hidden gap-1">
+          <div className="flex md:hidden gap-1 overflow-x-auto max-w-[60vw]">
             {NAV.map(({ to, icon: Icon }) => (
               <Link
                 key={to}
