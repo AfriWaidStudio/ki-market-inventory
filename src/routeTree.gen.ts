@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
 import { Route as AuthenticatedTradesRouteImport } from './routes/_authenticated/trades'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSearchRouteImport } from './routes/_authenticated/search'
@@ -43,6 +44,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedWalletRoute = AuthenticatedWalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedTradesRoute = AuthenticatedTradesRouteImport.update({
   id: '/trades',
@@ -114,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof AuthenticatedSearchRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/trades': typeof AuthenticatedTradesRouteWithChildren
+  '/wallet': typeof AuthenticatedWalletRoute
   '/api/chat': typeof ApiChatRoute
   '/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
 }
@@ -130,6 +137,7 @@ export interface FileRoutesByTo {
   '/search': typeof AuthenticatedSearchRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/trades': typeof AuthenticatedTradesRouteWithChildren
+  '/wallet': typeof AuthenticatedWalletRoute
   '/api/chat': typeof ApiChatRoute
   '/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
 }
@@ -148,6 +156,7 @@ export interface FileRoutesById {
   '/_authenticated/search': typeof AuthenticatedSearchRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/trades': typeof AuthenticatedTradesRouteWithChildren
+  '/_authenticated/wallet': typeof AuthenticatedWalletRoute
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
 }
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/trades'
+    | '/wallet'
     | '/api/chat'
     | '/trades/$tradeId'
   fileRoutesByTo: FileRoutesByTo
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/trades'
+    | '/wallet'
     | '/api/chat'
     | '/trades/$tradeId'
   id:
@@ -199,6 +210,7 @@ export interface FileRouteTypes {
     | '/_authenticated/search'
     | '/_authenticated/settings'
     | '/_authenticated/trades'
+    | '/_authenticated/wallet'
     | '/api/chat'
     | '/_authenticated/trades/$tradeId'
   fileRoutesById: FileRoutesById
@@ -239,6 +251,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/chat'
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/wallet': {
+      id: '/_authenticated/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof AuthenticatedWalletRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/trades': {
       id: '/_authenticated/trades'
@@ -342,6 +361,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSearchRoute: typeof AuthenticatedSearchRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTradesRoute: typeof AuthenticatedTradesRouteWithChildren
+  AuthenticatedWalletRoute: typeof AuthenticatedWalletRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -355,6 +375,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSearchRoute: AuthenticatedSearchRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTradesRoute: AuthenticatedTradesRouteWithChildren,
+  AuthenticatedWalletRoute: AuthenticatedWalletRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
