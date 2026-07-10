@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedTradesRouteImport } from './routes/_authenticated/trades'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedSearchRouteImport } from './routes/_authenticated/search'
 import { Route as AuthenticatedScannerRouteImport } from './routes/_authenticated/scanner'
 import { Route as AuthenticatedRiskCenterRouteImport } from './routes/_authenticated/risk-center'
 import { Route as AuthenticatedJournalRouteImport } from './routes/_authenticated/journal'
@@ -51,6 +52,11 @@ const AuthenticatedTradesRoute = AuthenticatedTradesRouteImport.update({
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSearchRoute = AuthenticatedSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedScannerRoute = AuthenticatedScannerRouteImport.update({
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/journal': typeof AuthenticatedJournalRoute
   '/risk-center': typeof AuthenticatedRiskCenterRoute
   '/scanner': typeof AuthenticatedScannerRoute
+  '/search': typeof AuthenticatedSearchRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/trades': typeof AuthenticatedTradesRouteWithChildren
   '/api/chat': typeof ApiChatRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByTo {
   '/journal': typeof AuthenticatedJournalRoute
   '/risk-center': typeof AuthenticatedRiskCenterRoute
   '/scanner': typeof AuthenticatedScannerRoute
+  '/search': typeof AuthenticatedSearchRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/trades': typeof AuthenticatedTradesRouteWithChildren
   '/api/chat': typeof ApiChatRoute
@@ -137,6 +145,7 @@ export interface FileRoutesById {
   '/_authenticated/journal': typeof AuthenticatedJournalRoute
   '/_authenticated/risk-center': typeof AuthenticatedRiskCenterRoute
   '/_authenticated/scanner': typeof AuthenticatedScannerRoute
+  '/_authenticated/search': typeof AuthenticatedSearchRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/trades': typeof AuthenticatedTradesRouteWithChildren
   '/api/chat': typeof ApiChatRoute
@@ -154,6 +163,7 @@ export interface FileRouteTypes {
     | '/journal'
     | '/risk-center'
     | '/scanner'
+    | '/search'
     | '/settings'
     | '/trades'
     | '/api/chat'
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
     | '/journal'
     | '/risk-center'
     | '/scanner'
+    | '/search'
     | '/settings'
     | '/trades'
     | '/api/chat'
@@ -185,6 +196,7 @@ export interface FileRouteTypes {
     | '/_authenticated/journal'
     | '/_authenticated/risk-center'
     | '/_authenticated/scanner'
+    | '/_authenticated/search'
     | '/_authenticated/settings'
     | '/_authenticated/trades'
     | '/api/chat'
@@ -240,6 +252,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/search': {
+      id: '/_authenticated/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof AuthenticatedSearchRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/scanner': {
@@ -320,6 +339,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedJournalRoute: typeof AuthenticatedJournalRoute
   AuthenticatedRiskCenterRoute: typeof AuthenticatedRiskCenterRoute
   AuthenticatedScannerRoute: typeof AuthenticatedScannerRoute
+  AuthenticatedSearchRoute: typeof AuthenticatedSearchRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTradesRoute: typeof AuthenticatedTradesRouteWithChildren
 }
@@ -332,6 +352,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedJournalRoute: AuthenticatedJournalRoute,
   AuthenticatedRiskCenterRoute: AuthenticatedRiskCenterRoute,
   AuthenticatedScannerRoute: AuthenticatedScannerRoute,
+  AuthenticatedSearchRoute: AuthenticatedSearchRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTradesRoute: AuthenticatedTradesRouteWithChildren,
 }
