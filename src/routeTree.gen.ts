@@ -22,6 +22,7 @@ import { Route as AuthenticatedRiskCenterRouteImport } from './routes/_authentic
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedJournalRouteImport } from './routes/_authenticated/journal'
 import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
+import { Route as AuthenticatedHelpRouteImport } from './routes/_authenticated/help'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
@@ -92,6 +93,11 @@ const AuthenticatedHistoryRoute = AuthenticatedHistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedHelpRoute = AuthenticatedHelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/chat': typeof AuthenticatedChatRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/help': typeof AuthenticatedHelpRoute
   '/history': typeof AuthenticatedHistoryRoute
   '/journal': typeof AuthenticatedJournalRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/chat': typeof AuthenticatedChatRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/help': typeof AuthenticatedHelpRoute
   '/history': typeof AuthenticatedHistoryRoute
   '/journal': typeof AuthenticatedJournalRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/help': typeof AuthenticatedHelpRoute
   '/_authenticated/history': typeof AuthenticatedHistoryRoute
   '/_authenticated/journal': typeof AuthenticatedJournalRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
@@ -178,6 +187,7 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/chat'
     | '/dashboard'
+    | '/help'
     | '/history'
     | '/journal'
     | '/notifications'
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/chat'
     | '/dashboard'
+    | '/help'
     | '/history'
     | '/journal'
     | '/notifications'
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/_authenticated/analytics'
     | '/_authenticated/chat'
     | '/_authenticated/dashboard'
+    | '/_authenticated/help'
     | '/_authenticated/history'
     | '/_authenticated/journal'
     | '/_authenticated/notifications'
@@ -328,6 +340,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHistoryRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/help': {
+      id: '/_authenticated/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof AuthenticatedHelpRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -374,6 +393,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedHelpRoute: typeof AuthenticatedHelpRoute
   AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
   AuthenticatedJournalRoute: typeof AuthenticatedJournalRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
@@ -389,6 +409,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
   AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedHelpRoute: AuthenticatedHelpRoute,
   AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
   AuthenticatedJournalRoute: AuthenticatedJournalRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
