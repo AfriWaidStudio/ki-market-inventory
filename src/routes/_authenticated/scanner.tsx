@@ -29,6 +29,11 @@ function ScannerPage() {
   const oppFn = useServerFn(listOpportunities);
   const snapsFn = useServerFn(listRecentSnapshots);
   const createTradeFn = useServerFn(createTrade);
+  const refreshFn = useServerFn(refreshLivePrices);
+  const profileFn = useServerFn(getProfile);
+
+  const profile = useQuery({ queryKey: ["profile"], queryFn: () => profileFn() });
+  const fiat = profile.data?.preferred_currency ?? "NGN";
 
   const [exchange, setExchange] = useState("Binance");
   const [side, setSide] = useState<"buy" | "sell">("buy");
@@ -37,6 +42,7 @@ function ScannerPage() {
   const [merchantCount, setMerchantCount] = useState("20");
   const [liquidity, setLiquidity] = useState("70");
   const [amount, setAmount] = useState("100");
+  const [autoRefresh, setAutoRefresh] = useState(true);
 
   const opps = useQuery({
     queryKey: ["opportunities", amount],
