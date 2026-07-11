@@ -1,17 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { RefreshCw, Zap } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Badge } from "@/components/StatCard";
-import { fmtMoney, fmtNumber } from "@/lib/currency";
+import { fmtMoney, fmtNumber, SUPPORTED_CURRENCIES } from "@/lib/currency";
 import {
   submitPriceSnapshot,
   listRecentSnapshots,
   listOpportunities,
 } from "@/lib/scanner.functions";
+import { refreshLivePrices } from "@/lib/prices.functions";
 import { createTrade } from "@/lib/trades.functions";
+import { getProfile } from "@/lib/profile.functions";
 
 const EXCHANGES = ["Binance", "Bybit", "OKX", "KuCoin", "Bitget"];
 
@@ -26,6 +29,11 @@ function ScannerPage() {
   const oppFn = useServerFn(listOpportunities);
   const snapsFn = useServerFn(listRecentSnapshots);
   const createTradeFn = useServerFn(createTrade);
+  const refreshFn = useServerFn(refreshLivePrices);
+  const profileFn = useServerFn(getProfile);
+
+  const profile = useQuery({ queryKey: ["profile"], queryFn: () => profileFn() });
+  const fiat = profile.data?.preferred_currency ?? "NGN";
 
   const [exchange, setExchange] = useState("Binance");
   const [side, setSide] = useState<"buy" | "sell">("buy");
@@ -34,6 +42,7 @@ function ScannerPage() {
   const [merchantCount, setMerchantCount] = useState("20");
   const [liquidity, setLiquidity] = useState("70");
   const [amount, setAmount] = useState("100");
+  const [autoRefresh, setAutoRefresh] = useState(true);
 
   const opps = useQuery({
     queryKey: ["opportunities", amount],
@@ -49,7 +58,7 @@ function ScannerPage() {
           asset: "USDT",
           side,
           price: Number(price),
-          currency: "NGN",
+          currency: fiat,
           liquidity_score: Number(liquidity),
           merchant_count: Number(merchantCount),
           merchant_rating: Number(merchantRating),
@@ -97,6 +106,29 @@ function ScannerPage() {
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
   });
+
+  const refresh = useMutation({
+    mutationFn: () => refreshFn({ data: { asset: "USDT", fiat } }),
+    onSuccess: (res) => {
+      qc.invalidateQueries({ queryKey: ["snapshots"] });
+      qc.invalidateQueries({ queryKey: ["opportunities"] });
+      if (res.inserted > 0) {
+        toast.success(`Live prices refreshed · ${res.exchanges_ok.join(", ")}`);
+      } else if (res.failures.length) {
+        toast.error(`Exchanges unreachable: ${res.failures.map((f) => f.exchange).join(", ")}`);
+      }
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Refresh failed"),
+  });
+
+  // Auto-fetch live prices on mount and every 2 minutes
+  useEffect(() => {
+    if (!autoRefresh) return;
+    refresh.mutate();
+    const id = setInterval(() => refresh.mutate(), 120_000);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoRefresh, fiat]);
 
   return (
     <AppShell title="Opportunity Scanner">
@@ -148,7 +180,31 @@ function ScannerPage() {
 
         <div className="space-y-6">
           <div className="rounded-xl border border-border bg-card p-5">
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Live opportunities</h2>
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div>
+                <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                  <Zap className="h-3.5 w-3.5 text-primary" /> Live opportunities
+                </h2>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Auto-fetched from Binance · Bybit · OKX P2P every 2 min · {fiat}
+                  {SUPPORTED_CURRENCIES.find((c) => c.code === fiat) ? "" : " (unsupported)"}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <input type="checkbox" checked={autoRefresh} onChange={(e) => setAutoRefresh(e.target.checked)} />
+                  Auto
+                </label>
+                <button
+                  onClick={() => refresh.mutate()}
+                  disabled={refresh.isPending}
+                  className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 px-2.5 py-1.5 text-xs text-primary hover:bg-primary/10 disabled:opacity-50"
+                >
+                  <RefreshCw className={`h-3.5 w-3.5 ${refresh.isPending ? "animate-spin" : ""}`} />
+                  {refresh.isPending ? "Fetching…" : "Refresh live"}
+                </button>
+              </div>
+            </div>
             {opps.isLoading ? (
               <p className="mt-3 text-sm text-muted-foreground">Scanning…</p>
             ) : (opps.data ?? []).length === 0 ? (

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { Badge } from "@/components/StatCard";
@@ -90,8 +90,8 @@ function TradesPage() {
               </thead>
               <tbody className="tabular-nums">
                 {rows.map((t) => (
-                  <>
-                    <tr key={t.id} className="border-t border-border">
+                  <Fragment key={t.id}>
+                    <tr className="border-t border-border">
                       <td className="py-3 px-4">
                         <Link to="/trades/$tradeId" params={{ tradeId: t.id }} className="text-foreground hover:text-primary">
                           {t.route}
@@ -157,7 +157,7 @@ function TradesPage() {
                         </td>
                       </tr>
                     )}
-                  </>
+                  </Fragment>
                 ))}
               </tbody>
             </table>

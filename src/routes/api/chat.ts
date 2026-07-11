@@ -27,7 +27,7 @@ export const Route = createFileRoute("/api/chat")({
           { global: { headers: { Authorization: authHeader } }, auth: { persistSession: false } },
         );
 
-        const [{ data: trades }, { data: alerts }] = await Promise.all([
+        const [{ data: trades }, { data: alerts }, { data: snaps }] = await Promise.all([
           supabase
             .from("market_inventory_trades")
             .select("id, route, status, amount, buy_price, expected_sell_price, actual_sell_price, expected_profit, actual_profit, duration_minutes, ki_accuracy_verdict, buy_time, sell_time, currency, confidence_score, risk_score")
@@ -39,11 +39,25 @@ export const Route = createFileRoute("/api/chat")({
             .is("dismissed_at", null)
             .order("created_at", { ascending: false })
             .limit(20),
+          supabase
+            .from("market_inventory_price_snapshots")
+            .select("exchange, side, price, currency, liquidity_score, merchant_count, merchant_rating, captured_at")
+            .order("captured_at", { ascending: false })
+            .limit(60),
         ]);
+
+        // Keep only the latest snapshot per (exchange, side) — chat cares about "now"
+        type Snap = NonNullable<typeof snaps>[number];
+        const latestPrices = new Map<string, Snap>();
+        for (const s of snaps ?? []) {
+          const k = `${s.exchange}::${s.side}`;
+          if (!latestPrices.has(k)) latestPrices.set(k, s);
+        }
 
         const grounding = {
           trades: trades ?? [],
           risk_alerts: alerts ?? [],
+          live_prices: Array.from(latestPrices.values()),
           generated_at: new Date().toISOString(),
         };
 
