@@ -58,7 +58,7 @@ function ScannerPage() {
           asset: "USDT",
           side,
           price: Number(price),
-          currency: "NGN",
+          currency: fiat,
           liquidity_score: Number(liquidity),
           merchant_count: Number(merchantCount),
           merchant_rating: Number(merchantRating),
