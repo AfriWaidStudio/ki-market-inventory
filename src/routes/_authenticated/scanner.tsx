@@ -1,17 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { RefreshCw, Zap } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Badge } from "@/components/StatCard";
-import { fmtMoney, fmtNumber } from "@/lib/currency";
+import { fmtMoney, fmtNumber, SUPPORTED_CURRENCIES } from "@/lib/currency";
 import {
   submitPriceSnapshot,
   listRecentSnapshots,
   listOpportunities,
 } from "@/lib/scanner.functions";
+import { refreshLivePrices } from "@/lib/prices.functions";
 import { createTrade } from "@/lib/trades.functions";
+import { getProfile } from "@/lib/profile.functions";
 
 const EXCHANGES = ["Binance", "Bybit", "OKX", "KuCoin", "Bitget"];
 
