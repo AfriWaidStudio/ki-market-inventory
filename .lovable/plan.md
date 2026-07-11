@@ -1,76 +1,89 @@
-## KI Market Inventory — Full Build
+# KI Market Inventory — Consolidation, Wiring & Live Price Intelligence
 
-A personal P2P/arbitrage command center for USDT tracking across Binance, Bybit, OKX. **Tracking + decision support only — no real trading, no fund movement, no auto-execute.**
+Goal: stop adding surfaces. Take what exists and make it **actually work end-to-end** — every button, every route, every link, every setting — and give Waides KI **real live prices** from Binance, Bybit, and OKX so it can reason on real data instead of only what the user typed.
 
-### Stack & auth
-- Lovable Cloud (Postgres + Auth + Edge)
-- Email/password + Google sign-in (managed)
-- Route gate under `src/routes/_authenticated/*`; public `/auth`
-- Currency: user-selectable (default NGN ₦), stored per trade + user preference
-- Prices: **manual entry** (no external scraping yet); price_snapshots table scaffolded for future sync
+Purpose reminder (from your original brief): this is a **personal P2P/arbitrage command center** and intelligence analyst. It tracks trades, explains opportunities, learns from behavior, and never executes real orders. Everything we do here serves that.
 
-### Database (all with RLS `auth.uid() = user_id`, GRANTs to authenticated + service_role)
+---
 
-1. `profiles` — user_id, display_name, preferred_currency, created_at
-2. `user_roles` + `app_role` enum + `has_role()` security definer (standard pattern)
-3. `market_inventory_trades` — full spec from brief (user_id, asset, amount, buy/sell exchange, prices, fees, expected/actual profit, times, duration_minutes, status enum [active|closed|cancelled], route, confidence_score, risk_score, ki_reasoning, user_notes, currency, timestamps)
-4. `market_inventory_price_snapshots` — user_id, exchange, asset, side (buy/sell), price, currency, liquidity_score, merchant_count, captured_at
-5. `market_inventory_exchange_accounts` — user_id, exchange, label, is_active
-6. `market_inventory_api_keys` — user_id, exchange, key_label, encrypted_key, encrypted_secret, permissions (read_only only), created_at. Encryption via pgcrypto + `APP_ENCRYPTION_KEY` secret (generated). **UI warning: read-only only, no withdrawal/trade perms.**
-7. `market_inventory_trade_notes` — trade_id, user_id, note, created_at
-8. `market_inventory_daily_reports` — user_id, report_date, total_profit, trade_count, win_rate, avg_duration, best_route (materialized on demand)
-9. `market_inventory_risk_alerts` — user_id, severity, message, related_trade_id, created_at, dismissed_at
-10. `market_inventory_audit_log` — user_id, action (api_key_created/deleted/synced), metadata, created_at
+## Phase 1 — Full audit & repair pass (no new features)
 
-### Server functions (`src/lib/*.functions.ts`, all `.middleware([requireSupabaseAuth])`)
-- `trades.functions.ts`: listActive, listClosed (with filters), getTrade, createTrade (Mark Bought), updatePrice, markClosed (computes actual_profit, duration, updates KI accuracy), cancelTrade, addNote
-- `scanner.functions.ts`: submitPriceSnapshot, listCurrentOpportunities (computes spread/fees/net/scores per exchange pair)
-- `analytics.functions.ts`: dashboardSummary, profitByDay, profitByRoute, profitByExchange, bestHour, winRate, capitalGrowth, kiAccuracy
-- `apiKeys.functions.ts`: listKeys, createKey (encrypt with pgcrypto), deleteKey — all write to audit_log
-- `chat.functions.ts`: `askKI` — pulls user's real trades + snapshots, sends to Lovable AI Gateway (`google/gemini-2.5-flash`) with system prompt anchoring answers to actual data; streams response
+Walk every existing route as a real user, in a browser, signed in, and fix what's broken:
 
-### Routes
-- `/auth` — email/password + Google (managed Lovable OAuth broker)
-- `/_authenticated/route.tsx` — integration-managed gate (create with first protected route)
-- `/_authenticated/index.tsx` → **Dashboard**: capital, active count, today/week/month/total profit, avg profit, avg duration, best/worst route, win rate, total fees, active risk alerts
-- `/_authenticated/scanner` → **Opportunity Scanner**: enter prices per exchange, live spread/fee/net-profit table, KI recommendation badge (buy now / wait / skip / watch) per pair
-- `/_authenticated/trades` → **Active Trades table** with Update Price / Mark Closed / Cancel / Ask KI actions
-- `/_authenticated/history` → **Trade History** with filters (date, exchange, route, P/L, status, confidence)
-- `/_authenticated/trades/$tradeId` → **Trade Detail**: timeline, buy/sell details, all price updates, KI reasoning, notes, profit calc, mistakes detected, KI accuracy verdict
-- `/_authenticated/analytics` → charts (recharts) for all analytics metrics
-- `/_authenticated/chat` → **KI Chat** grounded in user's data
-- `/_authenticated/settings` → currency preference, exchange accounts, API keys (with big read-only warning), audit log viewer
+- `/auth` — email/password sign-up, sign-in, Google OAuth round-trip, redirect back to `/dashboard`, session persistence on reload.
+- `/dashboard` — every stat card pulls from `analytics.functions.ts` and renders correctly (0-state, 1-trade state, many-trades state).
+- `/scanner` — submit price snapshot form works, opportunities list refreshes, KI recommendation badges render, "Mark Bought" creates a trade and lands you on `/trades`.
+- `/trades` — Update Price / Mark Closed / Cancel / Ask KI actions all round-trip to DB and invalidate the list.
+- `/trades/$tradeId` — timeline, price updates, notes add/save, KI accuracy verdict appears after close.
+- `/history` — filters (date, exchange, route, P/L, status) actually filter.
+- `/analytics` — every chart renders with real data, empty states are clear.
+- `/chat` — Waides KI answers stream, session token attaches, grounding JSON includes trades + alerts + **live prices** (Phase 2).
+- `/risk-center` — dismiss works, list refreshes.
+- `/journal`, `/search`, `/notifications`, `/wallet`, `/help` — links, empty states, "coming soon" labels honest.
+- `/settings` — currency preference saves and is reflected everywhere (`currency.ts` formatter reads it); exchange accounts add/remove; API keys form shows the read-only warning and the audit log entry appears.
+- Header/sidebar — every nav link routes, active state highlights, sign-out tears down cache and redirects to `/auth`.
+- Legal `/privacy`, `/terms`, `/safety` — footer links reach them.
 
-### KI logic (deterministic, in server functions — no ML)
-- **Confidence score**: weighted spread% vs fees, liquidity, merchant count, merchant rating
-- **Risk score**: inverse of liquidity + merchant reputation + spread volatility
-- **Recommendation**: thresholds on net_profit vs fees + confidence
-- **KI accuracy on close**: compare expected_profit vs actual_profit; store delta and verdict (accurate / overestimated / underestimated)
-- **Mistake detection**: sell below buy, held too long vs avg, fees > profit
-- KI Chat answers via Lovable AI Gateway using user's real aggregates as context
+Fix any hydration errors, 500s, broken invalidations, missing empty states, and mislabeled buttons found along the way.
 
-### Security
-- RLS on every table (owner-only)
-- `user_roles` separate table + `has_role()` (no roles on profiles)
-- API secrets encrypted via pgcrypto with server-only `APP_ENCRYPTION_KEY`
-- Audit log for all key create/delete/sync
-- Zod validation on every server function input
-- Clear UI warnings on API key form: read-only only, no withdrawal, no trading
-- No auto-execute anywhere; buttons labeled "Mark Bought" / "Mark Closed" (tracking only)
+## Phase 2 — Live price intelligence (auto-fetch, no manual entry required)
 
-### Design
-Dark trading-desk aesthetic: near-black bg, cyan/emerald accents for profit, rose for loss, mono numerics (JetBrains Mono), Inter for UI. Card-based dashboard, dense tables, badges for status/confidence/risk.
+Give KI real market awareness. Public P2P endpoints from Binance, Bybit, OKX don't need API keys — they're the same ones the exchange websites use.
 
-### Deliverables in this build
-- Enable Lovable Cloud + configure Google social auth
-- All migrations (tables + enums + GRANTs + RLS + `has_role` + pgcrypto encryption functions)
-- Generate `APP_ENCRYPTION_KEY` secret
-- All server functions + routes + UI pages listed above
-- Sign-in/sign-up page with Google button
-- Header with session-aware account menu + sign-out (cache teardown pattern)
-- Currency formatter helper + user preference wiring
+- New server function `prices.functions.ts`:
+  - `fetchLivePrices({ asset, fiat, side })` — server-side `fetch` to:
+    - Binance P2P: `https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search`
+    - Bybit P2P: `https://api2.bybit.com/fiat/otc/item/online`
+    - OKX P2P: `https://www.okx.com/v3/c2c/tradingOrders/books`
+  - Normalize each response to a common shape: `{ exchange, side, price, currency, liquidity_score, merchant_count, merchant_rating, captured_at }`.
+  - Insert into existing `market_inventory_price_snapshots` (already scaffolded) so all downstream code keeps working.
+- New public server route `/api/public/cron/refresh-prices` (signed with `CRON_SECRET`) that calls the fetcher for the user's watched pairs. Scheduled via pg_cron every 2–5 min.
+- `/scanner` gets a "Live" toggle — when on, prices auto-refresh from snapshots instead of requiring manual entry. Manual entry remains as fallback.
+- Waides KI grounding in `/api/chat` gets the latest live snapshots injected alongside trades and alerts, so it can answer "what's the spread on Binance→Bybit right now" against real data.
+- Add a **freshness badge** on every price ("Live · 42s ago" / "Stale · 6m ago") so nothing looks more certain than it is.
+- Store failures in `market_inventory_audit_log` (source: `price_fetch`) so you can see when an exchange endpoint blocks us.
 
-### Explicitly out of scope (per brief)
-- Real order execution, withdrawals, transfers
-- Live exchange API polling / auto-sync (schema scaffolded only)
-- Auto-buy / auto-sell
+Rate-limit: 1 call per exchange per minute per user. If an exchange 429s or geo-blocks, mark that exchange as "unavailable" in the UI rather than silently failing.
+
+## Phase 3 — End-to-end test pass (Playwright)
+
+Automated flow that proves the whole loop, run headless in the sandbox:
+
+1. Sign up → land on dashboard.
+2. Add currency preference in settings → verify it's applied.
+3. Trigger a live-price refresh → verify snapshots appear.
+4. Open scanner → best opportunity shows → "Mark Bought" → land on trades.
+5. Update price on the active trade → Mark Closed → verify actual_profit + KI accuracy verdict.
+6. Open `/chat` → ask "how did my last trade do?" → verify the reply cites the real trade.
+7. Dismiss a risk alert → verify it disappears.
+8. Sign out → verify redirect to `/auth` and cache is torn down.
+
+Screenshot each step under `/tmp/browser/e2e/`. Any red step blocks the phase from being called done.
+
+## Phase 4 — Cross-cutting polish (only after 1–3 are green)
+
+- Consistent empty/loading/error states across every route.
+- Every mutation invalidates the right queries (no stale UI).
+- Every money value uses the decimal-safe formatter in `currency.ts`.
+- Every "estimate" is visibly labeled as an estimate, never a guarantee.
+- Mobile layout sweep on the top 5 routes.
+
+---
+
+## Technical details
+
+- No new pages/routes get added in this pass except `prices.functions.ts` and `/api/public/cron/refresh-prices`.
+- P2P endpoints called server-side only (CORS + IP diversity). Cloudflare Worker `fetch` is fine.
+- pg_cron schedule installed via migration; secret via `generate_secret` for `CRON_SECRET`.
+- No exchange API keys required for public P2P data. The existing `market_inventory_api_keys` table stays for future read-only account features.
+- Chat grounding stays under 20KB; live prices summarized (latest per exchange/side) before injection.
+
+## Out of scope (still)
+
+- Real order execution, withdrawals, fund movement.
+- Auto-buy / auto-sell.
+- Third-party paid data providers.
+
+---
+
+Approve this and I'll start with Phase 1 (audit/repair), then Phase 2 (live prices), then Phase 3 (E2E tests). No new product surfaces will be built in this pass.
