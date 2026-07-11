@@ -107,6 +107,29 @@ function ScannerPage() {
     onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
   });
 
+  const refresh = useMutation({
+    mutationFn: () => refreshFn({ data: { asset: "USDT", fiat } }),
+    onSuccess: (res) => {
+      qc.invalidateQueries({ queryKey: ["snapshots"] });
+      qc.invalidateQueries({ queryKey: ["opportunities"] });
+      if (res.inserted > 0) {
+        toast.success(`Live prices refreshed · ${res.exchanges_ok.join(", ")}`);
+      } else if (res.failures.length) {
+        toast.error(`Exchanges unreachable: ${res.failures.map((f) => f.exchange).join(", ")}`);
+      }
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Refresh failed"),
+  });
+
+  // Auto-fetch live prices on mount and every 2 minutes
+  useEffect(() => {
+    if (!autoRefresh) return;
+    refresh.mutate();
+    const id = setInterval(() => refresh.mutate(), 120_000);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoRefresh, fiat]);
+
   return (
     <AppShell title="Opportunity Scanner">
       <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
