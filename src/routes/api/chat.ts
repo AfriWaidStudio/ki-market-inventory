@@ -47,7 +47,8 @@ export const Route = createFileRoute("/api/chat")({
         ]);
 
         // Keep only the latest snapshot per (exchange, side) — chat cares about "now"
-        const latestPrices = new Map<string, (typeof snaps extends (infer T)[] | null ? T : never)>();
+        type Snap = NonNullable<typeof snaps>[number];
+        const latestPrices = new Map<string, Snap>();
         for (const s of snaps ?? []) {
           const k = `${s.exchange}::${s.side}`;
           if (!latestPrices.has(k)) latestPrices.set(k, s);
