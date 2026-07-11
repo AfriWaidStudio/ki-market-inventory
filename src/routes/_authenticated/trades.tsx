@@ -90,74 +90,23 @@ function TradesPage() {
               </thead>
               <tbody className="tabular-nums">
                 {rows.map((t) => (
-                  <>
-                    <tr key={t.id} className="border-t border-border">
-                      <td className="py-3 px-4">
-                        <Link to="/trades/$tradeId" params={{ tradeId: t.id }} className="text-foreground hover:text-primary">
-                          {t.route}
-                        </Link>
-                      </td>
-                      <td className="py-3 px-4 text-right">{fmtNumber(Number(t.amount), 0)} {t.asset}</td>
-                      <td className="py-3 px-4 text-right">{fmtMoney(Number(t.buy_price), t.currency)}</td>
-                      <td className="py-3 px-4 text-right">
-                        {editing === t.id ? (
-                          <div className="flex gap-1 justify-end">
-                            <input type="number" step="0.01" value={priceInput} onChange={(e) => setPriceInput(e.target.value)}
-                              className="w-24 rounded border border-input bg-input px-2 py-1 text-right text-sm" />
-                            <button onClick={() => doUpdate.mutate({ id: t.id, price: Number(priceInput) })}
-                              className="rounded bg-primary px-2 text-xs text-primary-foreground">Save</button>
-                          </div>
-                        ) : (
-                          <button onClick={() => { setEditing(t.id); setPriceInput(String(t.expected_sell_price ?? "")); }}
-                            className="hover:text-primary">{fmtMoney(Number(t.expected_sell_price), t.currency)}</button>
-                        )}
-                      </td>
-                      <td className={`py-3 px-4 text-right ${Number(t.expected_profit) >= 0 ? "text-[color:var(--profit)]" : "text-[color:var(--loss)]"}`}>
-                        {fmtMoney(Number(t.expected_profit), t.currency)}
-                      </td>
-                      <td className="py-3 px-4 text-center">
-                        <Badge tone={Number(t.confidence_score) >= 70 ? "profit" : Number(t.confidence_score) >= 50 ? "info" : "warning"}>
-                          {fmtNumber(Number(t.confidence_score), 0)}%
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-4 text-xs text-muted-foreground">
-                        {timeAgo(t.buy_time as string)}
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        <div className="flex gap-1 justify-end">
-                          <button onClick={() => { setClosingId(t.id); setActualPrice(String(t.expected_sell_price ?? "")); setFinalFees(String(t.estimated_fees ?? "0")); }}
-                            className="rounded border border-primary/40 px-2 py-1 text-xs text-primary hover:bg-primary/10">Close</button>
-                          <button onClick={() => doCancel.mutate(t.id)}
-                            className="rounded border border-border px-2 py-1 text-xs text-muted-foreground hover:bg-muted">Cancel</button>
-                        </div>
-                      </td>
-                    </tr>
-                    {closingId === t.id && (
-                      <tr className="bg-muted/20">
-                        <td colSpan={8} className="p-4">
-                          <div className="flex flex-wrap items-end gap-3">
-                            <label className="text-sm">
-                              <div className="text-xs uppercase text-muted-foreground">Actual sell price</div>
-                              <input type="number" step="0.01" value={actualPrice} onChange={(e) => setActualPrice(e.target.value)}
-                                className="mt-1 w-32 rounded border border-input bg-input px-2 py-1.5" />
-                            </label>
-                            <label className="text-sm">
-                              <div className="text-xs uppercase text-muted-foreground">Final fees</div>
-                              <input type="number" step="0.01" value={finalFees} onChange={(e) => setFinalFees(e.target.value)}
-                                className="mt-1 w-32 rounded border border-input bg-input px-2 py-1.5" />
-                            </label>
-                            <button onClick={() => doClose.mutate({ id: t.id, price: Number(actualPrice), fees: Number(finalFees) })}
-                              disabled={!actualPrice || doClose.isPending}
-                              className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50">
-                              Confirm close
-                            </button>
-                            <button onClick={() => setClosingId(null)}
-                              className="rounded-md border border-border px-3 py-2 text-sm">Cancel</button>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </>
+                  <TradeRow
+                    key={t.id}
+                    t={t}
+                    editing={editing}
+                    priceInput={priceInput}
+                    setEditing={setEditing}
+                    setPriceInput={setPriceInput}
+                    doUpdate={doUpdate}
+                    closingId={closingId}
+                    actualPrice={actualPrice}
+                    setActualPrice={setActualPrice}
+                    finalFees={finalFees}
+                    setFinalFees={setFinalFees}
+                    setClosingId={setClosingId}
+                    doClose={doClose}
+                    doCancel={doCancel}
+                  />
                 ))}
               </tbody>
             </table>
