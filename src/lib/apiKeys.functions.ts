@@ -284,10 +284,10 @@ async function fetchExchangeTransactions(key: string, secret: string, exchange: 
   if (exchange === "Bybit") {
     try {
       const [depResp, witResp] = await Promise.all([
-        fetch("https://api.bybit.com/v5/asset/deposit/list?api_key=" + key + "&timestamp=" + Date.now() + "&sign=" + await signBybit("GET", "/v5/asset/deposit/list"), {
+        fetch("https://api.bybit.com/v5/asset/deposit/list?api_key=" + key + "&timestamp=" + Date.now() + "&sign=" + await signBybit(secret, "GET", "/v5/asset/deposit/list"), {
           headers: { "X-BAPI-API-KEY": key },
         }),
-        fetch("https://api.bybit.com/v5/asset/withdraw/list?api_key=" + key + "&timestamp=" + Date.now() + "&sign=" + await signBybit("GET", "/v5/asset/withdraw/list"), {
+        fetch("https://api.bybit.com/v5/asset/withdraw/list?api_key=" + key + "&timestamp=" + Date.now() + "&sign=" + await signBybit(secret, "GET", "/v5/asset/withdraw/list"), {
           headers: { "X-BAPI-API-KEY": key },
         }),
       ]);
