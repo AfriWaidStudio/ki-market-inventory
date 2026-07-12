@@ -231,10 +231,10 @@ async function fetchExchangeTransactions(key: string, secret: string, exchange: 
   if (exchange === "Binance") {
     try {
       const [depResp, witResp] = await Promise.all([
-        fetch("https://api.binance.com/sapi/v1/capital/deposit-hisrec?timestamp=" + Date.now() + "&signature=" + await signBinance("/sapi/v1/capital/deposit-hisrec"), {
+        fetch("https://api.binance.com/sapi/v1/capital/deposit-hisrec?timestamp=" + Date.now() + "&signature=" + await signBinance(secret, "/sapi/v1/capital/deposit-hisrec"), {
           headers: { "X-MBX-APIKEY": key },
         }),
-        fetch("https://api.binance.com/sapi/v1/capital/withdraw/history?timestamp=" + Date.now() + "&signature=" + await signBinance("/sapi/v1/capital/withdraw/history"), {
+        fetch("https://api.binance.com/sapi/v1/capital/withdraw/history?timestamp=" + Date.now() + "&signature=" + await signBinance(secret, "/sapi/v1/capital/withdraw/history"), {
           headers: { "X-MBX-APIKEY": key },
         }),
       ]);
