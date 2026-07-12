@@ -1,0 +1,6 @@
+import {createServerFn} from "@tanstack/react-start";
+import {requireAuth} from "./auth/middleware";
+import {hashToken,newOpaqueToken} from "./auth/core.server";
+export const getTelegramStatus=createServerFn({method:"GET"}).middleware([requireAuth]).handler(async({context})=>{const{data}=await(context.supabase as any).from("telegram_connections").select("telegram_user_id,chat_id,linked_at,enabled").eq("user_id",context.userId).maybeSingle();return data??null;});
+export const createTelegramLink=createServerFn({method:"POST"}).middleware([requireAuth]).handler(async({context})=>{const code=newOpaqueToken(9).toUpperCase();await(context.supabase as any).from("telegram_connections").upsert({user_id:context.userId,link_code_hash:hashToken(code),link_code_expires_at:new Date(Date.now()+600_000).toISOString(),enabled:true},{onConflict:"user_id"});const username=process.env.TELEGRAM_BOT_USERNAME;return{code,url:username?`https://t.me/${username}?start=${code}`:null,expiresInMinutes:10};});
+export const unlinkTelegram=createServerFn({method:"POST"}).middleware([requireAuth]).handler(async({context})=>{await(context.supabase as any).from("telegram_connections").delete().eq("user_id",context.userId);return{ok:true};});

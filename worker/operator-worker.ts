@@ -1,0 +1,46 @@
+import { createClient } from "@supabase/supabase-js";
+import { randomUUID } from "node:crypto";
+import { EXCHANGES, type CapturedAd } from "./exchanges";
+import { OPERATOR_MODEL_VERSION, SUPPORTED_FIATS, dedupeAlertKey, evaluatePosition, type MarketAd } from "../src/lib/operator-engine";
+
+const url=process.env.SUPABASE_URL, key=process.env.SUPABASE_SERVICE_ROLE_KEY;
+if(!url||!key) throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
+const db=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}}) as any;
+const owner=`worker-${randomUUID()}`; const interval=Math.max(15_000,Number(process.env.OPERATOR_POLL_MS??30_000));
+const sleep=(ms:number)=>new Promise(r=>setTimeout(r,ms));
+const failures=new Map<string,number>();
+
+async function acquireLease(){
+  const until=new Date(Date.now()+interval*3).toISOString();
+  const {data}=await db.from("ki_worker_leases").select("owner_id,lease_until").eq("lease_key","market-operator").maybeSingle();
+  if(data&&data.owner_id!==owner&&new Date(data.lease_until).getTime()>Date.now()) return false;
+  await db.from("ki_worker_leases").upsert({lease_key:"market-operator",owner_id:owner,lease_until:until,updated_at:new Date().toISOString()}); return true;
+}
+async function captureMarket(){
+  const captured:CapturedAd[]=[];
+  for(const fiat of SUPPORTED_FIATS) for(const adapter of EXCHANGES) for(const side of ["buy","sell"] as const){
+    const healthKey=`${adapter.name}:${fiat}`; const count=failures.get(healthKey)??0;
+    if(count>0&&Date.now()%Math.min(300_000,30_000*2**count)>interval) continue;
+    try{
+      const ads=await adapter.fetch("USDT",fiat,side); captured.push(...ads); failures.set(healthKey,0);
+      await db.from("market_intelligence_feed_health").upsert({exchange:adapter.name,fiat,status:ads.length?"healthy":"unsupported",schema_version:ads[0]?.schemaVersion,last_success_at:new Date().toISOString(),consecutive_failures:0,latency_ms:ads[0]?.latencyMs,updated_at:new Date().toISOString()});
+    }catch(error){const next=count+1;failures.set(healthKey,next);await db.from("market_intelligence_feed_health").upsert({exchange:adapter.name,fiat,status:next>=3?"stale":"degraded",consecutive_failures:next,last_failure_at:new Date().toISOString(),error_message:error instanceof Error?error.message:String(error),next_attempt_at:new Date(Date.now()+Math.min(300_000,30_000*2**next)).toISOString(),updated_at:new Date().toISOString()});}
+    await sleep(150);
+  }
+  if(captured.length) await db.from("market_intelligence_ads").insert(captured.map(a=>({exchange:a.exchange,asset:a.asset,fiat:a.fiat,side:a.side,external_ad_id:a.externalAdId,price:a.price,available_asset:a.availableAsset,min_fiat:a.minFiat,max_fiat:a.maxFiat,payment_methods:a.paymentMethods,merchant_name:a.merchantName,merchant_verified:a.merchantVerified,completion_rate:a.completionRate,completed_orders:a.completedOrders,response_latency_ms:a.latencyMs,schema_version:a.schemaVersion,observed_at:a.observedAt,raw_fingerprint:a.rawFingerprint})));
+  return captured;
+}
+async function aggregate(captured:CapturedAd[]){
+  const buckets=new Map<string,CapturedAd[]>(); for(const ad of captured){const k=`${ad.exchange}:${ad.fiat}:${ad.side}`;buckets.set(k,[...(buckets.get(k)??[]),ad]);}
+  for(const [key,rows] of buckets){const [exchange,fiat,side]=key.split(":");const prices=rows.map(r=>r.price);const close=prices[0],mean=prices.reduce((a,b)=>a+b,0)/prices.length;for(const seconds of [60,300,900,3600,86400]){const epoch=Math.floor(Date.now()/1000/seconds)*seconds;await db.from("market_intelligence_candles").upsert({exchange,asset:"USDT",fiat,side,interval_seconds:seconds,bucket_at:new Date(epoch*1000).toISOString(),open:close,high:Math.max(...prices),low:Math.min(...prices),close,executable_price:close,depth_asset:rows.reduce((s,r)=>s+r.availableAsset,0),merchant_count:rows.length,volatility:Math.sqrt(prices.reduce((s,p)=>s+(p-mean)**2,0)/prices.length)/mean},{onConflict:"exchange,asset,fiat,side,interval_seconds,bucket_at"});}}
+}
+async function evaluatePositions(captured:CapturedAd[]){
+  const {data:trades}=await db.from("market_inventory_trades").select("*").eq("status","active");
+  for(const trade of trades??[]){const fiat=trade.currency??"NGN";const ads=captured.filter(a=>a.fiat===fiat) as MarketAd[];const {data:candles}=await db.from("market_intelligence_candles").select("close,bucket_at").eq("fiat",fiat).eq("side","sell").eq("interval_seconds",60).order("bucket_at",{ascending:true}).limit(1440);const {data:health}=await db.from("market_intelligence_feed_health").select("status").eq("fiat",fiat);const decision=evaluatePosition({tradeId:trade.id,remainingAmount:Number(trade.remaining_amount),buyPrice:Number(trade.buy_price),totalFiatSpent:trade.total_fiat_spent==null?null:Number(trade.total_fiat_spent),entryFees:Number(trade.entry_fees??0),transferFeeAsset:Number(trade.transfer_fee_asset??0),exitFeesFiat:Number(trade.estimated_fees??0),openedAt:trade.buy_time,horizonHours:Number(trade.intended_horizon_hours??24),sourceExchange:trade.source_exchange,destinationExchange:trade.destination_exchange,paymentMethod:trade.payment_method},ads,{prices:(candles??[]).map((c:any)=>Number(c.close)),timestamps:(candles??[]).map((c:any)=>c.bucket_at),sampleCount:candles?.length??0,feedHealthy:(health??[]).some((h:any)=>h.status==="healthy")});
+    await db.from("ki_position_plans").update({active:false}).eq("trade_id",trade.id).eq("active",true);const {data:plan}=await db.from("ki_position_plans").insert({user_id:trade.user_id,trade_id:trade.id,...{action:decision.action,venue:decision.venue,executable_price:decision.executablePrice,executable_amount:decision.executableAmount,break_even_price:decision.breakEvenPrice,target_price:decision.targetPrice,expected_net:decision.expectedNet,downside:decision.downside,target_window_hours:decision.targetWindowHours,confidence:decision.confidence,confidence_eligible:decision.confidenceEligible,regime:decision.regime,evidence:decision.evidence,missing_data:decision.missingData,invalidation_condition:decision.invalidationCondition,next_evaluation_at:decision.nextEvaluationAt,model_version:OPERATOR_MODEL_VERSION}}).select("id").single();await db.from("ki_recommendation_snapshots").insert({user_id:trade.user_id,trade_id:trade.id,plan_id:plan?.id,action:decision.action,evidence:decision.evidence,market_snapshot:{fiat,ads:ads.length},predicted_windows:{target_hours:decision.targetWindowHours},model_version:OPERATOR_MODEL_VERSION});
+    if(decision.action==="sell_now"){const key=dedupeAlertKey(trade.id,"target_reached",decision.action,decision.executablePrice);const {data:alert}=await db.from("ki_operator_alerts").upsert({user_id:trade.user_id,trade_id:trade.id,alert_type:"target_reached",severity:"warning",dedupe_key:key,title:"KI exit opportunity",message:`${decision.venue} can currently execute near ${decision.executablePrice?.toFixed(2)} ${fiat}. Estimated net: ${decision.expectedNet?.toFixed(2)} ${fiat}.`,evidence:{decision}},{onConflict:"user_id,dedupe_key"}).select("id").single();if(alert)await db.from("ki_alert_deliveries").upsert([{alert_id:alert.id,channel:"in_app"},{alert_id:alert.id,channel:"telegram"}],{onConflict:"alert_id,channel"});}
+  }
+}
+async function dispatchTelegram(){const token=process.env.TELEGRAM_BOT_TOKEN;if(!token)return;const{data:deliveries}=await db.from("ki_alert_deliveries").select("id,attempts,alert_id,ki_operator_alerts(user_id,message)").eq("channel","telegram").in("status",["pending","failed"]).lte("next_attempt_at",new Date().toISOString()).limit(50);for(const d of deliveries??[]){const alert=Array.isArray(d.ki_operator_alerts)?d.ki_operator_alerts[0]:d.ki_operator_alerts;if(!alert)continue;const[{data:settings},{data:connection}]=await Promise.all([db.from("ki_strategy_settings").select("shadow_mode,live_alerts_enabled,muted_until").eq("user_id",alert.user_id).maybeSingle(),db.from("telegram_connections").select("chat_id,enabled").eq("user_id",alert.user_id).maybeSingle()]);if(!settings||settings.shadow_mode||!settings.live_alerts_enabled||!connection?.enabled||!connection.chat_id||new Date(settings.muted_until??0).getTime()>Date.now())continue;try{const r=await fetch(`https://api.telegram.org/bot${token}/sendMessage`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({chat_id:connection.chat_id,text:alert.message})});if(!r.ok)throw new Error(`Telegram HTTP ${r.status}`);await db.from("ki_alert_deliveries").update({status:"sent",sent_at:new Date().toISOString(),attempts:d.attempts+1,error_message:null}).eq("id",d.id);}catch(error){const attempts=d.attempts+1;await db.from("ki_alert_deliveries").update({status:"failed",attempts,error_message:error instanceof Error?error.message:String(error),next_attempt_at:new Date(Date.now()+Math.min(3_600_000,30_000*2**attempts)).toISOString()}).eq("id",d.id);}}}
+async function run(){console.info(`[Operator] ${owner} started; interval ${interval}ms`);for(;;){const start=Date.now();try{if(await acquireLease()){const ads=await captureMarket();await aggregate(ads);await evaluatePositions(ads);await dispatchTelegram();}}catch(e){console.error("[Operator] cycle failed",e);}await sleep(Math.max(1000,interval-(Date.now()-start))+Math.floor(Math.random()*3000));}}
+void run();

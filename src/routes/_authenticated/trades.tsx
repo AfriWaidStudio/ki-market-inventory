@@ -35,6 +35,7 @@ function TradesPage() {
   const [closingId, setClosingId] = useState<string | null>(null);
   const [actualPrice, setActualPrice] = useState("");
   const [finalFees, setFinalFees] = useState("");
+  const [amountSold, setAmountSold] = useState("");
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["active-trades"] });
@@ -49,13 +50,20 @@ function TradesPage() {
     onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
   });
   const doClose = useMutation({
-    mutationFn: (v: { id: string; price: number; fees: number }) =>
-      closeFn({ data: { id: v.id, actual_sell_price: v.price, final_fees: v.fees } }),
+    mutationFn: (v: { id: string; price: number; fees: number; amountSold?: number }) =>
+      closeFn({
+        data: {
+          id: v.id,
+          actual_sell_price: v.price,
+          final_fees: v.fees,
+          amount_sold: v.amountSold,
+        },
+      }),
     onSuccess: (res) => {
-      setClosingId(null); setActualPrice(""); setFinalFees("");
+      setClosingId(null); setActualPrice(""); setFinalFees(""); setAmountSold("");
       invalidate();
       const p = res.analysis.actualProfit;
-      toast.success(`Closed. ${p >= 0 ? "Profit" : "Loss"}: ${fmtNumber(p)}`);
+      toast.success(`${res.fully_closed ? "Closed" : "Partially closed"}. ${p >= 0 ? "Profit" : "Loss"}: ${fmtNumber(p)}`);
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
   });
@@ -79,6 +87,8 @@ function TradesPage() {
               <thead className="bg-muted/30 text-xs uppercase text-muted-foreground">
                 <tr>
                   <th className="text-left py-3 px-4">Route</th>
+                  <th className="text-center py-3 px-4">Type</th>
+                  <th className="text-left py-3 px-4">Stage</th>
                   <th className="text-right py-3 px-4">Amount</th>
                   <th className="text-right py-3 px-4">Buy</th>
                   <th className="text-right py-3 px-4">Exp. sell</th>
@@ -96,6 +106,14 @@ function TradesPage() {
                         <Link to="/trades/$tradeId" params={{ tradeId: t.id }} className="text-foreground hover:text-primary">
                           {t.route}
                         </Link>
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <Badge tone={t.trade_type === "paper" ? "info" : "profit"}>
+                          {t.trade_type === "paper" ? "paper" : "manual"}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-4 text-xs text-muted-foreground">
+                        {String(t.stage ?? t.status).replaceAll("_", " ")}
                       </td>
                       <td className="py-3 px-4 text-right">{fmtNumber(Number(t.amount), 0)} {t.asset}</td>
                       <td className="py-3 px-4 text-right">{fmtMoney(Number(t.buy_price), t.currency)}</td>
@@ -125,8 +143,10 @@ function TradesPage() {
                       </td>
                       <td className="py-3 px-4 text-right">
                         <div className="flex gap-1 justify-end">
-                          <button onClick={() => { setClosingId(t.id); setActualPrice(String(t.expected_sell_price ?? "")); setFinalFees(String(t.estimated_fees ?? "0")); }}
-                            className="rounded border border-primary/40 px-2 py-1 text-xs text-primary hover:bg-primary/10">Close</button>
+                          <button onClick={() => { setClosingId(t.id); setActualPrice(String(t.expected_sell_price ?? "")); setFinalFees(String(t.estimated_fees ?? "0")); setAmountSold(String(t.remaining_amount ?? t.amount)); }}
+                            className="rounded border border-primary/40 px-2 py-1 text-xs text-primary hover:bg-primary/10">
+                            {t.trade_type === "paper" ? "Paper Close" : "I Closed"}
+                          </button>
                           <button onClick={() => doCancel.mutate(t.id)}
                             className="rounded border border-border px-2 py-1 text-xs text-muted-foreground hover:bg-muted">Cancel</button>
                         </div>
@@ -134,8 +154,13 @@ function TradesPage() {
                     </tr>
                     {closingId === t.id && (
                       <tr className="bg-muted/20">
-                        <td colSpan={8} className="p-4">
+                        <td colSpan={10} className="p-4">
                           <div className="flex flex-wrap items-end gap-3">
+                            <label className="text-sm">
+                              <div className="text-xs uppercase text-muted-foreground">Amount sold</div>
+                              <input type="number" step="0.000001" value={amountSold} onChange={(e) => setAmountSold(e.target.value)}
+                                className="mt-1 w-32 rounded border border-input bg-input px-2 py-1.5" />
+                            </label>
                             <label className="text-sm">
                               <div className="text-xs uppercase text-muted-foreground">Actual sell price</div>
                               <input type="number" step="0.01" value={actualPrice} onChange={(e) => setActualPrice(e.target.value)}
@@ -146,10 +171,10 @@ function TradesPage() {
                               <input type="number" step="0.01" value={finalFees} onChange={(e) => setFinalFees(e.target.value)}
                                 className="mt-1 w-32 rounded border border-input bg-input px-2 py-1.5" />
                             </label>
-                            <button onClick={() => doClose.mutate({ id: t.id, price: Number(actualPrice), fees: Number(finalFees) })}
+                            <button onClick={() => doClose.mutate({ id: t.id, price: Number(actualPrice), fees: Number(finalFees), amountSold: Number(amountSold) || undefined })}
                               disabled={!actualPrice || doClose.isPending}
                               className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50">
-                              Confirm close
+                              {t.trade_type === "paper" ? "Confirm paper close" : "Confirm external close"}
                             </button>
                             <button onClick={() => setClosingId(null)}
                               className="rounded-md border border-border px-3 py-2 text-sm">Cancel</button>

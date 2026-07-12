@@ -3,10 +3,11 @@ import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { AlertTriangle, Trash2 } from "lucide-react";
+import { AlertTriangle, Trash2, RefreshCw } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Badge } from "@/components/StatCard";
 import { SUPPORTED_CURRENCIES } from "@/lib/currency";
+import { useAuth } from "@/lib/auth";
 import { getProfile, updateProfile } from "@/lib/profile.functions";
 import {
   listApiKeys,
@@ -15,6 +16,9 @@ import {
   listAuditLog,
   listExchangeAccounts,
   addExchangeAccount,
+  deleteExchangeAccount,
+  syncExchangeAccount,
+  getSyncStatus,
 } from "@/lib/apiKeys.functions";
 
 export const Route = createFileRoute("/_authenticated/settings")({
@@ -32,11 +36,15 @@ function SettingsPage() {
   const auditFn = useServerFn(listAuditLog);
   const listAccountsFn = useServerFn(listExchangeAccounts);
   const addAccountFn = useServerFn(addExchangeAccount);
+  const deleteAccountFn = useServerFn(deleteExchangeAccount);
+  const syncFn = useServerFn(syncExchangeAccount);
+  const syncStatusFn = useServerFn(getSyncStatus);
 
   const profile = useQuery({ queryKey: ["profile"], queryFn: () => profileFn() });
   const keys = useQuery({ queryKey: ["api-keys"], queryFn: () => listKeysFn() });
   const audit = useQuery({ queryKey: ["audit"], queryFn: () => auditFn() });
   const accounts = useQuery({ queryKey: ["exchange-accounts"], queryFn: () => listAccountsFn() });
+  const syncStatus = useQuery({ queryKey: ["sync-status"], queryFn: () => syncStatusFn() });
 
   const [currency, setCurrency] = useState<string>("");
   const [displayName, setDisplayName] = useState<string>("");
@@ -70,6 +78,18 @@ function SettingsPage() {
     mutationFn: () => addAccountFn({ data: { exchange: acctExchange, label: acctLabel || null } }),
     onSuccess: () => { setAcctLabel(""); qc.invalidateQueries({ queryKey: ["exchange-accounts"] }); toast.success("Added"); },
   });
+  const deleteAccount = useMutation({
+    mutationFn: (id: string) => deleteAccountFn({ data: { id } }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["exchange-accounts"] }); toast.success("Deleted"); },
+  });
+  const syncAccount = useMutation({
+    mutationFn: (id: string) => syncFn({ data: { account_id: id } }),
+    onSuccess: (res) => {
+      qc.invalidateQueries({ queryKey: ["sync-status"] });
+      toast.success(`Synced ${res.imported} transactions`);
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Sync failed"),
+  });
 
   const p = profile.data;
   const displayValue = displayName || (p?.display_name ?? "");
@@ -77,7 +97,8 @@ function SettingsPage() {
 
   return (
     <AppShell title="Settings">
-      <div className="grid gap-6 lg:grid-cols-2">
+      <SmaiIdCard />
+      <div className="grid gap-6 lg:grid-cols-2 mt-6">
         <div className="rounded-xl border border-border bg-card p-5">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Profile</h2>
           <div className="mt-4 space-y-3">
@@ -99,21 +120,37 @@ function SettingsPage() {
 
         <div className="rounded-xl border border-border bg-card p-5">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Exchange accounts</h2>
-          <div className="mt-4 grid grid-cols-3 gap-2">
-            <select value={acctExchange} onChange={(e) => setAcctExchange(e.target.value)} className="rounded-md border border-input bg-input px-3 py-2 text-sm col-span-1">
-              {["Binance","Bybit","OKX","KuCoin","Bitget"].map((x) => <option key={x}>{x}</option>)}
-            </select>
-            <input value={acctLabel} onChange={(e) => setAcctLabel(e.target.value)} placeholder="Label (optional)" className="rounded-md border border-input bg-input px-3 py-2 text-sm col-span-1" />
-            <button onClick={() => addAccount.mutate()} className="rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground">Add</button>
+          <div className="mt-4 space-y-3">
+            <div className="grid grid-cols-3 gap-2">
+              <select value={acctExchange} onChange={(e) => setAcctExchange(e.target.value)} className="rounded-md border border-input bg-input px-3 py-2 text-sm col-span-1">
+                {["Binance","Bybit","OKX","KuCoin","Bitget"].map((x) => <option key={x}>{x}</option>)}
+              </select>
+              <input value={acctLabel} onChange={(e) => setAcctLabel(e.target.value)} placeholder="Label (optional)" className="rounded-md border border-input bg-input px-3 py-2 text-sm col-span-1" />
+              <button onClick={() => addAccount.mutate()} className="rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground">Add</button>
+            </div>
+            <ul className="mt-2 space-y-1 text-sm">
+              {(accounts.data ?? []).map((a) => (
+                <li key={a.id} className="flex items-center justify-between border-b border-border/50 py-1.5">
+                  <div>
+                    <span>{a.exchange} {a.label && <span className="text-muted-foreground">— {a.label}</span>}</span>
+                    <div className="text-xs text-muted-foreground">
+                      Last sync: {syncStatus.data?.find(s => s.account_id === a.id)?.completed_at
+                        ? new Date(syncStatus.data.find(s => s.account_id === a.id)!.completed_at).toLocaleString()
+                        : "never"}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => syncAccount.mutate(a.id)} disabled={syncAccount.isPending} className="rounded p-1.5 text-muted-foreground hover:text-primary">
+                      <RefreshCw className={`h-4 w-4 ${syncAccount.isPending ? "animate-spin" : ""}`} />
+                    </button>
+                    <button onClick={() => deleteAccount.mutate(a.id)} className="rounded p-1.5 text-muted-foreground hover:text-[color:var(--loss)] hover:bg-muted">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="mt-4 space-y-1 text-sm">
-            {(accounts.data ?? []).map((a) => (
-              <li key={a.id} className="flex justify-between items-center border-b border-border/50 py-1.5">
-                <span>{a.exchange} {a.label && <span className="text-muted-foreground">— {a.label}</span>}</span>
-                <Badge>{a.is_active ? "active" : "inactive"}</Badge>
-              </li>
-            ))}
-          </ul>
         </div>
 
         <div className="rounded-xl border border-border bg-card p-5 lg:col-span-2">
@@ -154,16 +191,35 @@ function SettingsPage() {
                   <div className="font-medium">{k.exchange} · {k.key_label}</div>
                   <div className="text-xs text-muted-foreground">Added {new Date(k.created_at as string).toLocaleString()}</div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge tone="info">{k.permissions}</Badge>
-                  <button onClick={() => removeKey.mutate(k.id)} className="rounded p-1.5 text-muted-foreground hover:text-[color:var(--loss)] hover:bg-muted">
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
+                <Badge tone="info">{k.permissions}</Badge>
               </li>
             ))}
             {(keys.data ?? []).length === 0 && <li className="py-3 text-sm text-muted-foreground">No API keys yet.</li>}
           </ul>
+        </div>
+
+        <div className="rounded-xl border border-border bg-card p-5 lg:col-span-2">
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Sync history</h2>
+          <div className="mt-3 max-h-64 overflow-y-auto space-y-1 text-sm">
+            {syncStatus.data?.length ? (
+              syncStatus.data.map((s) => (
+                <div key={s.id} className="flex justify-between border-b border-border/40 py-2">
+                  <div>
+                    <span className="font-medium">{s.exchange}</span>
+                    <div className="text-xs text-muted-foreground">
+                      {s.status === "running" ? "Running…" : s.status === "completed" ? "Completed" : "Failed"}
+                      {s.records_imported > 0 && ` — ${s.records_imported} transactions`}
+                    </div>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {new Date(s.started_at).toLocaleString()}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-muted-foreground">No sync history yet.</p>
+            )}
+          </div>
         </div>
 
         <div className="rounded-xl border border-border bg-card p-5 lg:col-span-2">
@@ -181,5 +237,32 @@ function SettingsPage() {
         </div>
       </div>
     </AppShell>
+  );
+}
+
+function SmaiIdCard() {
+  const { user } = useAuth();
+  if (!user) return null;
+  const verified = user.smaiVerificationStatus === "verified";
+  const label = verified ? "Verified by KI" : user.smaiVerificationStatus === "pending" ? "Awaiting KI verification" : user.smaiVerificationStatus === "flagged" ? "Flagged by KI" : "Revoked";
+  return (
+    <div className="rounded-xl border border-border bg-card p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <div className="text-xs uppercase tracking-widest text-muted-foreground">Your SmaiID</div>
+        <div className="mt-1 font-mono text-xl">{user.smaiId}</div>
+        <p className="mt-1 text-xs text-muted-foreground">
+          A unique identity KI uses to recognize your account across every surface. Share it with support instead of your email.
+        </p>
+      </div>
+      <div className="flex flex-col items-start md:items-end gap-1">
+        <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ${verified ? "bg-emerald-500/15 text-emerald-400" : "bg-amber-500/15 text-amber-400"}`}>
+          <span className={`h-1.5 w-1.5 rounded-full ${verified ? "bg-emerald-400" : "bg-amber-400"}`} />
+          {label}
+        </span>
+        {user.smaiVerifiedAt && (
+          <span className="text-[10px] text-muted-foreground">since {new Date(user.smaiVerifiedAt).toLocaleString()}</span>
+        )}
+      </div>
+    </div>
   );
 }

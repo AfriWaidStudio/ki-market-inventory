@@ -13,7 +13,7 @@ import {
   listOpportunities,
 } from "@/lib/scanner.functions";
 import { refreshLivePrices } from "@/lib/prices.functions";
-import { createTrade } from "@/lib/trades.functions";
+import { createManualTrade, createPaperTrade } from "@/lib/trades.functions";
 import { getProfile } from "@/lib/profile.functions";
 
 const EXCHANGES = ["Binance", "Bybit", "OKX", "KuCoin", "Bitget"];
@@ -28,7 +28,8 @@ function ScannerPage() {
   const submitFn = useServerFn(submitPriceSnapshot);
   const oppFn = useServerFn(listOpportunities);
   const snapsFn = useServerFn(listRecentSnapshots);
-  const createTradeFn = useServerFn(createTrade);
+  const createPaperTradeFn = useServerFn(createPaperTrade);
+  const createManualTradeFn = useServerFn(createManualTrade);
   const refreshFn = useServerFn(refreshLivePrices);
   const profileFn = useServerFn(getProfile);
 
@@ -73,36 +74,47 @@ function ScannerPage() {
     onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
   });
 
-  const markBought = useMutation({
-    mutationFn: (opp: {
-      buy_exchange: string;
-      sell_exchange: string;
-      buy_price: number;
-      sell_price: number;
-      currency: string;
-      liquidity_score: number | null;
-      merchant_count: number | null;
-      merchant_rating: number | null;
-    }) =>
-      createTradeFn({
-        data: {
-          asset: "USDT",
-          amount: Number(amount) || 100,
-          buy_exchange: opp.buy_exchange,
-          sell_exchange: opp.sell_exchange,
-          buy_price: opp.buy_price,
-          expected_sell_price: opp.sell_price,
-          estimated_fees: 0,
-          currency: opp.currency,
-          liquidity_score: opp.liquidity_score,
-          merchant_count: opp.merchant_count,
-          merchant_rating: opp.merchant_rating,
-        },
-      }),
+  type OpportunityRow = {
+    buy_exchange: string;
+    sell_exchange: string;
+    buy_price: number;
+    sell_price: number;
+    currency: string;
+    liquidity_score: number | null;
+    merchant_count: number | null;
+    merchant_rating: number | null;
+  };
+
+  const toTradePayload = (opp: OpportunityRow) => ({
+    asset: "USDT",
+    amount: Number(amount) || 100,
+    buy_exchange: opp.buy_exchange,
+    sell_exchange: opp.sell_exchange,
+    buy_price: opp.buy_price,
+    expected_sell_price: opp.sell_price,
+    estimated_fees: 0,
+    currency: opp.currency,
+    liquidity_score: opp.liquidity_score,
+    merchant_count: opp.merchant_count,
+    merchant_rating: opp.merchant_rating,
+  });
+
+  const paperBuy = useMutation({
+    mutationFn: (opp: OpportunityRow) => createPaperTradeFn({ data: toTradePayload(opp) }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["dashboard-summary"] });
       qc.invalidateQueries({ queryKey: ["active-trades"] });
-      toast.success("Active trade opened");
+      toast.success("Paper trade opened. No real transaction occurred.");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
+  });
+
+  const iBought = useMutation({
+    mutationFn: (opp: OpportunityRow) => createManualTradeFn({ data: toTradePayload(opp) }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["dashboard-summary"] });
+      qc.invalidateQueries({ queryKey: ["active-trades"] });
+      toast.success("Manual trade recorded. No order was placed.");
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Failed"),
   });
@@ -186,7 +198,7 @@ function ScannerPage() {
                   <Zap className="h-3.5 w-3.5 text-primary" /> Live opportunities
                 </h2>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Auto-fetched from Binance · Bybit · OKX P2P every 2 min · {fiat}
+                  Auto-fetched from Binance · Bybit · OKX P2P every 2 min · {fiat}. Paper Buy simulates only; I Bought records an external action.
                   {SUPPORTED_CURRENCIES.find((c) => c.code === fiat) ? "" : " (unsupported)"}
                 </p>
               </div>
@@ -235,13 +247,24 @@ function ScannerPage() {
                           <RecBadge rec={o.recommendation} confidence={o.confidence} risk={o.risk} />
                         </td>
                         <td className="text-right">
-                          <button
-                            disabled={markBought.isPending}
-                            onClick={() => markBought.mutate(o)}
-                            className="rounded-md border border-primary/40 px-2.5 py-1 text-xs text-primary hover:bg-primary/10 disabled:opacity-50"
-                          >
-                            Mark bought
-                          </button>
+                          <div className="flex justify-end gap-1">
+                            <button
+                              disabled={paperBuy.isPending || iBought.isPending}
+                              onClick={() => paperBuy.mutate(o)}
+                              className="rounded-md border border-primary/40 px-2.5 py-1 text-xs text-primary hover:bg-primary/10 disabled:opacity-50"
+                              title="Paper Trade - No real transaction occurred."
+                            >
+                              Paper Buy
+                            </button>
+                            <button
+                              disabled={paperBuy.isPending || iBought.isPending}
+                              onClick={() => iBought.mutate(o)}
+                              className="rounded-md bg-primary px-2.5 py-1 text-xs text-primary-foreground hover:opacity-90 disabled:opacity-50"
+                              title="Records a trade you completed outside the platform. No order is placed."
+                            >
+                              I Bought
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}

@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireAuth } from "@/lib/auth/middleware";
 import { z } from "zod";
 
 /**
@@ -156,7 +156,7 @@ async function fetchOkx(asset: string, fiat: string, side: "buy" | "sell"): Prom
 }
 
 export const refreshLivePrices = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .inputValidator((d: unknown) => RefreshInput.parse(d ?? {}))
   .handler(async ({ data, context }) => {
     const jobs: Array<Promise<{ ok: true; snaps: NormalizedSnap[] } | { ok: false; exchange: string; error: string }>> = [];
@@ -224,11 +224,12 @@ export const refreshLivePrices = createServerFn({ method: "POST" })
   });
 
 export const listLatestLivePrices = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("market_inventory_price_snapshots")
       .select("exchange, side, price, currency, liquidity_score, merchant_count, merchant_rating, captured_at")
+      .eq("user_id", context.userId)
       .order("captured_at", { ascending: false })
       .limit(60);
     if (error) throw new Error(error.message);
