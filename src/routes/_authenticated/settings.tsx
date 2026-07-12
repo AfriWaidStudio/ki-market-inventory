@@ -97,7 +97,8 @@ function SettingsPage() {
 
   return (
     <AppShell title="Settings">
-      <div className="grid gap-6 lg:grid-cols-2">
+      <SmaiIdCard />
+      <div className="grid gap-6 lg:grid-cols-2 mt-6">
         <div className="rounded-xl border border-border bg-card p-5">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Profile</h2>
           <div className="mt-4 space-y-3">
