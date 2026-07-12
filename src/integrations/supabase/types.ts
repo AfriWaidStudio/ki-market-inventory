@@ -14,6 +14,124 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_users: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          email: string
+          id: string
+          password_hash: string | null
+          smai_id: string
+          smai_verification_notes: Json
+          smai_verification_status: string
+          smai_verified_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          email: string
+          id?: string
+          password_hash?: string | null
+          smai_id: string
+          smai_verification_notes?: Json
+          smai_verification_status?: string
+          smai_verified_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          email?: string
+          id?: string
+          password_hash?: string | null
+          smai_id?: string
+          smai_verification_notes?: Json
+          smai_verification_status?: string
+          smai_verified_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      auth_identities: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json
+          provider: string
+          provider_email: string | null
+          provider_subject: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          provider: string
+          provider_email?: string | null
+          provider_subject: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          provider?: string
+          provider_email?: string | null
+          provider_subject?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auth_identities_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      auth_sessions: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          last_activity_at: string
+          revoked_at: string | null
+          token_hash: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          last_activity_at?: string
+          revoked_at?: string | null
+          token_hash: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          last_activity_at?: string
+          revoked_at?: string | null
+          token_hash?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auth_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       market_inventory_api_keys: {
         Row: {
           created_at: string
@@ -45,7 +163,15 @@ export type Database = {
           permissions?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_api_keys_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       market_inventory_audit_log: {
         Row: {
@@ -69,7 +195,15 @@ export type Database = {
           metadata?: Json | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_audit_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       market_inventory_capital_ledger: {
         Row: {
@@ -116,6 +250,13 @@ export type Database = {
             referencedRelation: "market_inventory_trades"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "market_inventory_capital_ledger_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
         ]
       }
       market_inventory_daily_reports: {
@@ -152,7 +293,15 @@ export type Database = {
           user_id?: string
           win_rate?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_daily_reports_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       market_inventory_exchange_accounts: {
         Row: {
@@ -179,7 +328,15 @@ export type Database = {
           label?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_exchange_accounts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       market_inventory_exchange_transactions: {
         Row: {
@@ -244,6 +401,13 @@ export type Database = {
             referencedRelation: "market_inventory_exchange_accounts"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "market_inventory_exchange_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
         ]
       }
       market_inventory_price_snapshots: {
@@ -286,7 +450,15 @@ export type Database = {
           side?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_price_snapshots_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       market_inventory_risk_alerts: {
         Row: {
@@ -322,6 +494,13 @@ export type Database = {
             columns: ["related_trade_id"]
             isOneToOne: false
             referencedRelation: "market_inventory_trades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "market_inventory_risk_alerts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
             referencedColumns: ["id"]
           },
         ]
@@ -374,6 +553,13 @@ export type Database = {
             referencedRelation: "market_inventory_exchange_accounts"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "market_inventory_sync_runs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
         ]
       }
       market_inventory_trade_events: {
@@ -413,6 +599,13 @@ export type Database = {
             columns: ["trade_id"]
             isOneToOne: false
             referencedRelation: "market_inventory_trades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "market_inventory_trade_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
             referencedColumns: ["id"]
           },
         ]
@@ -456,6 +649,13 @@ export type Database = {
             referencedRelation: "market_inventory_trades"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "market_inventory_trade_fees_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
         ]
       }
       market_inventory_trade_notes: {
@@ -486,6 +686,13 @@ export type Database = {
             columns: ["trade_id"]
             isOneToOne: false
             referencedRelation: "market_inventory_trades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "market_inventory_trade_notes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
             referencedColumns: ["id"]
           },
         ]
@@ -599,7 +806,15 @@ export type Database = {
           user_id?: string
           user_notes?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_trades_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       market_inventory_transaction_matches: {
         Row: {
@@ -651,10 +866,52 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "market_inventory_transaction_matches_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "market_inventory_transaction_matches_withdrawal_tx_id_fkey"
             columns: ["withdrawal_tx_id"]
             isOneToOne: false
             referencedRelation: "market_inventory_exchange_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      password_reset_tokens: {
+        Row: {
+          consumed_at: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          token_hash: string
+          user_id: string
+        }
+        Insert: {
+          consumed_at?: string | null
+          created_at?: string
+          expires_at: string
+          id?: string
+          token_hash: string
+          user_id: string
+        }
+        Update: {
+          consumed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          token_hash?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "password_reset_tokens_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
             referencedColumns: ["id"]
           },
         ]
@@ -681,7 +938,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -702,13 +967,22 @@ export type Database = {
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      generate_smai_id: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
