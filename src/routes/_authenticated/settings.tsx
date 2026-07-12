@@ -239,3 +239,31 @@ function SettingsPage() {
     </AppShell>
   );
 }
+
+function SmaiIdCard() {
+  const { user } = useAuth();
+  if (!user) return null;
+  const verified = user.smaiVerificationStatus === "verified";
+  const label = verified ? "Verified by KI" : user.smaiVerificationStatus === "pending" ? "Awaiting KI verification" : user.smaiVerificationStatus === "flagged" ? "Flagged by KI" : "Revoked";
+  return (
+    <div className="rounded-xl border border-border bg-card p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <div className="text-xs uppercase tracking-widest text-muted-foreground">Your SmaiID</div>
+        <div className="mt-1 font-mono text-xl">{user.smaiId}</div>
+        <p className="mt-1 text-xs text-muted-foreground">
+          A unique identity KI uses to recognize your account across every surface. Share it with support instead of your email.
+        </p>
+      </div>
+      <div className="flex flex-col items-start md:items-end gap-1">
+        <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ${verified ? "bg-emerald-500/15 text-emerald-400" : "bg-amber-500/15 text-amber-400"}`}>
+          <span className={`h-1.5 w-1.5 rounded-full ${verified ? "bg-emerald-400" : "bg-amber-400"}`} />
+          {label}
+        </span>
+        {user.smaiVerifiedAt && (
+          <span className="text-[10px] text-muted-foreground">since {new Date(user.smaiVerifiedAt).toLocaleString()}</span>
+        )}
+      </div>
+    </div>
+  );
+}
+}
