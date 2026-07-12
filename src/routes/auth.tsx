@@ -40,7 +40,7 @@ function AuthPage() {
     }
     const result = mode === "signup" ? await signUp(email, password, displayName) : await signIn(email, password);
     if (result.error) toast.error(result.error);
-    else if (mode === "signup") toast.success("Account created.");
+    else if (mode === "signup") toast.success("Account created — KI is verifying your SmaiID.");
   }
 
   if (isAuthenticated) {
