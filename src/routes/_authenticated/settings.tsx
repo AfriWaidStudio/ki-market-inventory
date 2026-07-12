@@ -266,4 +266,3 @@ function SmaiIdCard() {
     </div>
   );
 }
-}
