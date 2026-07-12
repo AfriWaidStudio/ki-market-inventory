@@ -30,7 +30,7 @@ export const register = createServerFn({ method: "POST" })
     const { data: user, error } = await (supabaseAdmin as any)
       .from("app_users")
       .insert({ email, password_hash: passwordHash, display_name: data.displayName || email })
-      .select("id")
+      .select("id, smai_id")
       .single();
     if (error) {
       if (error.code === "23505") return { error: "An account with this email already exists." };
@@ -39,8 +39,13 @@ export const register = createServerFn({ method: "POST" })
     await (supabaseAdmin as any).from("auth_identities").insert({ user_id: user.id, provider: "password", provider_subject: email, provider_email: email });
     await (supabaseAdmin as any).from("profiles").upsert({ user_id: user.id, display_name: data.displayName || email });
     await (supabaseAdmin as any).from("user_roles").upsert({ user_id: user.id, role: "user" });
+    // KI auto-verifies password signups (unique email + strong password + no prior conflict).
+    await (supabaseAdmin as any).rpc("ki_verify_user", {
+      _user_id: user.id,
+      _note: "KI auto-verified password signup",
+    });
     await createSession(user.id);
-    return { ok: true as const, userId: user.id };
+    return { ok: true as const, userId: user.id, smaiId: user.smai_id as string };
   });
 
 export const login = createServerFn({ method: "POST" })
