@@ -71,6 +71,53 @@ export type Database = {
         }
         Relationships: []
       }
+      market_inventory_capital_ledger: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          description: string
+          entry_type: Database["public"]["Enums"]["market_inventory_ledger_entry_type"]
+          id: string
+          metadata: Json | null
+          trade_id: string | null
+          trade_type: Database["public"]["Enums"]["market_inventory_trade_type"]
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          description: string
+          entry_type: Database["public"]["Enums"]["market_inventory_ledger_entry_type"]
+          id?: string
+          metadata?: Json | null
+          trade_id?: string | null
+          trade_type: Database["public"]["Enums"]["market_inventory_trade_type"]
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          description?: string
+          entry_type?: Database["public"]["Enums"]["market_inventory_ledger_entry_type"]
+          id?: string
+          metadata?: Json | null
+          trade_id?: string | null
+          trade_type?: Database["public"]["Enums"]["market_inventory_trade_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_capital_ledger_trade_id_fkey"
+            columns: ["trade_id"]
+            isOneToOne: false
+            referencedRelation: "market_inventory_trades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       market_inventory_daily_reports: {
         Row: {
           avg_duration_minutes: number | null
@@ -214,6 +261,88 @@ export type Database = {
           },
         ]
       }
+      market_inventory_trade_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          from_stage: string | null
+          id: string
+          metadata: Json | null
+          to_stage: string | null
+          trade_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          from_stage?: string | null
+          id?: string
+          metadata?: Json | null
+          to_stage?: string | null
+          trade_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          from_stage?: string | null
+          id?: string
+          metadata?: Json | null
+          to_stage?: string | null
+          trade_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_trade_events_trade_id_fkey"
+            columns: ["trade_id"]
+            isOneToOne: false
+            referencedRelation: "market_inventory_trades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      market_inventory_trade_fees: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          fee_type: string
+          id: string
+          note: string | null
+          trade_id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          fee_type?: string
+          id?: string
+          note?: string | null
+          trade_id: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          fee_type?: string
+          id?: string
+          note?: string | null
+          trade_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_trade_fees_trade_id_fkey"
+            columns: ["trade_id"]
+            isOneToOne: false
+            referencedRelation: "market_inventory_trades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       market_inventory_trade_notes: {
         Row: {
           created_at: string
@@ -255,6 +384,7 @@ export type Database = {
           buy_exchange: string
           buy_price: number
           buy_time: string
+          closed_amount: number
           confidence_score: number | null
           created_at: string
           currency: string
@@ -266,12 +396,18 @@ export type Database = {
           id: string
           ki_accuracy_verdict: string | null
           ki_reasoning: string | null
+          last_event_at: string
           lesson_learned: string | null
+          realized_profit: number
+          remaining_amount: number
           risk_score: number | null
           route: string | null
           sell_exchange: string
           sell_time: string | null
+          stage: string
           status: Database["public"]["Enums"]["trade_status"]
+          total_recorded_fees: number
+          trade_type: Database["public"]["Enums"]["market_inventory_trade_type"]
           updated_at: string
           user_id: string
           user_notes: string | null
@@ -284,6 +420,7 @@ export type Database = {
           buy_exchange: string
           buy_price: number
           buy_time?: string
+          closed_amount?: number
           confidence_score?: number | null
           created_at?: string
           currency?: string
@@ -295,12 +432,18 @@ export type Database = {
           id?: string
           ki_accuracy_verdict?: string | null
           ki_reasoning?: string | null
+          last_event_at?: string
           lesson_learned?: string | null
+          realized_profit?: number
+          remaining_amount: number
           risk_score?: number | null
           route?: string | null
           sell_exchange: string
           sell_time?: string | null
+          stage?: string
           status?: Database["public"]["Enums"]["trade_status"]
+          total_recorded_fees?: number
+          trade_type?: Database["public"]["Enums"]["market_inventory_trade_type"]
           updated_at?: string
           user_id: string
           user_notes?: string | null
@@ -313,6 +456,7 @@ export type Database = {
           buy_exchange?: string
           buy_price?: number
           buy_time?: string
+          closed_amount?: number
           confidence_score?: number | null
           created_at?: string
           currency?: string
@@ -324,12 +468,18 @@ export type Database = {
           id?: string
           ki_accuracy_verdict?: string | null
           ki_reasoning?: string | null
+          last_event_at?: string
           lesson_learned?: string | null
+          realized_profit?: number
+          remaining_amount?: number
           risk_score?: number | null
           route?: string | null
           sell_exchange?: string
           sell_time?: string | null
+          stage?: string
           status?: Database["public"]["Enums"]["trade_status"]
+          total_recorded_fees?: number
+          trade_type?: Database["public"]["Enums"]["market_inventory_trade_type"]
           updated_at?: string
           user_id?: string
           user_notes?: string | null
@@ -396,6 +546,14 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      market_inventory_ledger_entry_type:
+        | "paper_position_opened"
+        | "paper_realized_profit"
+        | "manual_capital_committed"
+        | "manual_realized_profit"
+        | "fee_recorded"
+        | "adjustment"
+      market_inventory_trade_type: "paper" | "manual"
       trade_status: "active" | "closed" | "cancelled"
     }
     CompositeTypes: {
@@ -525,6 +683,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      market_inventory_ledger_entry_type: [
+        "paper_position_opened",
+        "paper_realized_profit",
+        "manual_capital_committed",
+        "manual_realized_profit",
+        "fee_recorded",
+        "adjustment",
+      ],
+      market_inventory_trade_type: ["paper", "manual"],
       trade_status: ["active", "closed", "cancelled"],
     },
   },
