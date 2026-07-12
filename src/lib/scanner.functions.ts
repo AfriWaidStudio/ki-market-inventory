@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireAuth } from "@/lib/auth/middleware";
 import { z } from "zod";
 import { scoreOpportunity } from "./ki-logic";
 
@@ -15,7 +15,7 @@ const SnapshotInput = z.object({
 });
 
 export const submitPriceSnapshot = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .inputValidator((d: unknown) => SnapshotInput.parse(d))
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase.from("market_inventory_price_snapshots").insert({
@@ -34,11 +34,12 @@ export const submitPriceSnapshot = createServerFn({ method: "POST" })
   });
 
 export const listRecentSnapshots = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("market_inventory_price_snapshots")
       .select("*")
+      .eq("user_id", context.userId)
       .order("captured_at", { ascending: false })
       .limit(200);
     if (error) throw new Error(error.message);
@@ -47,12 +48,13 @@ export const listRecentSnapshots = createServerFn({ method: "POST" })
 
 const AmountInput = z.object({ amount: z.number().positive().default(100) });
 export const listOpportunities = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuth])
   .inputValidator((d: unknown) => AmountInput.parse(d ?? { amount: 100 }))
   .handler(async ({ data, context }) => {
     const { data: snaps, error } = await context.supabase
       .from("market_inventory_price_snapshots")
       .select("*")
+      .eq("user_id", context.userId)
       .order("captured_at", { ascending: false })
       .limit(200);
     if (error) throw new Error(error.message);

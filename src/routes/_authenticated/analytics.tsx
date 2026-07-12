@@ -18,7 +18,7 @@ function AnalyticsPage() {
   const q = useQuery({ queryKey: ["analytics-series"], queryFn: () => fn() });
 
   if (q.isLoading) return <AppShell title="Analytics"><div className="text-muted-foreground">Loading…</div></AppShell>;
-  const d = q.data ?? { profitByDay: [], profitByHour: [], capitalGrowth: [], kiAccuracy: 0 };
+  const d = q.data ?? { profitByDay: [], profitByType: [], profitByHour: [], capitalGrowth: [], kiAccuracy: 0 };
 
   return (
     <AppShell title="Analytics">
@@ -38,6 +38,18 @@ function AnalyticsPage() {
               <Tooltip contentStyle={{ background: "var(--color-card)", border: "1px solid var(--color-border)" }} />
               <Line type="monotone" dataKey="profit" stroke="var(--color-primary)" strokeWidth={2} dot={false} />
             </LineChart>
+          </ResponsiveContainer>
+        </ChartCard>
+        <ChartCard title="Paper vs manual realized profit">
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={d.profitByType}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+              <XAxis dataKey="date" stroke="var(--color-muted-foreground)" fontSize={11} />
+              <YAxis stroke="var(--color-muted-foreground)" fontSize={11} />
+              <Tooltip contentStyle={{ background: "var(--color-card)", border: "1px solid var(--color-border)" }} />
+              <Bar dataKey="manual" fill="var(--profit)" />
+              <Bar dataKey="paper" fill="var(--color-primary)" />
+            </BarChart>
           </ResponsiveContainer>
         </ChartCard>
         <ChartCard title="Cumulative capital growth">

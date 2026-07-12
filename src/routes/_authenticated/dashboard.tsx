@@ -23,11 +23,15 @@ function DashboardPage() {
   return (
     <AppShell title="Command Center">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Tracked capital" value={fmtMoney(data.trackedCapital, c)} hint={`${data.activeCount} active trades`} />
-        <StatCard label="Today profit" value={fmtMoney(data.todayProfit, c)} tone={data.todayProfit >= 0 ? "profit" : "loss"} />
+        <StatCard label="Manual capital active" value={fmtMoney(data.trackedCapital, c)} hint={`${data.manualActiveCount} manual active`} />
+        <StatCard label="Paper capital active" value={fmtMoney(data.paperTrackedCapital, c)} hint={`${data.paperActiveCount} paper active`} />
+        <StatCard label="Today manual profit" value={fmtMoney(data.todayManualProfit, c)} tone={data.todayManualProfit >= 0 ? "profit" : "loss"} />
+        <StatCard label="Today paper profit" value={fmtMoney(data.todayPaperProfit, c)} tone={data.todayPaperProfit >= 0 ? "profit" : "loss"} />
         <StatCard label="7-day profit" value={fmtMoney(data.weekProfit, c)} tone={data.weekProfit >= 0 ? "profit" : "loss"} />
         <StatCard label="30-day profit" value={fmtMoney(data.monthProfit, c)} tone={data.monthProfit >= 0 ? "profit" : "loss"} />
-        <StatCard label="Total profit" value={fmtMoney(data.totalProfit, c)} tone={data.totalProfit >= 0 ? "profit" : "loss"} hint={`${data.closedCount} closed trades`} />
+        <StatCard label="Manual realized profit" value={fmtMoney(data.manualProfit, c)} tone={data.manualProfit >= 0 ? "profit" : "loss"} hint={`${data.manualClosedCount} manual closed`} />
+        <StatCard label="Paper realized profit" value={fmtMoney(data.paperProfit, c)} tone={data.paperProfit >= 0 ? "profit" : "loss"} hint={`${data.paperClosedCount} paper closed`} />
+        <StatCard label="Total separated profit" value={fmtMoney(data.totalProfit, c)} tone={data.totalProfit >= 0 ? "profit" : "loss"} hint={`${data.closedCount} closed trades`} />
         <StatCard label="Avg profit / trade" value={fmtMoney(data.avgProfit, c)} />
         <StatCard label="Avg duration" value={`${fmtNumber(data.avgDurationMinutes, 0)}m`} />
         <StatCard label="Win rate" value={`${(data.winRate * 100).toFixed(1)}%`} />

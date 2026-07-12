@@ -3,7 +3,6 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/chat")({
   head: () => ({ meta: [{ title: "Ask KI — KI Market Inventory" }] }),
@@ -11,29 +10,14 @@ export const Route = createFileRoute("/_authenticated/chat")({
 });
 
 function ChatPage() {
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setToken(data.session?.access_token ?? null));
-  }, []);
-
-  return token ? (
-    <ChatUI token={token} />
-  ) : (
-    <AppShell title="Ask Waides KI">
-      <div className="text-muted-foreground">Loading session…</div>
-    </AppShell>
-  );
+  return <ChatUI />;
 }
 
-function ChatUI({ token }: { token: string }) {
+function ChatUI() {
   const transport = useMemo(
     () =>
-      new DefaultChatTransport({
-        api: "/api/chat",
-        headers: { Authorization: `Bearer ${token}` },
-      }),
-    [token],
+      new DefaultChatTransport({ api: "/api/chat", credentials: "same-origin" }),
+    [],
   );
   const { messages, sendMessage, status } = useChat({ transport });
   const [input, setInput] = useState("");
