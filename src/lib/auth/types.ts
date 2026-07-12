@@ -1,4 +1,13 @@
-export type AuthUser = { id: string; email: string; displayName: string | null; createdAt: string };
+export type SmaiVerificationStatus = "pending" | "verified" | "flagged" | "revoked";
+export type AuthUser = {
+  id: string;
+  email: string;
+  displayName: string | null;
+  createdAt: string;
+  smaiId: string;
+  smaiVerificationStatus: SmaiVerificationStatus;
+  smaiVerifiedAt: string | null;
+};
 export type AuthSession = { user: AuthUser };
 
 export type AuthContext = {
