@@ -7,6 +7,7 @@ import { AlertTriangle, Trash2, RefreshCw } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Badge } from "@/components/StatCard";
 import { SUPPORTED_CURRENCIES } from "@/lib/currency";
+import { useAuth } from "@/lib/auth";
 import { getProfile, updateProfile } from "@/lib/profile.functions";
 import {
   listApiKeys,
