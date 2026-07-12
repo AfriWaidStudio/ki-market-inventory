@@ -57,7 +57,7 @@ export async function getCurrentSession(): Promise<{ user: AuthUser; sessionId: 
   const now = new Date().toISOString();
   const { data, error } = await (supabaseAdmin as any)
     .from("auth_sessions")
-    .select("id, user_id, expires_at, revoked_at, app_users(id,email,display_name,status,created_at)")
+    .select("id, user_id, expires_at, revoked_at, app_users(id,email,display_name,status,created_at,smai_id,smai_verification_status,smai_verified_at)")
     .eq("token_hash", hashToken(token))
     .maybeSingle();
   const userRow = Array.isArray(data?.app_users) ? data.app_users[0] : data?.app_users;
@@ -75,6 +75,9 @@ export async function getCurrentSession(): Promise<{ user: AuthUser; sessionId: 
       email: userRow.email,
       displayName: userRow.display_name,
       createdAt: userRow.created_at,
+      smaiId: userRow.smai_id,
+      smaiVerificationStatus: userRow.smai_verification_status ?? "pending",
+      smaiVerifiedAt: userRow.smai_verified_at ?? null,
     },
   };
 }
