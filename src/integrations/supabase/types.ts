@@ -34,7 +34,7 @@ export type Database = {
           email: string
           id?: string
           password_hash?: string | null
-          smai_id: string
+          smai_id?: string
           smai_verification_notes?: Json
           smai_verification_status?: string
           smai_verified_at?: string | null
@@ -1726,6 +1726,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      ki_verify_user: {
+        Args: { _note: string; _user_id: string }
+        Returns: undefined
       }
     }
     Enums: {
