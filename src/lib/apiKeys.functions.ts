@@ -337,14 +337,14 @@ async function fetchExchangeTransactions(key: string, secret: string, exchange: 
   return results;
 }
 
-async function signBinance(path: string): Promise<string> {
+async function signBinance(secret: string, path: string): Promise<string> {
   const timestamp = Date.now();
   const query = `timestamp=${timestamp}`;
   const crypto = await import("crypto");
   return crypto.createHmac("sha256", secret).update(query).digest("hex");
 }
 
-async function signBybit(method: string, path: string, params: string = ""): Promise<string> {
+async function signBybit(secret: string, method: string, path: string, params: string = ""): Promise<string> {
   const timestamp = Date.now();
   const paramStr = method + path + timestamp + params;
   const crypto = await import("crypto");
