@@ -132,6 +132,672 @@ export type Database = {
           },
         ]
       }
+      ki_alert_deliveries: {
+        Row: {
+          alert_id: string
+          attempts: number
+          channel: string
+          error_message: string | null
+          id: string
+          next_attempt_at: string
+          sent_at: string | null
+          status: string
+        }
+        Insert: {
+          alert_id: string
+          attempts?: number
+          channel: string
+          error_message?: string | null
+          id?: string
+          next_attempt_at?: string
+          sent_at?: string | null
+          status?: string
+        }
+        Update: {
+          alert_id?: string
+          attempts?: number
+          channel?: string
+          error_message?: string | null
+          id?: string
+          next_attempt_at?: string
+          sent_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ki_alert_deliveries_alert_id_fkey"
+            columns: ["alert_id"]
+            isOneToOne: false
+            referencedRelation: "ki_operator_alerts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ki_conversation_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          external_message_id: string | null
+          id: string
+          role: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          external_message_id?: string | null
+          id?: string
+          role: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          external_message_id?: string | null
+          id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ki_conversation_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "ki_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ki_conversations: {
+        Row: {
+          channel: string
+          created_at: string
+          external_thread_id: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          channel: string
+          created_at?: string
+          external_thread_id?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          channel?: string
+          created_at?: string
+          external_thread_id?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ki_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ki_model_metrics: {
+        Row: {
+          calibration_error: number | null
+          created_at: string
+          direction_accuracy: number | null
+          feed_uptime: number | null
+          fiat: string
+          id: number
+          metric_date: string
+          model_version: string
+          sample_count: number
+          target_hit_rate: number | null
+        }
+        Insert: {
+          calibration_error?: number | null
+          created_at?: string
+          direction_accuracy?: number | null
+          feed_uptime?: number | null
+          fiat: string
+          id?: never
+          metric_date: string
+          model_version: string
+          sample_count: number
+          target_hit_rate?: number | null
+        }
+        Update: {
+          calibration_error?: number | null
+          created_at?: string
+          direction_accuracy?: number | null
+          feed_uptime?: number | null
+          fiat?: string
+          id?: never
+          metric_date?: string
+          model_version?: string
+          sample_count?: number
+          target_hit_rate?: number | null
+        }
+        Relationships: []
+      }
+      ki_operator_alerts: {
+        Row: {
+          acknowledged_at: string | null
+          alert_type: string
+          created_at: string
+          dedupe_key: string
+          evidence: Json
+          id: string
+          message: string
+          severity: string
+          title: string
+          trade_id: string | null
+          user_id: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          alert_type: string
+          created_at?: string
+          dedupe_key: string
+          evidence?: Json
+          id?: string
+          message: string
+          severity: string
+          title: string
+          trade_id?: string | null
+          user_id: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          alert_type?: string
+          created_at?: string
+          dedupe_key?: string
+          evidence?: Json
+          id?: string
+          message?: string
+          severity?: string
+          title?: string
+          trade_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ki_operator_alerts_trade_id_fkey"
+            columns: ["trade_id"]
+            isOneToOne: false
+            referencedRelation: "market_inventory_trades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ki_operator_alerts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ki_position_plans: {
+        Row: {
+          action: string
+          active: boolean
+          break_even_price: number
+          computed_at: string
+          confidence: number | null
+          confidence_eligible: boolean
+          downside: number | null
+          evidence: Json
+          executable_amount: number | null
+          executable_price: number | null
+          expected_net: number | null
+          id: string
+          invalidation_condition: string
+          missing_data: string[]
+          model_version: string
+          next_evaluation_at: string
+          regime: string
+          target_price: number
+          target_window_hours: number | null
+          trade_id: string
+          user_id: string
+          venue: string | null
+        }
+        Insert: {
+          action: string
+          active?: boolean
+          break_even_price: number
+          computed_at?: string
+          confidence?: number | null
+          confidence_eligible?: boolean
+          downside?: number | null
+          evidence?: Json
+          executable_amount?: number | null
+          executable_price?: number | null
+          expected_net?: number | null
+          id?: string
+          invalidation_condition: string
+          missing_data?: string[]
+          model_version: string
+          next_evaluation_at: string
+          regime: string
+          target_price: number
+          target_window_hours?: number | null
+          trade_id: string
+          user_id: string
+          venue?: string | null
+        }
+        Update: {
+          action?: string
+          active?: boolean
+          break_even_price?: number
+          computed_at?: string
+          confidence?: number | null
+          confidence_eligible?: boolean
+          downside?: number | null
+          evidence?: Json
+          executable_amount?: number | null
+          executable_price?: number | null
+          expected_net?: number | null
+          id?: string
+          invalidation_condition?: string
+          missing_data?: string[]
+          model_version?: string
+          next_evaluation_at?: string
+          regime?: string
+          target_price?: number
+          target_window_hours?: number | null
+          trade_id?: string
+          user_id?: string
+          venue?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ki_position_plans_trade_id_fkey"
+            columns: ["trade_id"]
+            isOneToOne: false
+            referencedRelation: "market_inventory_trades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ki_position_plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ki_recommendation_feedback: {
+        Row: {
+          created_at: string
+          id: string
+          note: string | null
+          rating: string
+          recommendation_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          rating: string
+          recommendation_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          rating?: string
+          recommendation_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ki_recommendation_feedback_recommendation_id_fkey"
+            columns: ["recommendation_id"]
+            isOneToOne: false
+            referencedRelation: "ki_recommendation_snapshots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ki_recommendation_feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ki_recommendation_snapshots: {
+        Row: {
+          action: string
+          created_at: string
+          evaluated_at: string | null
+          evidence: Json
+          id: string
+          market_snapshot: Json
+          model_version: string
+          outcome: Json | null
+          plan_id: string | null
+          predicted_windows: Json
+          trade_id: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          evaluated_at?: string | null
+          evidence: Json
+          id?: string
+          market_snapshot: Json
+          model_version: string
+          outcome?: Json | null
+          plan_id?: string | null
+          predicted_windows?: Json
+          trade_id?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          evaluated_at?: string | null
+          evidence?: Json
+          id?: string
+          market_snapshot?: Json
+          model_version?: string
+          outcome?: Json | null
+          plan_id?: string | null
+          predicted_windows?: Json
+          trade_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ki_recommendation_snapshots_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "ki_position_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ki_recommendation_snapshots_trade_id_fkey"
+            columns: ["trade_id"]
+            isOneToOne: false
+            referencedRelation: "market_inventory_trades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ki_recommendation_snapshots_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ki_strategy_settings: {
+        Row: {
+          alert_cooldown_minutes: number
+          break_even_first: boolean
+          enabled_fiats: string[]
+          evaluation_amounts: number[]
+          live_alerts_enabled: boolean
+          muted_until: string | null
+          normal_horizon_hours: number
+          posture: string
+          shadow_mode: boolean
+          shadow_started_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_cooldown_minutes?: number
+          break_even_first?: boolean
+          enabled_fiats?: string[]
+          evaluation_amounts?: number[]
+          live_alerts_enabled?: boolean
+          muted_until?: string | null
+          normal_horizon_hours?: number
+          posture?: string
+          shadow_mode?: boolean
+          shadow_started_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_cooldown_minutes?: number
+          break_even_first?: boolean
+          enabled_fiats?: string[]
+          evaluation_amounts?: number[]
+          live_alerts_enabled?: boolean
+          muted_until?: string | null
+          normal_horizon_hours?: number
+          posture?: string
+          shadow_mode?: boolean
+          shadow_started_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ki_strategy_settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ki_telegram_updates: {
+        Row: {
+          error_message: string | null
+          processed_at: string | null
+          received_at: string
+          update_id: number
+        }
+        Insert: {
+          error_message?: string | null
+          processed_at?: string | null
+          received_at?: string
+          update_id: number
+        }
+        Update: {
+          error_message?: string | null
+          processed_at?: string | null
+          received_at?: string
+          update_id?: number
+        }
+        Relationships: []
+      }
+      ki_worker_leases: {
+        Row: {
+          checkpoint: Json
+          lease_key: string
+          lease_until: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          checkpoint?: Json
+          lease_key: string
+          lease_until: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          checkpoint?: Json
+          lease_key?: string
+          lease_until?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      market_intelligence_ads: {
+        Row: {
+          asset: string
+          available_asset: number | null
+          completed_orders: number | null
+          completion_rate: number | null
+          exchange: string
+          external_ad_id: string
+          fiat: string
+          id: number
+          max_fiat: number | null
+          merchant_name: string | null
+          merchant_verified: boolean | null
+          min_fiat: number | null
+          observed_at: string
+          payment_methods: string[]
+          price: number
+          raw_fingerprint: string
+          response_latency_ms: number | null
+          schema_version: string
+          side: string
+        }
+        Insert: {
+          asset?: string
+          available_asset?: number | null
+          completed_orders?: number | null
+          completion_rate?: number | null
+          exchange: string
+          external_ad_id: string
+          fiat: string
+          id?: never
+          max_fiat?: number | null
+          merchant_name?: string | null
+          merchant_verified?: boolean | null
+          min_fiat?: number | null
+          observed_at: string
+          payment_methods?: string[]
+          price: number
+          raw_fingerprint: string
+          response_latency_ms?: number | null
+          schema_version: string
+          side: string
+        }
+        Update: {
+          asset?: string
+          available_asset?: number | null
+          completed_orders?: number | null
+          completion_rate?: number | null
+          exchange?: string
+          external_ad_id?: string
+          fiat?: string
+          id?: never
+          max_fiat?: number | null
+          merchant_name?: string | null
+          merchant_verified?: boolean | null
+          min_fiat?: number | null
+          observed_at?: string
+          payment_methods?: string[]
+          price?: number
+          raw_fingerprint?: string
+          response_latency_ms?: number | null
+          schema_version?: string
+          side?: string
+        }
+        Relationships: []
+      }
+      market_intelligence_candles: {
+        Row: {
+          asset: string
+          bucket_at: string
+          close: number
+          depth_asset: number
+          exchange: string
+          executable_price: number
+          fiat: string
+          high: number
+          id: number
+          interval_seconds: number
+          low: number
+          merchant_count: number
+          open: number
+          side: string
+          volatility: number
+        }
+        Insert: {
+          asset?: string
+          bucket_at: string
+          close: number
+          depth_asset?: number
+          exchange: string
+          executable_price: number
+          fiat: string
+          high: number
+          id?: never
+          interval_seconds: number
+          low: number
+          merchant_count?: number
+          open: number
+          side: string
+          volatility?: number
+        }
+        Update: {
+          asset?: string
+          bucket_at?: string
+          close?: number
+          depth_asset?: number
+          exchange?: string
+          executable_price?: number
+          fiat?: string
+          high?: number
+          id?: never
+          interval_seconds?: number
+          low?: number
+          merchant_count?: number
+          open?: number
+          side?: string
+          volatility?: number
+        }
+        Relationships: []
+      }
+      market_intelligence_feed_health: {
+        Row: {
+          consecutive_failures: number
+          error_message: string | null
+          exchange: string
+          fiat: string
+          last_failure_at: string | null
+          last_success_at: string | null
+          latency_ms: number | null
+          next_attempt_at: string | null
+          schema_version: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          consecutive_failures?: number
+          error_message?: string | null
+          exchange: string
+          fiat: string
+          last_failure_at?: string | null
+          last_success_at?: string | null
+          latency_ms?: number | null
+          next_attempt_at?: string | null
+          schema_version?: string | null
+          status: string
+          updated_at?: string
+        }
+        Update: {
+          consecutive_failures?: number
+          error_message?: string | null
+          exchange?: string
+          fiat?: string
+          last_failure_at?: string | null
+          last_success_at?: string | null
+          latency_ms?: number | null
+          next_attempt_at?: string | null
+          schema_version?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       market_inventory_api_keys: {
         Row: {
           created_at: string
@@ -703,6 +1369,7 @@ export type Database = {
           actual_sell_price: number | null
           amount: number
           asset: string
+          available_amount: number | null
           buy_exchange: string
           buy_price: number
           buy_time: string
@@ -710,26 +1377,34 @@ export type Database = {
           confidence_score: number | null
           created_at: string
           currency: string
+          destination_exchange: string | null
           duration_minutes: number | null
+          entry_fees: number
           estimated_fees: number
           expected_profit: number | null
           expected_sell_price: number | null
           final_fees: number | null
           id: string
+          intended_horizon_hours: number
           ki_accuracy_verdict: string | null
           ki_reasoning: string | null
           last_event_at: string
           lesson_learned: string | null
+          payment_method: string | null
           realized_profit: number
           remaining_amount: number
           risk_score: number | null
           route: string | null
           sell_exchange: string
           sell_time: string | null
+          source_exchange: string | null
           stage: string
           status: Database["public"]["Enums"]["trade_status"]
+          total_fiat_spent: number | null
           total_recorded_fees: number
           trade_type: Database["public"]["Enums"]["market_inventory_trade_type"]
+          transfer_fee_asset: number
+          transfer_network: string | null
           updated_at: string
           user_id: string
           user_notes: string | null
@@ -739,6 +1414,7 @@ export type Database = {
           actual_sell_price?: number | null
           amount: number
           asset?: string
+          available_amount?: number | null
           buy_exchange: string
           buy_price: number
           buy_time?: string
@@ -746,26 +1422,34 @@ export type Database = {
           confidence_score?: number | null
           created_at?: string
           currency?: string
+          destination_exchange?: string | null
           duration_minutes?: number | null
+          entry_fees?: number
           estimated_fees?: number
           expected_profit?: number | null
           expected_sell_price?: number | null
           final_fees?: number | null
           id?: string
+          intended_horizon_hours?: number
           ki_accuracy_verdict?: string | null
           ki_reasoning?: string | null
           last_event_at?: string
           lesson_learned?: string | null
+          payment_method?: string | null
           realized_profit?: number
           remaining_amount: number
           risk_score?: number | null
           route?: string | null
           sell_exchange: string
           sell_time?: string | null
+          source_exchange?: string | null
           stage?: string
           status?: Database["public"]["Enums"]["trade_status"]
+          total_fiat_spent?: number | null
           total_recorded_fees?: number
           trade_type?: Database["public"]["Enums"]["market_inventory_trade_type"]
+          transfer_fee_asset?: number
+          transfer_network?: string | null
           updated_at?: string
           user_id: string
           user_notes?: string | null
@@ -775,6 +1459,7 @@ export type Database = {
           actual_sell_price?: number | null
           amount?: number
           asset?: string
+          available_amount?: number | null
           buy_exchange?: string
           buy_price?: number
           buy_time?: string
@@ -782,26 +1467,34 @@ export type Database = {
           confidence_score?: number | null
           created_at?: string
           currency?: string
+          destination_exchange?: string | null
           duration_minutes?: number | null
+          entry_fees?: number
           estimated_fees?: number
           expected_profit?: number | null
           expected_sell_price?: number | null
           final_fees?: number | null
           id?: string
+          intended_horizon_hours?: number
           ki_accuracy_verdict?: string | null
           ki_reasoning?: string | null
           last_event_at?: string
           lesson_learned?: string | null
+          payment_method?: string | null
           realized_profit?: number
           remaining_amount?: number
           risk_score?: number | null
           route?: string | null
           sell_exchange?: string
           sell_time?: string | null
+          source_exchange?: string | null
           stage?: string
           status?: Database["public"]["Enums"]["trade_status"]
+          total_fiat_spent?: number | null
           total_recorded_fees?: number
           trade_type?: Database["public"]["Enums"]["market_inventory_trade_type"]
+          transfer_fee_asset?: number
+          transfer_network?: string | null
           updated_at?: string
           user_id?: string
           user_notes?: string | null
@@ -941,6 +1634,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      telegram_connections: {
+        Row: {
+          chat_id: number | null
+          created_at: string
+          enabled: boolean
+          id: string
+          link_code_expires_at: string | null
+          link_code_hash: string | null
+          linked_at: string | null
+          telegram_user_id: number | null
+          user_id: string
+        }
+        Insert: {
+          chat_id?: number | null
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          link_code_expires_at?: string | null
+          link_code_hash?: string | null
+          linked_at?: string | null
+          telegram_user_id?: number | null
+          user_id: string
+        }
+        Update: {
+          chat_id?: number | null
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          link_code_expires_at?: string | null
+          link_code_hash?: string | null
+          linked_at?: string | null
+          telegram_user_id?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telegram_connections_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
             referencedRelation: "app_users"
