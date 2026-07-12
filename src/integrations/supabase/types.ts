@@ -181,6 +181,71 @@ export type Database = {
         }
         Relationships: []
       }
+      market_inventory_exchange_transactions: {
+        Row: {
+          account_id: string | null
+          amount: number
+          asset: string
+          created_at: string
+          external_tx_id: string
+          fee: number | null
+          fee_asset: string | null
+          from_address: string | null
+          id: string
+          side: string | null
+          status: string
+          to_address: string | null
+          tx_time: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_id?: string | null
+          amount: number
+          asset: string
+          created_at?: string
+          external_tx_id: string
+          fee?: number | null
+          fee_asset?: string | null
+          from_address?: string | null
+          id?: string
+          side?: string | null
+          status: string
+          to_address?: string | null
+          tx_time: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_id?: string | null
+          amount?: number
+          asset?: string
+          created_at?: string
+          external_tx_id?: string
+          fee?: number | null
+          fee_asset?: string | null
+          from_address?: string | null
+          id?: string
+          side?: string | null
+          status?: string
+          to_address?: string | null
+          tx_time?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_exchange_transactions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "market_inventory_exchange_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       market_inventory_price_snapshots: {
         Row: {
           asset: string
@@ -257,6 +322,56 @@ export type Database = {
             columns: ["related_trade_id"]
             isOneToOne: false
             referencedRelation: "market_inventory_trades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      market_inventory_sync_runs: {
+        Row: {
+          account_id: string | null
+          completed_at: string | null
+          error_message: string | null
+          exchange: string
+          id: string
+          metadata: Json | null
+          records_failed: number | null
+          records_imported: number | null
+          started_at: string
+          status: Database["public"]["Enums"]["sync_status"]
+          user_id: string
+        }
+        Insert: {
+          account_id?: string | null
+          completed_at?: string | null
+          error_message?: string | null
+          exchange: string
+          id?: string
+          metadata?: Json | null
+          records_failed?: number | null
+          records_imported?: number | null
+          started_at?: string
+          status?: Database["public"]["Enums"]["sync_status"]
+          user_id: string
+        }
+        Update: {
+          account_id?: string | null
+          completed_at?: string | null
+          error_message?: string | null
+          exchange?: string
+          id?: string
+          metadata?: Json | null
+          records_failed?: number | null
+          records_imported?: number | null
+          started_at?: string
+          status?: Database["public"]["Enums"]["sync_status"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_sync_runs_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "market_inventory_exchange_accounts"
             referencedColumns: ["id"]
           },
         ]
@@ -486,6 +601,64 @@ export type Database = {
         }
         Relationships: []
       }
+      market_inventory_transaction_matches: {
+        Row: {
+          confidence: number | null
+          confirmed_at: string | null
+          created_at: string
+          deposit_tx_id: string | null
+          id: string
+          status: string
+          trade_id: string | null
+          user_id: string
+          withdrawal_tx_id: string | null
+        }
+        Insert: {
+          confidence?: number | null
+          confirmed_at?: string | null
+          created_at?: string
+          deposit_tx_id?: string | null
+          id?: string
+          status?: string
+          trade_id?: string | null
+          user_id: string
+          withdrawal_tx_id?: string | null
+        }
+        Update: {
+          confidence?: number | null
+          confirmed_at?: string | null
+          created_at?: string
+          deposit_tx_id?: string | null
+          id?: string
+          status?: string
+          trade_id?: string | null
+          user_id?: string
+          withdrawal_tx_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_transaction_matches_deposit_tx_id_fkey"
+            columns: ["deposit_tx_id"]
+            isOneToOne: false
+            referencedRelation: "market_inventory_exchange_transactions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "market_inventory_transaction_matches_trade_id_fkey"
+            columns: ["trade_id"]
+            isOneToOne: false
+            referencedRelation: "market_inventory_trades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "market_inventory_transaction_matches_withdrawal_tx_id_fkey"
+            columns: ["withdrawal_tx_id"]
+            isOneToOne: false
+            referencedRelation: "market_inventory_exchange_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -554,6 +727,7 @@ export type Database = {
         | "fee_recorded"
         | "adjustment"
       market_inventory_trade_type: "paper" | "manual"
+      sync_status: "running" | "completed" | "failed"
       trade_status: "active" | "closed" | "cancelled"
     }
     CompositeTypes: {
@@ -692,6 +866,7 @@ export const Constants = {
         "adjustment",
       ],
       market_inventory_trade_type: ["paper", "manual"],
+      sync_status: ["running", "completed", "failed"],
       trade_status: ["active", "closed", "cancelled"],
     },
   },
