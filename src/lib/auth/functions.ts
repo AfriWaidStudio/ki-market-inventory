@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
   assertSameOrigin,
   assertRateLimit,
@@ -20,7 +21,7 @@ export const getCurrentUser = createServerFn({ method: "GET" }).handler(async ()
 );
 
 export const register = createServerFn({ method: "POST" })
-  .inputValidator((value: unknown) => credentials.extend({ displayName: z.string().trim().max(80).optional() }).parse(value))
+  .validator((value: unknown) => credentials.extend({ displayName: z.string().trim().max(80).optional() }).parse(value))
   .handler(async ({ data }) => {
     assertSameOrigin();
     assertRateLimit("register", 5, 15 * 60 * 1000);
@@ -49,7 +50,7 @@ export const register = createServerFn({ method: "POST" })
   });
 
 export const login = createServerFn({ method: "POST" })
-  .inputValidator((value: unknown) => credentials.parse(value))
+  .validator((value: unknown) => credentials.parse(value))
   .handler(async ({ data }) => {
     assertSameOrigin();
     assertRateLimit("login", 10, 15 * 60 * 1000);
@@ -74,16 +75,21 @@ export const requestPasswordReset = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     assertSameOrigin();
     assertRateLimit("password-reset", 5, 15 * 60 * 1000);
-    if (process.env.NODE_ENV === "production") throw new Error("Password email transport is not configured.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: user } = await (supabaseAdmin as any).from("app_users").select("id").eq("email", normalizeEmail(data.email)).maybeSingle();
+    let resetUrl: string | undefined;
     if (user) {
       const token = newOpaqueToken();
       await (supabaseAdmin as any).from("password_reset_tokens").insert({ user_id: user.id, token_hash: hashToken(token), expires_at: new Date(Date.now() + 30 * 60 * 1000).toISOString() });
       const baseUrl = new URL((await import("@tanstack/react-start/server")).getRequest().url).origin;
-      console.info(`[Auth] Password reset link for ${normalizeEmail(data.email)}: ${baseUrl}/auth?reset=${encodeURIComponent(token)}`);
+      resetUrl = `${baseUrl}/auth?reset=${encodeURIComponent(token)}`;
+      console.info(`[Auth] Password reset link created for ${normalizeEmail(data.email)}.`);
     }
-    return { ok: true };
+    return {
+      ok: true as const,
+      resetUrl: process.env.NODE_ENV === "production" ? undefined : resetUrl,
+      deliveryUnavailable: process.env.NODE_ENV === "production",
+    };
   });
 
 export const resetPassword = createServerFn({ method: "POST" })
@@ -118,3 +124,57 @@ export const beginGoogleOAuth = createServerFn({ method: "POST" }).handler(async
   url.search = new URLSearchParams({ client_id: clientId, redirect_uri: redirectUri, response_type: "code", scope: "openid email profile", state, nonce, code_challenge: createHash("sha256").update(verifier).digest("base64url"), code_challenge_method: "S256", prompt: "select_account" }).toString();
   return { url: url.toString() };
 });
+
+export const completeManagedAuthSignIn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    assertSameOrigin();
+    const claims = (context as any).claims ?? {};
+    const emailClaim = typeof claims.email === "string" ? claims.email : undefined;
+    const appMetadata = typeof claims.app_metadata === "object" && claims.app_metadata !== null ? claims.app_metadata as Record<string, unknown> : {};
+    const userMetadata = typeof claims.user_metadata === "object" && claims.user_metadata !== null ? claims.user_metadata as Record<string, unknown> : {};
+    const fullName = typeof userMetadata.full_name === "string" ? userMetadata.full_name : undefined;
+    const displayName = typeof userMetadata.name === "string" ? userMetadata.name : fullName;
+    const email = emailClaim ? normalizeEmail(emailClaim) : undefined;
+    if (!email) return { error: "The sign-in provider did not return a usable email address." };
+    const provider = appMetadata.provider === "google" ? "google" : "password";
+    const providerSubject = provider === "google" ? (context as any).userId : email;
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const db = supabaseAdmin as any;
+    let { data: user, error: userLookupError } = await db.from("app_users").select("id,smai_verification_status").eq("email", email).maybeSingle();
+    if (userLookupError) throw new Error(userLookupError.message);
+
+    if (!user) {
+      const inserted = await db
+        .from("app_users")
+        .insert({ email, display_name: displayName || email })
+        .select("id,smai_verification_status")
+        .single();
+      if (inserted.error) throw new Error(inserted.error.message);
+      user = inserted.data;
+      await db.from("profiles").upsert({ user_id: user.id, display_name: displayName || email });
+      await db.from("user_roles").upsert({ user_id: user.id, role: "user" });
+    }
+
+    await db.from("auth_identities").upsert(
+      {
+        user_id: user.id,
+        provider,
+        provider_subject: providerSubject,
+        provider_email: email,
+        metadata: claims,
+      },
+      { onConflict: "provider,user_id" },
+    );
+
+    if (user.smai_verification_status !== "verified") {
+      await db.rpc("ki_verify_user", {
+        _user_id: user.id,
+        _note: "KI auto-verified managed Google sign-in",
+      });
+    }
+
+    await createSession(user.id);
+    return { ok: true as const };
+  });
