@@ -71,6 +71,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signInWithOAuth: async () => {
       setLoading(true); setError(null);
       try {
+        if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+          setError("Google sign-in is available in the Lovable preview or published app.");
+          return;
+        }
         const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
         if (result.redirected) return;
         if (result.error) {
