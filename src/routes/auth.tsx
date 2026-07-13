@@ -21,16 +21,20 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
-  const { isAuthenticated, signIn, signUp, signInWithOAuth, loading } = useAuth();
+  const [resetUrl, setResetUrl] = useState<string | null>(null);
+  const { isAuthenticated, signIn, signUp, signInWithOAuth, loading, error } = useAuth();
 
   useEffect(() => { if (isAuthenticated) void navigate({ to: "/dashboard" }); }, [isAuthenticated, navigate]);
   useEffect(() => { if (search.oauth_error) toast.error(search.oauth_error); }, [search.oauth_error]);
+  useEffect(() => { if (error) toast.error(error); }, [error]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    setResetUrl(null);
     if (mode === "forgot") {
-      await requestPasswordReset({ data: { email } });
-      toast.success("If that account exists, a reset link has been created.");
+      const result = await requestPasswordReset({ data: { email } });
+      if (result.resetUrl) setResetUrl(result.resetUrl);
+      toast.success(result.deliveryUnavailable ? "Reset email is not configured yet; try again when email sending is connected." : "If that account exists, a reset link has been created.");
       setMode("signin"); return;
     }
     if (mode === "reset" && search.reset) {
@@ -40,13 +44,12 @@ function AuthPage() {
     }
     const result = mode === "signup" ? await signUp(email, password, displayName) : await signIn(email, password);
     if (result.error) toast.error(result.error);
-    else if (mode === "signup") toast.success("Account created — KI is verifying your SmaiID.");
+    else {
+      if (mode === "signup") toast.success("Account created — KI verified your SmaiID.");
+      void navigate({ to: "/dashboard" });
+    }
   }
 
-  if (isAuthenticated) {
-    navigate({ to: "/dashboard" });
-    return null;
-  }
   const showEmail = mode !== "reset";
   const showPassword = mode !== "forgot";
   return (
@@ -68,6 +71,11 @@ function AuthPage() {
             {showPassword && <label className="block text-xs uppercase text-muted-foreground">{mode === "reset" ? "New password" : "Password"}<input type="password" required minLength={10} className="mt-1 w-full rounded-md border bg-input px-3 py-2 text-sm" value={password} onChange={e => setPassword(e.target.value)} /></label>}
             <button disabled={loading} className="w-full rounded-md bg-primary py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-50">{loading ? "Working…" : mode === "signup" ? "Create account" : mode === "forgot" ? "Create reset link" : mode === "reset" ? "Set new password" : "Sign in"}</button>
           </form>
+          {resetUrl && (
+            <a href={resetUrl} className="mt-3 block break-all rounded-md border border-border bg-secondary px-3 py-2 text-xs text-primary underline">
+              Open test reset link
+            </a>
+          )}
           {mode === "signin" && <button type="button" onClick={() => setMode("forgot")} className="mt-3 text-xs text-primary underline">Forgot password?</button>}
           {(mode === "forgot" || mode === "reset") && <button type="button" onClick={() => setMode("signin")} className="mt-3 text-xs text-primary underline">Back to sign in</button>}
           {(mode === "signin" || mode === "signup") && <>

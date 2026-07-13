@@ -2,13 +2,15 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import type { AuthContext, AuthUser } from "./types";
 import {
   getCurrentUser,
-  beginGoogleOAuth,
+  completeManagedAuthSignIn,
   login,
   logout,
   register,
   requestPasswordReset,
   resetPassword as resetPasswordFn,
 } from "./functions";
+import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 
 type ContextValue = AuthContext & { refresh: () => Promise<void> };
 const Context = createContext<ContextValue | null>(null);
@@ -19,7 +21,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const refresh = useCallback(async () => {
     setLoading(true);
-    try { setUser(await getCurrentUser()); } finally { setLoading(false); }
+    try {
+      const currentUser = await getCurrentUser();
+      if (currentUser) {
+        setUser(currentUser);
+        return;
+      }
+
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        const linked = await completeManagedAuthSignIn();
+        if (!linked.error) setUser(await getCurrentUser());
+        else setUser(null);
+        return;
+      }
+
+      setUser(null);
+    } finally { setLoading(false); }
   }, []);
   useEffect(() => { void refresh(); }, [refresh]);
 
@@ -31,14 +49,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refresh,
     signIn: async (email, password) => {
       setLoading(true); setError(null);
-      try { const result = await login({ data: { email, password } }); if (result.error) { setError(result.error); return result; } await refresh(); return {}; } finally { setLoading(false); }
+      try {
+        const result = await login({ data: { email, password } });
+        if (!result.error) { await refresh(); return {}; }
+
+        const fallback = await supabase.auth.signInWithPassword({ email, password });
+        if (!fallback.error) {
+          const linked = await completeManagedAuthSignIn();
+          if (!linked.error) { await refresh(); return {}; }
+        }
+
+        setError(result.error);
+        return result;
+      } finally { setLoading(false); }
     },
     signUp: async (email, password, displayName) => {
       setLoading(true); setError(null);
       try { const result = await register({ data: { email, password, displayName } }); if (result.error) { setError(result.error); return result; } await new Promise(r => setTimeout(r, 50)); await refresh(); return { requiresVerification: false }; } finally { setLoading(false); }
     },
-    signOut: async () => { await logout(); setUser(null); },
-    signInWithOAuth: async () => { const result = await beginGoogleOAuth(); if (result.url) window.location.assign(result.url); else setError(result.error ?? "Google sign-in failed"); },
+    signOut: async () => { await logout(); await supabase.auth.signOut(); setUser(null); },
+    signInWithOAuth: async () => {
+      setLoading(true); setError(null);
+      try {
+        const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
+        if (result.redirected) return;
+        if (result.error) {
+          setError(result.error instanceof Error ? result.error.message : String(result.error));
+          return;
+        }
+        const linked = await completeManagedAuthSignIn();
+        if (linked.error) {
+          setError(linked.error);
+          return;
+        }
+        await refresh();
+      } finally { setLoading(false); }
+    },
     resetPassword: async (email) => { await requestPasswordReset({ data: { email } }); return {}; },
     confirmEmail: async () => ({}),
     updateProfile: async () => ({ error: "Profile updates use the settings service." }),
