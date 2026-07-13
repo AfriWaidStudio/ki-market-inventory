@@ -50,6 +50,14 @@ function AuthPage() {
     }
   }
 
+  async function continueWithGoogle() {
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+      toast.info("Google sign-in is available in the Lovable preview or published app.");
+      return;
+    }
+    await signInWithOAuth("google");
+  }
+
   const showEmail = mode !== "reset";
   const showPassword = mode !== "forgot";
   return (
@@ -80,7 +88,7 @@ function AuthPage() {
           {(mode === "forgot" || mode === "reset") && <button type="button" onClick={() => setMode("signin")} className="mt-3 text-xs text-primary underline">Back to sign in</button>}
           {(mode === "signin" || mode === "signup") && <>
             <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground"><div className="h-px flex-1 bg-border" />OR<div className="h-px flex-1 bg-border" /></div>
-            <button type="button" onClick={() => void signInWithOAuth("google")} className="w-full rounded-md border bg-secondary py-2.5 text-sm font-medium">Continue with Google</button>
+            <button type="button" onClick={() => void continueWithGoogle()} className="w-full rounded-md border bg-secondary py-2.5 text-sm font-medium">Continue with Google</button>
           </>}
         </div>
         <p className="mt-6 text-center text-xs text-muted-foreground">Tracking-only tool. <Link to="/" className="underline">Back home</Link></p>
