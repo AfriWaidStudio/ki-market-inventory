@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { timingSafeEqual } from "node:crypto";
 import { EXCHANGES, type CapturedAd } from "../../../../../worker/exchanges";
 import {
   OPERATOR_MODEL_VERSION,
@@ -9,14 +8,10 @@ import {
   type MarketAd,
 } from "@/lib/operator-engine";
 
-function verifySecret(request: Request): boolean {
-  const provided = request.headers.get("x-cron-secret") ?? "";
-  const expected = process.env.CRON_SECRET ?? "";
-  if (!expected || !provided) return false;
-  const a = Buffer.from(provided);
-  const b = Buffer.from(expected);
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(a, b);
+function verifyApiKey(request: Request): boolean {
+  const provided = request.headers.get("apikey") ?? "";
+  const expected = process.env.SUPABASE_PUBLISHABLE_KEY ?? "";
+  return expected.length > 0 && provided === expected;
 }
 
 export const Route = createFileRoute("/api/public/cron/operator-tick")({
