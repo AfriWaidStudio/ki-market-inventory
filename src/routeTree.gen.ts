@@ -34,6 +34,7 @@ import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/c
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as ApiTelegramWebhookRouteImport } from './routes/api/telegram/webhook'
 import { Route as AuthenticatedTradesTradeIdRouteImport } from './routes/_authenticated/trades.$tradeId'
+import { Route as ApiPublicCronOperatorTickRouteImport } from './routes/api/public/cron/operator-tick'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -161,6 +162,12 @@ const AuthenticatedTradesTradeIdRoute =
     path: '/$tradeId',
     getParentRoute: () => AuthenticatedTradesRoute,
   } as any)
+const ApiPublicCronOperatorTickRoute =
+  ApiPublicCronOperatorTickRouteImport.update({
+    id: '/api/public/cron/operator-tick',
+    path: '/api/public/cron/operator-tick',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -187,6 +194,7 @@ export interface FileRoutesByFullPath {
   '/auth/callback': typeof AuthCallbackRoute
   '/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
   '/api/telegram/webhook': typeof ApiTelegramWebhookRoute
+  '/api/public/cron/operator-tick': typeof ApiPublicCronOperatorTickRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -213,6 +221,7 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackRoute
   '/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
   '/api/telegram/webhook': typeof ApiTelegramWebhookRoute
+  '/api/public/cron/operator-tick': typeof ApiPublicCronOperatorTickRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -241,6 +250,7 @@ export interface FileRoutesById {
   '/auth/callback': typeof AuthCallbackRoute
   '/_authenticated/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
   '/api/telegram/webhook': typeof ApiTelegramWebhookRoute
+  '/api/public/cron/operator-tick': typeof ApiPublicCronOperatorTickRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -269,6 +279,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/trades/$tradeId'
     | '/api/telegram/webhook'
+    | '/api/public/cron/operator-tick'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -295,6 +306,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/trades/$tradeId'
     | '/api/telegram/webhook'
+    | '/api/public/cron/operator-tick'
   id:
     | '__root__'
     | '/'
@@ -322,6 +334,7 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/_authenticated/trades/$tradeId'
     | '/api/telegram/webhook'
+    | '/api/public/cron/operator-tick'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -333,6 +346,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiTelegramWebhookRoute: typeof ApiTelegramWebhookRoute
+  ApiPublicCronOperatorTickRoute: typeof ApiPublicCronOperatorTickRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -512,6 +526,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTradesTradeIdRouteImport
       parentRoute: typeof AuthenticatedTradesRoute
     }
+    '/api/public/cron/operator-tick': {
+      id: '/api/public/cron/operator-tick'
+      path: '/api/public/cron/operator-tick'
+      fullPath: '/api/public/cron/operator-tick'
+      preLoaderRoute: typeof ApiPublicCronOperatorTickRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -584,17 +605,8 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   ApiChatRoute: ApiChatRoute,
   ApiTelegramWebhookRoute: ApiTelegramWebhookRoute,
+  ApiPublicCronOperatorTickRoute: ApiPublicCronOperatorTickRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -1,89 +1,107 @@
-# KI Market Inventory — Consolidation, Wiring & Live Price Intelligence
+# Enterprise-Grade Upgrade Plan
 
-Goal: stop adding surfaces. Take what exists and make it **actually work end-to-end** — every button, every route, every link, every setting — and give Waides KI **real live prices** from Binance, Bybit, and OKX so it can reason on real data instead of only what the user typed.
+Goal: take what we've built (auth, SmaiID, scanner, trades, KI chat, operator engine, telegram, risk, analytics) and make it feel like a production product — every backend wired, every worker reachable, observability in place, and shippable.
 
-Purpose reminder (from your original brief): this is a **personal P2P/arbitrage command center** and intelligence analyst. It tracks trades, explains opportunities, learns from behavior, and never executes real orders. Everything we do here serves that.
-
----
-
-## Phase 1 — Full audit & repair pass (no new features)
-
-Walk every existing route as a real user, in a browser, signed in, and fix what's broken:
-
-- `/auth` — email/password sign-up, sign-in, Google OAuth round-trip, redirect back to `/dashboard`, session persistence on reload.
-- `/dashboard` — every stat card pulls from `analytics.functions.ts` and renders correctly (0-state, 1-trade state, many-trades state).
-- `/scanner` — submit price snapshot form works, opportunities list refreshes, KI recommendation badges render, "Mark Bought" creates a trade and lands you on `/trades`.
-- `/trades` — Update Price / Mark Closed / Cancel / Ask KI actions all round-trip to DB and invalidate the list.
-- `/trades/$tradeId` — timeline, price updates, notes add/save, KI accuracy verdict appears after close.
-- `/history` — filters (date, exchange, route, P/L, status) actually filter.
-- `/analytics` — every chart renders with real data, empty states are clear.
-- `/chat` — Waides KI answers stream, session token attaches, grounding JSON includes trades + alerts + **live prices** (Phase 2).
-- `/risk-center` — dismiss works, list refreshes.
-- `/journal`, `/search`, `/notifications`, `/wallet`, `/help` — links, empty states, "coming soon" labels honest.
-- `/settings` — currency preference saves and is reflected everywhere (`currency.ts` formatter reads it); exchange accounts add/remove; API keys form shows the read-only warning and the audit log entry appears.
-- Header/sidebar — every nav link routes, active state highlights, sign-out tears down cache and redirects to `/auth`.
-- Legal `/privacy`, `/terms`, `/safety` — footer links reach them.
-
-Fix any hydration errors, 500s, broken invalidations, missing empty states, and mislabeled buttons found along the way.
-
-## Phase 2 — Live price intelligence (auto-fetch, no manual entry required)
-
-Give KI real market awareness. Public P2P endpoints from Binance, Bybit, OKX don't need API keys — they're the same ones the exchange websites use.
-
-- New server function `prices.functions.ts`:
-  - `fetchLivePrices({ asset, fiat, side })` — server-side `fetch` to:
-    - Binance P2P: `https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search`
-    - Bybit P2P: `https://api2.bybit.com/fiat/otc/item/online`
-    - OKX P2P: `https://www.okx.com/v3/c2c/tradingOrders/books`
-  - Normalize each response to a common shape: `{ exchange, side, price, currency, liquidity_score, merchant_count, merchant_rating, captured_at }`.
-  - Insert into existing `market_inventory_price_snapshots` (already scaffolded) so all downstream code keeps working.
-- New public server route `/api/public/cron/refresh-prices` (signed with `CRON_SECRET`) that calls the fetcher for the user's watched pairs. Scheduled via pg_cron every 2–5 min.
-- `/scanner` gets a "Live" toggle — when on, prices auto-refresh from snapshots instead of requiring manual entry. Manual entry remains as fallback.
-- Waides KI grounding in `/api/chat` gets the latest live snapshots injected alongside trades and alerts, so it can answer "what's the spread on Binance→Bybit right now" against real data.
-- Add a **freshness badge** on every price ("Live · 42s ago" / "Stale · 6m ago") so nothing looks more certain than it is.
-- Store failures in `market_inventory_audit_log` (source: `price_fetch`) so you can see when an exchange endpoint blocks us.
-
-Rate-limit: 1 call per exchange per minute per user. If an exchange 429s or geo-blocks, mark that exchange as "unavailable" in the UI rather than silently failing.
-
-## Phase 3 — End-to-end test pass (Playwright)
-
-Automated flow that proves the whole loop, run headless in the sandbox:
-
-1. Sign up → land on dashboard.
-2. Add currency preference in settings → verify it's applied.
-3. Trigger a live-price refresh → verify snapshots appear.
-4. Open scanner → best opportunity shows → "Mark Bought" → land on trades.
-5. Update price on the active trade → Mark Closed → verify actual_profit + KI accuracy verdict.
-6. Open `/chat` → ask "how did my last trade do?" → verify the reply cites the real trade.
-7. Dismiss a risk alert → verify it disappears.
-8. Sign out → verify redirect to `/auth` and cache is torn down.
-
-Screenshot each step under `/tmp/browser/e2e/`. Any red step blocks the phase from being called done.
-
-## Phase 4 — Cross-cutting polish (only after 1–3 are green)
-
-- Consistent empty/loading/error states across every route.
-- Every mutation invalidates the right queries (no stale UI).
-- Every money value uses the decimal-safe formatter in `currency.ts`.
-- Every "estimate" is visibly labeled as an estimate, never a guarantee.
-- Mobile layout sweep on the top 5 routes.
+Below is broken into phases. We do them in order; each phase leaves the app in a working state.
 
 ---
 
-## Technical details
+## Phase 1 — Backend hardening & data integrity
 
-- No new pages/routes get added in this pass except `prices.functions.ts` and `/api/public/cron/refresh-prices`.
-- P2P endpoints called server-side only (CORS + IP diversity). Cloudflare Worker `fetch` is fine.
-- pg_cron schedule installed via migration; secret via `generate_secret` for `CRON_SECRET`.
-- No exchange API keys required for public P2P data. The existing `market_inventory_api_keys` table stays for future read-only account features.
-- Chat grounding stays under 20KB; live prices summarized (latest per exchange/side) before injection.
+**Why:** several features read from tables that are only populated when the external worker runs. In Lovable's serverless runtime we have no always-on Node process, so the operator/price loop never fires and KI has nothing to ground on.
 
-## Out of scope (still)
+Work:
+1. Convert `worker/operator-worker.ts` cycle into a **server route** at `/api/public/cron/operator-tick` (signed with `CRON_SECRET`) that:
+   - captures market ads from Binance/Bybit/Bitget adapters
+   - aggregates 1m/5m/15m/1h/1d candles
+   - re-evaluates open positions → writes `ki_position_plans`, `ki_operator_alerts`
+   - dispatches queued Telegram alerts
+2. Wire **pg_cron** (Supabase) to hit that URL every 30s using the stable `project--{id}.lovable.app` host.
+3. Add a **feed health dashboard** row on Settings → Operator: last success per exchange/fiat, consecutive failures, next retry.
+4. Backfill missing GRANTs / RLS on any table still marked `RLS off` that shouldn't be (`ki_model_metrics`, `ki_telegram_updates`, `ki_worker_leases`, `market_intelligence_*`). Public read-only aggregates get narrow `TO anon` SELECT; user-scoped stays `TO authenticated`.
 
-- Real order execution, withdrawals, fund movement.
-- Auto-buy / auto-sell.
-- Third-party paid data providers.
+## Phase 2 — Auth & identity polish
+
+1. Email delivery: request `RESEND_API_KEY` via `add_secret`, wire real transactional email for signup verification + password reset (currently reset returns a debug URL).
+2. Session UX: "remember me", visible active sessions list in Settings with revoke.
+3. SmaiID: expose verification history, make the badge clickable → drawer showing what KI checked.
+4. Google OAuth: verify redirect allow-list, add Apple as optional.
+5. Rate limit `/api/auth/*` routes (in-memory + DB-backed counter table).
+
+## Phase 3 — KI intelligence upgrade
+
+1. Streaming chat already works; add **tool calling** so KI can:
+   - `get_live_prices({exchange, fiat, side})`
+   - `get_position_plan({trade_id})`
+   - `get_feed_health()`
+   - `simulate_exit({trade_id, price})`
+2. Persist conversations to `ki_conversations` / `ki_conversation_messages` (tables exist, unused).
+3. Add message feedback (👍/👎) → `ki_recommendation_feedback` for future fine-tuning signal.
+4. Grounding cache: memoize `buildKiGrounding` per user for 15s to cut token cost.
+
+## Phase 4 — MCP server (agent integrations)
+
+Expose the app as an MCP server at `/mcp` using `@lovable.dev/mcp-js` + Supabase OAuth 2.1 so users can connect Claude/ChatGPT/Cursor and let their assistant:
+- list open trades / plans / alerts
+- fetch current prices and feed health
+- create a paper trade
+- ask KI a question (delegates to the same orchestrator)
+
+Auth-gated per user; each tool acts as that user via bearer token.
+
+## Phase 5 — Exchange connectivity
+
+1. Encrypt API keys at rest with `APP_ENCRYPTION_KEY` (already provisioned).
+2. Real Binance + Bybit REST clients for balance + trade history sync (currently stubbed in `market_inventory_exchange_transactions`).
+3. Sync status card on Settings → Exchanges with last run, next run, error surface.
+4. Background reconciliation: match exchange transactions to local trades → `market_inventory_transaction_matches`.
+
+## Phase 6 — Notifications & alerts
+
+1. Telegram: finish the two-way bind flow (bot deep-link with one-time code → writes `telegram_connections`).
+2. In-app notification center already exists — wire real-time updates via Supabase Realtime channel on `ki_operator_alerts`.
+3. Per-user quiet hours + severity filters in Settings.
+
+## Phase 7 — Observability & ops
+
+1. Structured logging helper (`src/lib/log.server.ts`) with request id.
+2. Error capture already partially there — add breadcrumb + user id + route to every 500.
+3. Health page at `/api/public/health` returning DB, AI gateway, feed status.
+4. Admin route `/_authenticated/admin` gated by `has_role('admin')` — shows worker leases, recent alerts, feed health, user count, verification queue.
+
+## Phase 8 — UX polish for "enterprise feel"
+
+1. Global command palette (⌘K) → search trades, jump to routes, run KI query.
+2. Consistent empty states + skeleton loaders on every list route.
+3. Keyboard shortcuts on trades/scanner tables.
+4. Dark theme audit; ensure all tokens semantic (no raw `bg-white`).
+5. SEO/head metadata pass on public routes (`/`, `/privacy`, `/terms`, `/safety`, `/auth`).
+
+## Phase 9 — Testing & release readiness
+
+1. Vitest coverage for `operator-engine`, `auth/primitives`, `ki-orchestrator`, price adapters.
+2. Playwright smoke: signup → verify → login → create paper trade → open KI chat → logout.
+3. Seed script for demo data (behind admin gate).
+4. Publish + custom domain check + `og:image` per route.
 
 ---
 
-Approve this and I'll start with Phase 1 (audit/repair), then Phase 2 (live prices), then Phase 3 (E2E tests). No new product surfaces will be built in this pass.
+## Technical notes
+
+- **Cron transport**: pg_cron → `net.http_post` to `/api/public/cron/*` with `x-cron-secret` header. Server route verifies via timing-safe compare against `CRON_SECRET` (generated).
+- **MCP consent**: uses `supabase--configure_oauth_server` + `/.lovable/oauth/consent` route per `app-mcp-server-authoring`.
+- **Realtime**: Supabase channel `ki_operator_alerts:user_id=eq.<uid>` on the client, filtered subscription.
+- **Secrets to add**: `CRON_SECRET` (generated), `RESEND_API_KEY` (user), optional `TELEGRAM_BOT_TOKEN` (user).
+- **No new frameworks** — stays on TanStack Start + Lovable Cloud.
+
+---
+
+## Suggested execution order for the next few turns
+
+1. Phase 1 (cron + feed health) — unblocks KI grounding.
+2. Phase 3 (KI tool calling + persistence) — biggest visible upgrade.
+3. Phase 2 (real email) — makes auth production-safe.
+4. Phase 7 (admin + health) — gives you a control panel.
+5. Phase 4 (MCP), Phase 5 (exchange sync), Phase 6, 8, 9.
+
+Tell me which phase to start with — or say "go" and I'll run Phase 1 immediately.
