@@ -18,7 +18,7 @@ export const Route = createFileRoute("/api/public/cron/operator-tick")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        if (!verifySecret(request)) {
+        if (!verifyApiKey(request)) {
           return new Response("Unauthorized", { status: 401 });
         }
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
