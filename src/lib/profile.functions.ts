@@ -1,9 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireAuth } from "@/lib/auth/middleware";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
 export const getProfile = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("profiles")
@@ -19,7 +19,7 @@ const UpdateInput = z.object({
   preferred_currency: z.string().min(2).max(8).optional(),
 });
 export const updateProfile = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => UpdateInput.parse(d))
   .handler(async ({ data, context }) => {
     const payload: { display_name?: string | null; preferred_currency?: string } = {};

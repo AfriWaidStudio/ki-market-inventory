@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { type ReactNode } from "react";
-import { useAuth } from "@/lib/auth";
+import { useEffect, type ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard,
   Radar,
@@ -17,14 +17,10 @@ import {
   Wallet,
   Bell,
   LifeBuoy,
-  BrainCircuit,
-  Send,
 } from "lucide-react";
 
 const NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/operator", label: "KI Operator", icon: BrainCircuit },
-  { to: "/telegram", label: "Telegram KI", icon: Send },
   { to: "/scanner", label: "Scanner", icon: Radar },
   { to: "/trades", label: "Active Trades", icon: Activity },
   { to: "/history", label: "History", icon: History },
@@ -43,13 +39,18 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
   const navigate = useNavigate();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { signOut: endSession } = useAuth();
+
+  useEffect(() => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT") router.invalidate();
+    });
+    return () => sub.subscription.unsubscribe();
+  }, [router]);
 
   async function signOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
-    await endSession();
-    await router.invalidate();
+    await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   }
 

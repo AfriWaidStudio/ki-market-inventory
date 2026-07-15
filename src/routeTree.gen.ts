@@ -15,16 +15,13 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
 import { Route as AuthenticatedTradesRouteImport } from './routes/_authenticated/trades'
-import { Route as AuthenticatedTelegramRouteImport } from './routes/_authenticated/telegram'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSearchRouteImport } from './routes/_authenticated/search'
 import { Route as AuthenticatedScannerRouteImport } from './routes/_authenticated/scanner'
 import { Route as AuthenticatedRiskCenterRouteImport } from './routes/_authenticated/risk-center'
-import { Route as AuthenticatedOperatorRouteImport } from './routes/_authenticated/operator'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedJournalRouteImport } from './routes/_authenticated/journal'
 import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
@@ -32,9 +29,7 @@ import { Route as AuthenticatedHelpRouteImport } from './routes/_authenticated/h
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
-import { Route as ApiTelegramWebhookRouteImport } from './routes/api/telegram/webhook'
 import { Route as AuthenticatedTradesTradeIdRouteImport } from './routes/_authenticated/trades.$tradeId'
-import { Route as ApiPublicCronOperatorTickRouteImport } from './routes/api/public/cron/operator-tick'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -65,11 +60,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthCallbackRoute = AuthCallbackRouteImport.update({
-  id: '/callback',
-  path: '/callback',
-  getParentRoute: () => AuthRoute,
-} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -83,11 +73,6 @@ const AuthenticatedWalletRoute = AuthenticatedWalletRouteImport.update({
 const AuthenticatedTradesRoute = AuthenticatedTradesRouteImport.update({
   id: '/trades',
   path: '/trades',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedTelegramRoute = AuthenticatedTelegramRouteImport.update({
-  id: '/telegram',
-  path: '/telegram',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
@@ -108,11 +93,6 @@ const AuthenticatedScannerRoute = AuthenticatedScannerRouteImport.update({
 const AuthenticatedRiskCenterRoute = AuthenticatedRiskCenterRouteImport.update({
   id: '/risk-center',
   path: '/risk-center',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedOperatorRoute = AuthenticatedOperatorRouteImport.update({
-  id: '/operator',
-  path: '/operator',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedNotificationsRoute =
@@ -151,27 +131,16 @@ const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ApiTelegramWebhookRoute = ApiTelegramWebhookRouteImport.update({
-  id: '/api/telegram/webhook',
-  path: '/api/telegram/webhook',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedTradesTradeIdRoute =
   AuthenticatedTradesTradeIdRouteImport.update({
     id: '/$tradeId',
     path: '/$tradeId',
     getParentRoute: () => AuthenticatedTradesRoute,
   } as any)
-const ApiPublicCronOperatorTickRoute =
-  ApiPublicCronOperatorTickRouteImport.update({
-    id: '/api/public/cron/operator-tick',
-    path: '/api/public/cron/operator-tick',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRouteWithChildren
+  '/auth': typeof AuthRoute
   '/privacy': typeof PrivacyRoute
   '/safety': typeof SafetyRoute
   '/terms': typeof TermsRoute
@@ -182,23 +151,18 @@ export interface FileRoutesByFullPath {
   '/history': typeof AuthenticatedHistoryRoute
   '/journal': typeof AuthenticatedJournalRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
-  '/operator': typeof AuthenticatedOperatorRoute
   '/risk-center': typeof AuthenticatedRiskCenterRoute
   '/scanner': typeof AuthenticatedScannerRoute
   '/search': typeof AuthenticatedSearchRoute
   '/settings': typeof AuthenticatedSettingsRoute
-  '/telegram': typeof AuthenticatedTelegramRoute
   '/trades': typeof AuthenticatedTradesRouteWithChildren
   '/wallet': typeof AuthenticatedWalletRoute
   '/api/chat': typeof ApiChatRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
-  '/api/telegram/webhook': typeof ApiTelegramWebhookRoute
-  '/api/public/cron/operator-tick': typeof ApiPublicCronOperatorTickRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRouteWithChildren
+  '/auth': typeof AuthRoute
   '/privacy': typeof PrivacyRoute
   '/safety': typeof SafetyRoute
   '/terms': typeof TermsRoute
@@ -209,25 +173,20 @@ export interface FileRoutesByTo {
   '/history': typeof AuthenticatedHistoryRoute
   '/journal': typeof AuthenticatedJournalRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
-  '/operator': typeof AuthenticatedOperatorRoute
   '/risk-center': typeof AuthenticatedRiskCenterRoute
   '/scanner': typeof AuthenticatedScannerRoute
   '/search': typeof AuthenticatedSearchRoute
   '/settings': typeof AuthenticatedSettingsRoute
-  '/telegram': typeof AuthenticatedTelegramRoute
   '/trades': typeof AuthenticatedTradesRouteWithChildren
   '/wallet': typeof AuthenticatedWalletRoute
   '/api/chat': typeof ApiChatRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
-  '/api/telegram/webhook': typeof ApiTelegramWebhookRoute
-  '/api/public/cron/operator-tick': typeof ApiPublicCronOperatorTickRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/auth': typeof AuthRouteWithChildren
+  '/auth': typeof AuthRoute
   '/privacy': typeof PrivacyRoute
   '/safety': typeof SafetyRoute
   '/terms': typeof TermsRoute
@@ -238,19 +197,14 @@ export interface FileRoutesById {
   '/_authenticated/history': typeof AuthenticatedHistoryRoute
   '/_authenticated/journal': typeof AuthenticatedJournalRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
-  '/_authenticated/operator': typeof AuthenticatedOperatorRoute
   '/_authenticated/risk-center': typeof AuthenticatedRiskCenterRoute
   '/_authenticated/scanner': typeof AuthenticatedScannerRoute
   '/_authenticated/search': typeof AuthenticatedSearchRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
-  '/_authenticated/telegram': typeof AuthenticatedTelegramRoute
   '/_authenticated/trades': typeof AuthenticatedTradesRouteWithChildren
   '/_authenticated/wallet': typeof AuthenticatedWalletRoute
   '/api/chat': typeof ApiChatRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/_authenticated/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
-  '/api/telegram/webhook': typeof ApiTelegramWebhookRoute
-  '/api/public/cron/operator-tick': typeof ApiPublicCronOperatorTickRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -267,19 +221,14 @@ export interface FileRouteTypes {
     | '/history'
     | '/journal'
     | '/notifications'
-    | '/operator'
     | '/risk-center'
     | '/scanner'
     | '/search'
     | '/settings'
-    | '/telegram'
     | '/trades'
     | '/wallet'
     | '/api/chat'
-    | '/auth/callback'
     | '/trades/$tradeId'
-    | '/api/telegram/webhook'
-    | '/api/public/cron/operator-tick'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -294,19 +243,14 @@ export interface FileRouteTypes {
     | '/history'
     | '/journal'
     | '/notifications'
-    | '/operator'
     | '/risk-center'
     | '/scanner'
     | '/search'
     | '/settings'
-    | '/telegram'
     | '/trades'
     | '/wallet'
     | '/api/chat'
-    | '/auth/callback'
     | '/trades/$tradeId'
-    | '/api/telegram/webhook'
-    | '/api/public/cron/operator-tick'
   id:
     | '__root__'
     | '/'
@@ -322,31 +266,24 @@ export interface FileRouteTypes {
     | '/_authenticated/history'
     | '/_authenticated/journal'
     | '/_authenticated/notifications'
-    | '/_authenticated/operator'
     | '/_authenticated/risk-center'
     | '/_authenticated/scanner'
     | '/_authenticated/search'
     | '/_authenticated/settings'
-    | '/_authenticated/telegram'
     | '/_authenticated/trades'
     | '/_authenticated/wallet'
     | '/api/chat'
-    | '/auth/callback'
     | '/_authenticated/trades/$tradeId'
-    | '/api/telegram/webhook'
-    | '/api/public/cron/operator-tick'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AuthRoute: typeof AuthRouteWithChildren
+  AuthRoute: typeof AuthRoute
   PrivacyRoute: typeof PrivacyRoute
   SafetyRoute: typeof SafetyRoute
   TermsRoute: typeof TermsRoute
   ApiChatRoute: typeof ApiChatRoute
-  ApiTelegramWebhookRoute: typeof ApiTelegramWebhookRoute
-  ApiPublicCronOperatorTickRoute: typeof ApiPublicCronOperatorTickRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -393,13 +330,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/callback': {
-      id: '/auth/callback'
-      path: '/callback'
-      fullPath: '/auth/callback'
-      preLoaderRoute: typeof AuthCallbackRouteImport
-      parentRoute: typeof AuthRoute
-    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -419,13 +349,6 @@ declare module '@tanstack/react-router' {
       path: '/trades'
       fullPath: '/trades'
       preLoaderRoute: typeof AuthenticatedTradesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/telegram': {
-      id: '/_authenticated/telegram'
-      path: '/telegram'
-      fullPath: '/telegram'
-      preLoaderRoute: typeof AuthenticatedTelegramRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings': {
@@ -454,13 +377,6 @@ declare module '@tanstack/react-router' {
       path: '/risk-center'
       fullPath: '/risk-center'
       preLoaderRoute: typeof AuthenticatedRiskCenterRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/operator': {
-      id: '/_authenticated/operator'
-      path: '/operator'
-      fullPath: '/operator'
-      preLoaderRoute: typeof AuthenticatedOperatorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/notifications': {
@@ -512,26 +428,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAnalyticsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/telegram/webhook': {
-      id: '/api/telegram/webhook'
-      path: '/api/telegram/webhook'
-      fullPath: '/api/telegram/webhook'
-      preLoaderRoute: typeof ApiTelegramWebhookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated/trades/$tradeId': {
       id: '/_authenticated/trades/$tradeId'
       path: '/$tradeId'
       fullPath: '/trades/$tradeId'
       preLoaderRoute: typeof AuthenticatedTradesTradeIdRouteImport
       parentRoute: typeof AuthenticatedTradesRoute
-    }
-    '/api/public/cron/operator-tick': {
-      id: '/api/public/cron/operator-tick'
-      path: '/api/public/cron/operator-tick'
-      fullPath: '/api/public/cron/operator-tick'
-      preLoaderRoute: typeof ApiPublicCronOperatorTickRouteImport
-      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -555,12 +457,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
   AuthenticatedJournalRoute: typeof AuthenticatedJournalRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
-  AuthenticatedOperatorRoute: typeof AuthenticatedOperatorRoute
   AuthenticatedRiskCenterRoute: typeof AuthenticatedRiskCenterRoute
   AuthenticatedScannerRoute: typeof AuthenticatedScannerRoute
   AuthenticatedSearchRoute: typeof AuthenticatedSearchRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
-  AuthenticatedTelegramRoute: typeof AuthenticatedTelegramRoute
   AuthenticatedTradesRoute: typeof AuthenticatedTradesRouteWithChildren
   AuthenticatedWalletRoute: typeof AuthenticatedWalletRoute
 }
@@ -573,12 +473,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
   AuthenticatedJournalRoute: AuthenticatedJournalRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
-  AuthenticatedOperatorRoute: AuthenticatedOperatorRoute,
   AuthenticatedRiskCenterRoute: AuthenticatedRiskCenterRoute,
   AuthenticatedScannerRoute: AuthenticatedScannerRoute,
   AuthenticatedSearchRoute: AuthenticatedSearchRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
-  AuthenticatedTelegramRoute: AuthenticatedTelegramRoute,
   AuthenticatedTradesRoute: AuthenticatedTradesRouteWithChildren,
   AuthenticatedWalletRoute: AuthenticatedWalletRoute,
 }
@@ -586,37 +484,15 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface AuthRouteChildren {
-  AuthCallbackRoute: typeof AuthCallbackRoute
-}
-
-const AuthRouteChildren: AuthRouteChildren = {
-  AuthCallbackRoute: AuthCallbackRoute,
-}
-
-const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AuthRoute: AuthRouteWithChildren,
+  AuthRoute: AuthRoute,
   PrivacyRoute: PrivacyRoute,
   SafetyRoute: SafetyRoute,
   TermsRoute: TermsRoute,
   ApiChatRoute: ApiChatRoute,
-  ApiTelegramWebhookRoute: ApiTelegramWebhookRoute,
-  ApiPublicCronOperatorTickRoute: ApiPublicCronOperatorTickRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
