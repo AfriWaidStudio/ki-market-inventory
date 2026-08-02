@@ -9,9 +9,14 @@ export const Route = createFileRoute("/api/public/cron/refresh-prices")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const secret = process.env["CRON_SECRET"];
+        // Accepts either the project anon key (pg_cron) or the shared CRON_SECRET.
+        const anonKey = process.env["SUPABASE_PUBLISHABLE_KEY"] ?? process.env["SUPABASE_ANON_KEY"];
+        const cronSecret = process.env["CRON_SECRET"];
+        const apikey = request.headers.get("apikey");
         const auth = request.headers.get("authorization") ?? "";
-        if (!secret || auth !== `Bearer ${secret}`) {
+        const authorized =
+          (!!anonKey && apikey === anonKey) || (!!cronSecret && auth === `Bearer ${cronSecret}`);
+        if (!authorized) {
           return new Response("Unauthorized", { status: 401 });
         }
 
