@@ -1076,6 +1076,56 @@ export type Database = {
           },
         ]
       }
+      market_inventory_feed_status: {
+        Row: {
+          asset: string
+          consecutive_failures: number
+          error_message: string | null
+          exchange: string
+          fiat: string
+          id: string
+          last_failure_at: string | null
+          last_success_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          asset?: string
+          consecutive_failures?: number
+          error_message?: string | null
+          exchange: string
+          fiat: string
+          id?: string
+          last_failure_at?: string | null
+          last_success_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          asset?: string
+          consecutive_failures?: number
+          error_message?: string | null
+          exchange?: string
+          fiat?: string
+          id?: string
+          last_failure_at?: string | null
+          last_success_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_feed_status_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       market_inventory_price_snapshots: {
         Row: {
           asset: string
@@ -1570,6 +1620,41 @@ export type Database = {
             columns: ["withdrawal_tx_id"]
             isOneToOne: false
             referencedRelation: "market_inventory_exchange_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      market_inventory_watchlist: {
+        Row: {
+          asset: string
+          created_at: string
+          fiat: string
+          id: string
+          is_active: boolean
+          user_id: string
+        }
+        Insert: {
+          asset?: string
+          created_at?: string
+          fiat: string
+          id?: string
+          is_active?: boolean
+          user_id: string
+        }
+        Update: {
+          asset?: string
+          created_at?: string
+          fiat?: string
+          id?: string
+          is_active?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_watchlist_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
             referencedColumns: ["id"]
           },
         ]
