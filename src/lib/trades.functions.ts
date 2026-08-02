@@ -48,6 +48,7 @@ export const createTrade = createServerFn({ method: "POST" })
         ki_reasoning: score.reasoning,
         currency: data.currency,
         user_notes: data.user_notes ?? null,
+        remaining_amount: data.amount,
         status: "active",
       })
       .select("*")

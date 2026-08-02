@@ -30,6 +30,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as AuthenticatedTradesTradeIdRouteImport } from './routes/_authenticated/trades.$tradeId'
+import { Route as ApiPublicCronRefreshPricesRouteImport } from './routes/api/public/cron/refresh-prices'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -137,6 +138,12 @@ const AuthenticatedTradesTradeIdRoute =
     path: '/$tradeId',
     getParentRoute: () => AuthenticatedTradesRoute,
   } as any)
+const ApiPublicCronRefreshPricesRoute =
+  ApiPublicCronRefreshPricesRouteImport.update({
+    id: '/api/public/cron/refresh-prices',
+    path: '/api/public/cron/refresh-prices',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -159,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/wallet': typeof AuthenticatedWalletRoute
   '/api/chat': typeof ApiChatRoute
   '/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
+  '/api/public/cron/refresh-prices': typeof ApiPublicCronRefreshPricesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -181,6 +189,7 @@ export interface FileRoutesByTo {
   '/wallet': typeof AuthenticatedWalletRoute
   '/api/chat': typeof ApiChatRoute
   '/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
+  '/api/public/cron/refresh-prices': typeof ApiPublicCronRefreshPricesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -205,6 +214,7 @@ export interface FileRoutesById {
   '/_authenticated/wallet': typeof AuthenticatedWalletRoute
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
+  '/api/public/cron/refresh-prices': typeof ApiPublicCronRefreshPricesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -229,6 +239,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/api/chat'
     | '/trades/$tradeId'
+    | '/api/public/cron/refresh-prices'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -251,6 +262,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/api/chat'
     | '/trades/$tradeId'
+    | '/api/public/cron/refresh-prices'
   id:
     | '__root__'
     | '/'
@@ -274,6 +286,7 @@ export interface FileRouteTypes {
     | '/_authenticated/wallet'
     | '/api/chat'
     | '/_authenticated/trades/$tradeId'
+    | '/api/public/cron/refresh-prices'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -284,6 +297,7 @@ export interface RootRouteChildren {
   SafetyRoute: typeof SafetyRoute
   TermsRoute: typeof TermsRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiPublicCronRefreshPricesRoute: typeof ApiPublicCronRefreshPricesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -435,6 +449,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTradesTradeIdRouteImport
       parentRoute: typeof AuthenticatedTradesRoute
     }
+    '/api/public/cron/refresh-prices': {
+      id: '/api/public/cron/refresh-prices'
+      path: '/api/public/cron/refresh-prices'
+      fullPath: '/api/public/cron/refresh-prices'
+      preLoaderRoute: typeof ApiPublicCronRefreshPricesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -492,17 +513,8 @@ const rootRouteChildren: RootRouteChildren = {
   SafetyRoute: SafetyRoute,
   TermsRoute: TermsRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiPublicCronRefreshPricesRoute: ApiPublicCronRefreshPricesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

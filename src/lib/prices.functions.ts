@@ -5,206 +5,64 @@ import { z } from "zod";
 /**
  * Live P2P price intelligence.
  *
- * Fetches public P2P order books from Binance, Bybit, and OKX server-side
- * (Cloudflare Worker fetch — same endpoints their public websites use, no
- * API keys required) and writes normalized snapshots into
- * market_inventory_price_snapshots so the rest of the app (Scanner,
- * Waides KI chat grounding) reads real data instead of only what the user
- * typed.
+ * Fetchers live in p2p.server.ts (server-only). This module owns the
+ * user-facing server functions: refreshing a pair, reading feed health, and
+ * managing the watchlist of asset/fiat pairs we keep fresh.
  */
 
-const RefreshInput = z.object({
+const PairInput = z.object({
   asset: z.string().default("USDT"),
   fiat: z.string().default("NGN"),
 });
 
-type NormalizedSnap = {
-  exchange: string;
-  side: "buy" | "sell";
-  price: number;
-  liquidity_score: number | null;
-  merchant_count: number | null;
-  merchant_rating: number | null;
-};
-
-async function fetchBinance(asset: string, fiat: string, side: "buy" | "sell"): Promise<NormalizedSnap[]> {
-  // tradeType from the TAKER perspective: BUY = user buys USDT from merchant.
-  const tradeType = side === "buy" ? "BUY" : "SELL";
-  const r = await fetch("https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "User-Agent": "Mozilla/5.0" },
-    body: JSON.stringify({
-      page: 1,
-      rows: 10,
-      asset,
-      tradeType,
-      fiat,
-      payTypes: [],
-      publisherType: null,
-    }),
-  });
-  if (!r.ok) throw new Error(`Binance ${r.status}`);
-  const j = (await r.json()) as {
-    data?: Array<{
-      adv?: { price?: string; surplusAmount?: string };
-      advertiser?: { monthOrderCount?: number; monthFinishRate?: number };
-    }>;
-  };
-  const rows = j.data ?? [];
-  if (!rows.length) return [];
-  const top = rows.slice(0, 5);
-  const price = Number(top[0]?.adv?.price ?? 0);
-  if (!price) return [];
-  const avgFinish =
-    top.reduce((s, r) => s + Number(r.advertiser?.monthFinishRate ?? 0), 0) / top.length;
-  const totalOrders = top.reduce(
-    (s, r) => s + Number(r.advertiser?.monthOrderCount ?? 0),
-    0,
-  );
-  return [
-    {
-      exchange: "Binance",
-      side,
-      price,
-      merchant_count: rows.length,
-      merchant_rating: Number((avgFinish * 5).toFixed(2)) || null, // finish rate 0-1 → 0-5
-      liquidity_score: Math.min(100, Math.round(totalOrders / 20)),
-    },
-  ];
-}
-
-async function fetchBybit(asset: string, fiat: string, side: "buy" | "sell"): Promise<NormalizedSnap[]> {
-  // Bybit side: "1" = merchants SELLING (user buys), "0" = merchants BUYING (user sells)
-  const bybitSide = side === "buy" ? "1" : "0";
-  const r = await fetch("https://api2.bybit.com/fiat/otc/item/online", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "User-Agent": "Mozilla/5.0" },
-    body: JSON.stringify({
-      userId: "",
-      tokenId: asset,
-      currencyId: fiat,
-      payment: [],
-      side: bybitSide,
-      size: "10",
-      page: "1",
-      amount: "",
-    }),
-  });
-  if (!r.ok) throw new Error(`Bybit ${r.status}`);
-  const j = (await r.json()) as {
-    result?: {
-      items?: Array<{
-        price?: string;
-        recentOrderNum?: number;
-        recentExecuteRate?: number;
-      }>;
-    };
-  };
-  const rows = j.result?.items ?? [];
-  if (!rows.length) return [];
-  const top = rows.slice(0, 5);
-  const price = Number(top[0]?.price ?? 0);
-  if (!price) return [];
-  const avgExec =
-    top.reduce((s, r) => s + Number(r.recentExecuteRate ?? 0), 0) / top.length; // 0-100
-  const totalOrders = top.reduce((s, r) => s + Number(r.recentOrderNum ?? 0), 0);
-  return [
-    {
-      exchange: "Bybit",
-      side,
-      price,
-      merchant_count: rows.length,
-      merchant_rating: Number(((avgExec / 100) * 5).toFixed(2)) || null,
-      liquidity_score: Math.min(100, Math.round(totalOrders / 20)),
-    },
-  ];
-}
-
-async function fetchOkx(asset: string, fiat: string, side: "buy" | "sell"): Promise<NormalizedSnap[]> {
-  // OKX side from merchant POV: side=sell → merchants selling → user buys.
-  const okxSide = side === "buy" ? "sell" : "buy";
-  const url = `https://www.okx.com/v3/c2c/tradingOrders/books?quoteCurrency=${fiat}&baseCurrency=${asset}&side=${okxSide}&paymentMethod=all&userType=all&showTrade=false&showFollow=false&showAlreadyTraded=false&isAbleFilter=false`;
-  const r = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
-  if (!r.ok) throw new Error(`OKX ${r.status}`);
-  const j = (await r.json()) as {
-    data?: {
-      sell?: Array<{ price?: string; completedOrderQuantity?: number; completedRate?: string }>;
-      buy?: Array<{ price?: string; completedOrderQuantity?: number; completedRate?: string }>;
-    };
-  };
-  const rows = (okxSide === "sell" ? j.data?.sell : j.data?.buy) ?? [];
-  if (!rows.length) return [];
-  const top = rows.slice(0, 5);
-  const price = Number(top[0]?.price ?? 0);
-  if (!price) return [];
-  const avgRate =
-    top.reduce((s, r) => s + Number(r.completedRate ?? 0), 0) / top.length;
-  const totalOrders = top.reduce(
-    (s, r) => s + Number(r.completedOrderQuantity ?? 0),
-    0,
-  );
-  return [
-    {
-      exchange: "OKX",
-      side,
-      price,
-      merchant_count: rows.length,
-      merchant_rating: Number((avgRate * 5).toFixed(2)) || null,
-      liquidity_score: Math.min(100, Math.round(totalOrders / 20)),
-    },
-  ];
-}
-
 export const refreshLivePrices = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => RefreshInput.parse(d ?? {}))
+  .inputValidator((d: unknown) => PairInput.parse(d ?? {}))
   .handler(async ({ data, context }) => {
-    const jobs: Array<Promise<{ ok: true; snaps: NormalizedSnap[] } | { ok: false; exchange: string; error: string }>> = [];
+    const { fetchPairAllExchanges } = await import("./p2p.server");
+    const outcomes = await fetchPairAllExchanges(data.asset, data.fiat);
 
-    for (const side of ["buy", "sell"] as const) {
-      for (const [name, fn] of [
-        ["Binance", fetchBinance],
-        ["Bybit", fetchBybit],
-        ["OKX", fetchOkx],
-      ] as const) {
-        jobs.push(
-          fn(data.asset, data.fiat, side)
-            .then((snaps) => ({ ok: true as const, snaps }))
-            .catch((e) => ({
-              ok: false as const,
-              exchange: name,
-              error: e instanceof Error ? e.message : String(e),
-            })),
-        );
-      }
-    }
+    const rows = outcomes.flatMap((o) =>
+      o.snaps.map((s) => ({
+        user_id: context.userId,
+        exchange: s.exchange,
+        asset: data.asset,
+        side: s.side,
+        price: s.price,
+        currency: data.fiat,
+        liquidity_score: s.liquidity_score,
+        merchant_count: s.merchant_count,
+        merchant_rating: s.merchant_rating,
+      })),
+    );
 
-    const results = await Promise.all(jobs);
-    const snaps: NormalizedSnap[] = [];
-    const failures: Array<{ exchange: string; error: string }> = [];
-    for (const r of results) {
-      if (r.ok) snaps.push(...r.snaps);
-      else failures.push({ exchange: r.exchange, error: r.error });
-    }
-
-    if (snaps.length) {
+    if (rows.length) {
       const { error } = await context.supabase
         .from("market_inventory_price_snapshots")
-        .insert(
-          snaps.map((s) => ({
-            user_id: context.userId,
-            exchange: s.exchange,
-            asset: data.asset,
-            side: s.side,
-            price: s.price,
-            currency: data.fiat,
-            liquidity_score: s.liquidity_score,
-            merchant_count: s.merchant_count,
-            merchant_rating: s.merchant_rating,
-          })),
-        );
+        .insert(rows);
       if (error) throw new Error(error.message);
     }
+
+    const now = new Date().toISOString();
+    const statusRows = outcomes.map((o) => ({
+      user_id: context.userId,
+      exchange: o.exchange,
+      asset: data.asset,
+      fiat: data.fiat,
+      status: o.ok ? "live" : "unavailable",
+      consecutive_failures: o.ok ? 0 : 1,
+      last_success_at: o.ok ? now : null,
+      last_failure_at: o.ok ? null : now,
+      error_message: o.ok ? null : (o.error ?? "Unknown error"),
+      updated_at: now,
+    }));
+    await context.supabase
+      .from("market_inventory_feed_status")
+      .upsert(statusRows, { onConflict: "user_id,exchange,asset,fiat" });
+
+    const failures = outcomes
+      .filter((o) => !o.ok)
+      .map((o) => ({ exchange: o.exchange, error: o.error ?? "Unknown error" }));
 
     if (failures.length) {
       await context.supabase.from("market_inventory_audit_log").insert(
@@ -217,9 +75,10 @@ export const refreshLivePrices = createServerFn({ method: "POST" })
     }
 
     return {
-      inserted: snaps.length,
+      inserted: rows.length,
       failures,
-      exchanges_ok: [...new Set(snaps.map((s) => s.exchange))],
+      exchanges_ok: outcomes.filter((o) => o.ok).map((o) => o.exchange),
+      fetched_at: now,
     };
   });
 
@@ -228,15 +87,127 @@ export const listLatestLivePrices = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("market_inventory_price_snapshots")
-      .select("exchange, side, price, currency, liquidity_score, merchant_count, merchant_rating, captured_at")
+      .select("exchange, asset, side, price, currency, liquidity_score, merchant_count, merchant_rating, captured_at")
       .order("captured_at", { ascending: false })
-      .limit(60);
+      .limit(120);
     if (error) throw new Error(error.message);
-    // Keep latest per (exchange, side)
     const latest = new Map<string, (typeof data)[number]>();
     for (const s of data ?? []) {
-      const key = `${s.exchange}::${s.side}`;
+      const key = `${s.exchange}::${s.asset}::${s.currency}::${s.side}`;
       if (!latest.has(key)) latest.set(key, s);
     }
     return Array.from(latest.values());
+  });
+
+export const listFeedStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("market_inventory_feed_status")
+      .select("exchange, asset, fiat, status, consecutive_failures, last_success_at, last_failure_at, error_message, updated_at")
+      .order("exchange", { ascending: true });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+/* ---------------- Watchlist ---------------- */
+
+export const listWatchlist = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("market_inventory_watchlist")
+      .select("id, asset, fiat, is_active, created_at")
+      .order("created_at", { ascending: true });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const addWatchPair = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => PairInput.parse(d))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("market_inventory_watchlist")
+      .upsert(
+        {
+          user_id: context.userId,
+          asset: data.asset.toUpperCase(),
+          fiat: data.fiat.toUpperCase(),
+          is_active: true,
+        },
+        { onConflict: "user_id,asset,fiat" },
+      );
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const removeWatchPair = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("market_inventory_watchlist")
+      .delete()
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/** Refresh every active watched pair for the current user. */
+export const refreshWatchlist = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { fetchPairAllExchanges } = await import("./p2p.server");
+    const { data: pairs, error } = await context.supabase
+      .from("market_inventory_watchlist")
+      .select("asset, fiat")
+      .eq("is_active", true);
+    if (error) throw new Error(error.message);
+
+    const list = pairs?.length ? pairs : [{ asset: "USDT", fiat: "NGN" }];
+    const now = new Date().toISOString();
+    let inserted = 0;
+    const failures: Array<{ exchange: string; pair: string; error: string }> = [];
+
+    for (const p of list) {
+      const outcomes = await fetchPairAllExchanges(p.asset, p.fiat);
+      const rows = outcomes.flatMap((o) =>
+        o.snaps.map((s) => ({
+          user_id: context.userId,
+          exchange: s.exchange,
+          asset: p.asset,
+          side: s.side,
+          price: s.price,
+          currency: p.fiat,
+          liquidity_score: s.liquidity_score,
+          merchant_count: s.merchant_count,
+          merchant_rating: s.merchant_rating,
+        })),
+      );
+      if (rows.length) {
+        await context.supabase.from("market_inventory_price_snapshots").insert(rows);
+        inserted += rows.length;
+      }
+      await context.supabase.from("market_inventory_feed_status").upsert(
+        outcomes.map((o) => ({
+          user_id: context.userId,
+          exchange: o.exchange,
+          asset: p.asset,
+          fiat: p.fiat,
+          status: o.ok ? "live" : "unavailable",
+          consecutive_failures: o.ok ? 0 : 1,
+          last_success_at: o.ok ? now : null,
+          last_failure_at: o.ok ? null : now,
+          error_message: o.ok ? null : (o.error ?? "Unknown error"),
+          updated_at: now,
+        })),
+        { onConflict: "user_id,exchange,asset,fiat" },
+      );
+      for (const o of outcomes) {
+        if (!o.ok) failures.push({ exchange: o.exchange, pair: `${p.asset}/${p.fiat}`, error: o.error ?? "Unknown" });
+      }
+    }
+
+    return { inserted, failures, pairs: list.length, fetched_at: now };
   });
