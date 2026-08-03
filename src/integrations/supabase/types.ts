@@ -1076,6 +1076,56 @@ export type Database = {
           },
         ]
       }
+      market_inventory_fee_profiles: {
+        Row: {
+          created_at: string
+          exchange: string
+          id: string
+          network: string | null
+          notes: string | null
+          payment_fee_flat: number
+          payment_fee_pct: number
+          trade_fee_pct: number
+          updated_at: string
+          user_id: string
+          withdrawal_fee_asset: number
+        }
+        Insert: {
+          created_at?: string
+          exchange: string
+          id?: string
+          network?: string | null
+          notes?: string | null
+          payment_fee_flat?: number
+          payment_fee_pct?: number
+          trade_fee_pct?: number
+          updated_at?: string
+          user_id: string
+          withdrawal_fee_asset?: number
+        }
+        Update: {
+          created_at?: string
+          exchange?: string
+          id?: string
+          network?: string | null
+          notes?: string | null
+          payment_fee_flat?: number
+          payment_fee_pct?: number
+          trade_fee_pct?: number
+          updated_at?: string
+          user_id?: string
+          withdrawal_fee_asset?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_fee_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       market_inventory_feed_status: {
         Row: {
           asset: string
@@ -1119,6 +1169,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "market_inventory_feed_status_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      market_inventory_notifications: {
+        Row: {
+          body: string
+          created_at: string
+          dedupe_key: string
+          id: string
+          link: string | null
+          metadata: Json
+          read_at: string | null
+          severity: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          dedupe_key: string
+          id?: string
+          link?: string | null
+          metadata?: Json
+          read_at?: string | null
+          severity?: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          dedupe_key?: string
+          id?: string
+          link?: string | null
+          metadata?: Json
+          read_at?: string | null
+          severity?: string
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_notifications_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "app_users"
@@ -1214,6 +1314,68 @@ export type Database = {
           },
           {
             foreignKeyName: "market_inventory_risk_alerts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      market_inventory_spread_history: {
+        Row: {
+          asset: string
+          buy_exchange: string
+          buy_price: number
+          depth_asset: number | null
+          executable_buy_price: number | null
+          executable_sell_price: number | null
+          fiat: string
+          id: number
+          net_pct: number | null
+          observed_at: string
+          sell_exchange: string
+          sell_price: number
+          spread: number
+          spread_pct: number
+          user_id: string
+        }
+        Insert: {
+          asset: string
+          buy_exchange: string
+          buy_price: number
+          depth_asset?: number | null
+          executable_buy_price?: number | null
+          executable_sell_price?: number | null
+          fiat: string
+          id?: number
+          net_pct?: number | null
+          observed_at?: string
+          sell_exchange: string
+          sell_price: number
+          spread: number
+          spread_pct: number
+          user_id: string
+        }
+        Update: {
+          asset?: string
+          buy_exchange?: string
+          buy_price?: number
+          depth_asset?: number | null
+          executable_buy_price?: number | null
+          executable_sell_price?: number | null
+          fiat?: string
+          id?: number
+          net_pct?: number | null
+          observed_at?: string
+          sell_exchange?: string
+          sell_price?: number
+          spread?: number
+          spread_pct?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_inventory_spread_history_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "app_users"
