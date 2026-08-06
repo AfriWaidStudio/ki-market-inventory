@@ -17,6 +17,7 @@ import {
   Wallet,
   Bell,
   LifeBuoy,
+  Globe2,
 } from "lucide-react";
 
 const NAV = [
@@ -26,6 +27,7 @@ const NAV = [
   { to: "/history", label: "History", icon: History },
   { to: "/journal", label: "Journal", icon: BookOpen },
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
+  { to: "/corridors", label: "Corridors", icon: Globe2 },
   { to: "/risk-center", label: "Risk Center", icon: ShieldAlert },
   { to: "/chat", label: "Ask KI", icon: MessageSquare },
   { to: "/search", label: "Search", icon: Search },
