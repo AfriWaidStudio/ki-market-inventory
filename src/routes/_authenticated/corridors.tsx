@@ -34,7 +34,7 @@ export const Route = createFileRoute("/_authenticated/corridors")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: CorridorsPage;
+  component: CorridorsPage,
 });
 
 const input =
