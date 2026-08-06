@@ -27,9 +27,11 @@ import { Route as AuthenticatedJournalRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
 import { Route as AuthenticatedHelpRouteImport } from './routes/_authenticated/help'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedCorridorsRouteImport } from './routes/_authenticated/corridors'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as AuthenticatedTradesTradeIdRouteImport } from './routes/_authenticated/trades.$tradeId'
+import { Route as ApiPublicV1DataRouteImport } from './routes/api/public/v1/data'
 import { Route as ApiPublicCronRefreshPricesRouteImport } from './routes/api/public/cron/refresh-prices'
 
 const TermsRoute = TermsRouteImport.update({
@@ -122,6 +124,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCorridorsRoute = AuthenticatedCorridorsRouteImport.update({
+  id: '/corridors',
+  path: '/corridors',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
   id: '/chat',
   path: '/chat',
@@ -138,6 +145,11 @@ const AuthenticatedTradesTradeIdRoute =
     path: '/$tradeId',
     getParentRoute: () => AuthenticatedTradesRoute,
   } as any)
+const ApiPublicV1DataRoute = ApiPublicV1DataRouteImport.update({
+  id: '/api/public/v1/data',
+  path: '/api/public/v1/data',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicCronRefreshPricesRoute =
   ApiPublicCronRefreshPricesRouteImport.update({
     id: '/api/public/cron/refresh-prices',
@@ -153,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/chat': typeof AuthenticatedChatRoute
+  '/corridors': typeof AuthenticatedCorridorsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/help': typeof AuthenticatedHelpRoute
   '/history': typeof AuthenticatedHistoryRoute
@@ -167,6 +180,7 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
   '/api/public/cron/refresh-prices': typeof ApiPublicCronRefreshPricesRoute
+  '/api/public/v1/data': typeof ApiPublicV1DataRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -176,6 +190,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/chat': typeof AuthenticatedChatRoute
+  '/corridors': typeof AuthenticatedCorridorsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/help': typeof AuthenticatedHelpRoute
   '/history': typeof AuthenticatedHistoryRoute
@@ -190,6 +205,7 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
   '/api/public/cron/refresh-prices': typeof ApiPublicCronRefreshPricesRoute
+  '/api/public/v1/data': typeof ApiPublicV1DataRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -201,6 +217,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/chat': typeof AuthenticatedChatRoute
+  '/_authenticated/corridors': typeof AuthenticatedCorridorsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/help': typeof AuthenticatedHelpRoute
   '/_authenticated/history': typeof AuthenticatedHistoryRoute
@@ -215,6 +232,7 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
   '/api/public/cron/refresh-prices': typeof ApiPublicCronRefreshPricesRoute
+  '/api/public/v1/data': typeof ApiPublicV1DataRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -226,6 +244,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/analytics'
     | '/chat'
+    | '/corridors'
     | '/dashboard'
     | '/help'
     | '/history'
@@ -240,6 +259,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/trades/$tradeId'
     | '/api/public/cron/refresh-prices'
+    | '/api/public/v1/data'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -249,6 +269,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/analytics'
     | '/chat'
+    | '/corridors'
     | '/dashboard'
     | '/help'
     | '/history'
@@ -263,6 +284,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/trades/$tradeId'
     | '/api/public/cron/refresh-prices'
+    | '/api/public/v1/data'
   id:
     | '__root__'
     | '/'
@@ -273,6 +295,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/analytics'
     | '/_authenticated/chat'
+    | '/_authenticated/corridors'
     | '/_authenticated/dashboard'
     | '/_authenticated/help'
     | '/_authenticated/history'
@@ -287,6 +310,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/_authenticated/trades/$tradeId'
     | '/api/public/cron/refresh-prices'
+    | '/api/public/v1/data'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -298,6 +322,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiPublicCronRefreshPricesRoute: typeof ApiPublicCronRefreshPricesRoute
+  ApiPublicV1DataRoute: typeof ApiPublicV1DataRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -428,6 +453,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/corridors': {
+      id: '/_authenticated/corridors'
+      path: '/corridors'
+      fullPath: '/corridors'
+      preLoaderRoute: typeof AuthenticatedCorridorsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/chat': {
       id: '/_authenticated/chat'
       path: '/chat'
@@ -448,6 +480,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/trades/$tradeId'
       preLoaderRoute: typeof AuthenticatedTradesTradeIdRouteImport
       parentRoute: typeof AuthenticatedTradesRoute
+    }
+    '/api/public/v1/data': {
+      id: '/api/public/v1/data'
+      path: '/api/public/v1/data'
+      fullPath: '/api/public/v1/data'
+      preLoaderRoute: typeof ApiPublicV1DataRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/cron/refresh-prices': {
       id: '/api/public/cron/refresh-prices'
@@ -473,6 +512,7 @@ const AuthenticatedTradesRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
+  AuthenticatedCorridorsRoute: typeof AuthenticatedCorridorsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedHelpRoute: typeof AuthenticatedHelpRoute
   AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
@@ -489,6 +529,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
   AuthenticatedChatRoute: AuthenticatedChatRoute,
+  AuthenticatedCorridorsRoute: AuthenticatedCorridorsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedHelpRoute: AuthenticatedHelpRoute,
   AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
@@ -514,17 +555,8 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   ApiChatRoute: ApiChatRoute,
   ApiPublicCronRefreshPricesRoute: ApiPublicCronRefreshPricesRoute,
+  ApiPublicV1DataRoute: ApiPublicV1DataRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

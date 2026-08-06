@@ -132,6 +132,417 @@ export type Database = {
           },
         ]
       }
+      corridor_quotes: {
+        Row: {
+          fee_flat: number
+          fee_pct: number
+          fx_rate: number
+          id: number
+          max_amount: number | null
+          mid_market_rate: number | null
+          min_amount: number | null
+          notes: string | null
+          observed_at: string
+          payout_method: string | null
+          provider: string
+          provider_type: string
+          receive_currency: string
+          send_currency: string
+          source: string
+          speed_hours: number | null
+          user_id: string
+        }
+        Insert: {
+          fee_flat?: number
+          fee_pct?: number
+          fx_rate: number
+          id?: number
+          max_amount?: number | null
+          mid_market_rate?: number | null
+          min_amount?: number | null
+          notes?: string | null
+          observed_at?: string
+          payout_method?: string | null
+          provider: string
+          provider_type?: string
+          receive_currency: string
+          send_currency: string
+          source?: string
+          speed_hours?: number | null
+          user_id: string
+        }
+        Update: {
+          fee_flat?: number
+          fee_pct?: number
+          fx_rate?: number
+          id?: number
+          max_amount?: number | null
+          mid_market_rate?: number | null
+          min_amount?: number | null
+          notes?: string | null
+          observed_at?: string
+          payout_method?: string | null
+          provider?: string
+          provider_type?: string
+          receive_currency?: string
+          send_currency?: string
+          source?: string
+          speed_hours?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corridor_quotes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      corridor_transfers: {
+        Row: {
+          amount_received: number
+          amount_sent: number
+          baseline_rate: number | null
+          created_at: string
+          effective_rate: number
+          id: string
+          notes: string | null
+          provider: string
+          purpose: string | null
+          receive_currency: string
+          saved_vs_baseline: number | null
+          send_currency: string
+          sent_at: string
+          total_cost: number
+          user_id: string
+        }
+        Insert: {
+          amount_received: number
+          amount_sent: number
+          baseline_rate?: number | null
+          created_at?: string
+          effective_rate: number
+          id?: string
+          notes?: string | null
+          provider: string
+          purpose?: string | null
+          receive_currency: string
+          saved_vs_baseline?: number | null
+          send_currency: string
+          sent_at?: string
+          total_cost?: number
+          user_id: string
+        }
+        Update: {
+          amount_received?: number
+          amount_sent?: number
+          baseline_rate?: number | null
+          created_at?: string
+          effective_rate?: number
+          id?: string
+          notes?: string | null
+          provider?: string
+          purpose?: string | null
+          receive_currency?: string
+          saved_vs_baseline?: number | null
+          send_currency?: string
+          sent_at?: string
+          total_cost?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corridor_transfers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      corridor_watchlist: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          label: string | null
+          receive_currency: string
+          send_currency: string
+          typical_amount: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string | null
+          receive_currency: string
+          send_currency: string
+          typical_amount?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string | null
+          receive_currency?: string
+          send_currency?: string
+          typical_amount?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corridor_watchlist_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      data_api_clients: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          key_hash: string
+          key_prefix: string
+          last_used_at: string | null
+          name: string
+          rate_limit_per_min: number
+          revoked_at: string | null
+          scopes: string[]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          key_hash: string
+          key_prefix: string
+          last_used_at?: string | null
+          name: string
+          rate_limit_per_min?: number
+          revoked_at?: string | null
+          scopes?: string[]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          key_hash?: string
+          key_prefix?: string
+          last_used_at?: string | null
+          name?: string
+          rate_limit_per_min?: number
+          revoked_at?: string | null
+          scopes?: string[]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_api_clients_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      data_api_usage: {
+        Row: {
+          called_at: string
+          client_id: string
+          endpoint: string
+          id: number
+          response_ms: number | null
+          status_code: number
+          user_id: string
+        }
+        Insert: {
+          called_at?: string
+          client_id: string
+          endpoint: string
+          id?: number
+          response_ms?: number | null
+          status_code: number
+          user_id: string
+        }
+        Update: {
+          called_at?: string
+          client_id?: string
+          endpoint?: string
+          id?: number
+          response_ms?: number | null
+          status_code?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_api_usage_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "data_api_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_api_usage_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      freight_duty_profiles: {
+        Row: {
+          created_at: string
+          description: string | null
+          destination_country: string
+          duty_pct: number
+          hs_code: string
+          id: string
+          other_fees_pct: number
+          user_id: string
+          vat_pct: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          destination_country: string
+          duty_pct?: number
+          hs_code: string
+          id?: string
+          other_fees_pct?: number
+          user_id: string
+          vat_pct?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          destination_country?: string
+          duty_pct?: number
+          hs_code?: string
+          id?: string
+          other_fees_pct?: number
+          user_id?: string
+          vat_pct?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "freight_duty_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      freight_lanes: {
+        Row: {
+          created_at: string
+          destination: string
+          equipment: string
+          id: string
+          is_active: boolean
+          mode: string
+          origin: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          destination: string
+          equipment?: string
+          id?: string
+          is_active?: boolean
+          mode?: string
+          origin: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          destination?: string
+          equipment?: string
+          id?: string
+          is_active?: boolean
+          mode?: string
+          origin?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "freight_lanes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      freight_rates: {
+        Row: {
+          base_rate: number
+          carrier: string
+          currency: string
+          id: number
+          lane_id: string
+          notes: string | null
+          observed_at: string
+          source: string
+          surcharges: number
+          transit_days: number | null
+          user_id: string
+          valid_until: string | null
+        }
+        Insert: {
+          base_rate: number
+          carrier: string
+          currency?: string
+          id?: number
+          lane_id: string
+          notes?: string | null
+          observed_at?: string
+          source?: string
+          surcharges?: number
+          transit_days?: number | null
+          user_id: string
+          valid_until?: string | null
+        }
+        Update: {
+          base_rate?: number
+          carrier?: string
+          currency?: string
+          id?: number
+          lane_id?: string
+          notes?: string | null
+          observed_at?: string
+          source?: string
+          surcharges?: number
+          transit_days?: number | null
+          user_id?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "freight_rates_lane_id_fkey"
+            columns: ["lane_id"]
+            isOneToOne: false
+            referencedRelation: "freight_lanes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "freight_rates_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ki_alert_deliveries: {
         Row: {
           alert_id: string
@@ -1883,6 +2294,277 @@ export type Database = {
             foreignKeyName: "profiles_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      retail_listings: {
+        Row: {
+          currency: string
+          id: number
+          in_stock: boolean
+          marketplace: string
+          marketplace_fee_pct: number
+          observed_at: string
+          price: number
+          product_id: string
+          role: string
+          seller_rating: number | null
+          shipping_cost: number
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          currency?: string
+          id?: number
+          in_stock?: boolean
+          marketplace: string
+          marketplace_fee_pct?: number
+          observed_at?: string
+          price: number
+          product_id: string
+          role?: string
+          seller_rating?: number | null
+          shipping_cost?: number
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          currency?: string
+          id?: number
+          in_stock?: boolean
+          marketplace?: string
+          marketplace_fee_pct?: number
+          observed_at?: string
+          price?: number
+          product_id?: string
+          role?: string
+          seller_rating?: number | null
+          shipping_cost?: number
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "retail_listings_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "retail_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "retail_listings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      retail_products: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          notes: string | null
+          sku: string | null
+          target_margin_pct: number
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          sku?: string | null
+          target_margin_pct?: number
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          sku?: string | null
+          target_margin_pct?: number
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "retail_products_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saas_price_events: {
+        Row: {
+          created_at: string
+          effective_date: string
+          id: number
+          new_amount: number
+          note: string | null
+          old_amount: number
+          subscription_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          effective_date?: string
+          id?: number
+          new_amount: number
+          note?: string | null
+          old_amount: number
+          subscription_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          effective_date?: string
+          id?: number
+          new_amount?: number
+          note?: string | null
+          old_amount?: number
+          subscription_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saas_price_events_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "saas_subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saas_price_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saas_subscriptions: {
+        Row: {
+          active_seats: number | null
+          auto_renew: boolean
+          billing_cycle: string
+          cancellation_notice_days: number
+          created_at: string
+          currency: string
+          id: string
+          notes: string | null
+          plan: string
+          renewal_date: string | null
+          seats: number
+          status: string
+          unit_cost: number
+          updated_at: string
+          user_id: string
+          vendor_id: string
+        }
+        Insert: {
+          active_seats?: number | null
+          auto_renew?: boolean
+          billing_cycle?: string
+          cancellation_notice_days?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          notes?: string | null
+          plan?: string
+          renewal_date?: string | null
+          seats?: number
+          status?: string
+          unit_cost?: number
+          updated_at?: string
+          user_id: string
+          vendor_id: string
+        }
+        Update: {
+          active_seats?: number | null
+          auto_renew?: boolean
+          billing_cycle?: string
+          cancellation_notice_days?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          notes?: string | null
+          plan?: string
+          renewal_date?: string | null
+          seats?: number
+          status?: string
+          unit_cost?: number
+          updated_at?: string
+          user_id?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saas_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saas_subscriptions_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "saas_vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saas_vendors: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+          owner_name: string | null
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+          owner_name?: string | null
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          owner_name?: string | null
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saas_vendors_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "app_users"
             referencedColumns: ["id"]
           },
