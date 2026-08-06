@@ -30,6 +30,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as AuthenticatedTradesTradeIdRouteImport } from './routes/_authenticated/trades.$tradeId'
+import { Route as ApiPublicV1DataRouteImport } from './routes/api/public/v1/data'
 import { Route as ApiPublicCronRefreshPricesRouteImport } from './routes/api/public/cron/refresh-prices'
 
 const TermsRoute = TermsRouteImport.update({
@@ -138,6 +139,11 @@ const AuthenticatedTradesTradeIdRoute =
     path: '/$tradeId',
     getParentRoute: () => AuthenticatedTradesRoute,
   } as any)
+const ApiPublicV1DataRoute = ApiPublicV1DataRouteImport.update({
+  id: '/api/public/v1/data',
+  path: '/api/public/v1/data',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicCronRefreshPricesRoute =
   ApiPublicCronRefreshPricesRouteImport.update({
     id: '/api/public/cron/refresh-prices',
@@ -167,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
   '/api/public/cron/refresh-prices': typeof ApiPublicCronRefreshPricesRoute
+  '/api/public/v1/data': typeof ApiPublicV1DataRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -190,6 +197,7 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
   '/api/public/cron/refresh-prices': typeof ApiPublicCronRefreshPricesRoute
+  '/api/public/v1/data': typeof ApiPublicV1DataRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -215,6 +223,7 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
   '/api/public/cron/refresh-prices': typeof ApiPublicCronRefreshPricesRoute
+  '/api/public/v1/data': typeof ApiPublicV1DataRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -240,6 +249,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/trades/$tradeId'
     | '/api/public/cron/refresh-prices'
+    | '/api/public/v1/data'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -263,6 +273,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/trades/$tradeId'
     | '/api/public/cron/refresh-prices'
+    | '/api/public/v1/data'
   id:
     | '__root__'
     | '/'
@@ -287,6 +298,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/_authenticated/trades/$tradeId'
     | '/api/public/cron/refresh-prices'
+    | '/api/public/v1/data'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -298,6 +310,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiPublicCronRefreshPricesRoute: typeof ApiPublicCronRefreshPricesRoute
+  ApiPublicV1DataRoute: typeof ApiPublicV1DataRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -449,6 +462,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTradesTradeIdRouteImport
       parentRoute: typeof AuthenticatedTradesRoute
     }
+    '/api/public/v1/data': {
+      id: '/api/public/v1/data'
+      path: '/api/public/v1/data'
+      fullPath: '/api/public/v1/data'
+      preLoaderRoute: typeof ApiPublicV1DataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/cron/refresh-prices': {
       id: '/api/public/cron/refresh-prices'
       path: '/api/public/cron/refresh-prices'
@@ -514,17 +534,8 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   ApiChatRoute: ApiChatRoute,
   ApiPublicCronRefreshPricesRoute: ApiPublicCronRefreshPricesRoute,
+  ApiPublicV1DataRoute: ApiPublicV1DataRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
