@@ -22,6 +22,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedSearchRouteImport } from './routes/_authenticated/search'
 import { Route as AuthenticatedScannerRouteImport } from './routes/_authenticated/scanner'
 import { Route as AuthenticatedRiskCenterRouteImport } from './routes/_authenticated/risk-center'
+import { Route as AuthenticatedRetailRouteImport } from './routes/_authenticated/retail'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedJournalRouteImport } from './routes/_authenticated/journal'
 import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
@@ -98,6 +99,11 @@ const AuthenticatedRiskCenterRoute = AuthenticatedRiskCenterRouteImport.update({
   path: '/risk-center',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedRetailRoute = AuthenticatedRetailRouteImport.update({
+  id: '/retail',
+  path: '/retail',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedNotificationsRoute =
   AuthenticatedNotificationsRouteImport.update({
     id: '/notifications',
@@ -171,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/history': typeof AuthenticatedHistoryRoute
   '/journal': typeof AuthenticatedJournalRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
+  '/retail': typeof AuthenticatedRetailRoute
   '/risk-center': typeof AuthenticatedRiskCenterRoute
   '/scanner': typeof AuthenticatedScannerRoute
   '/search': typeof AuthenticatedSearchRoute
@@ -196,6 +203,7 @@ export interface FileRoutesByTo {
   '/history': typeof AuthenticatedHistoryRoute
   '/journal': typeof AuthenticatedJournalRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
+  '/retail': typeof AuthenticatedRetailRoute
   '/risk-center': typeof AuthenticatedRiskCenterRoute
   '/scanner': typeof AuthenticatedScannerRoute
   '/search': typeof AuthenticatedSearchRoute
@@ -223,6 +231,7 @@ export interface FileRoutesById {
   '/_authenticated/history': typeof AuthenticatedHistoryRoute
   '/_authenticated/journal': typeof AuthenticatedJournalRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
+  '/_authenticated/retail': typeof AuthenticatedRetailRoute
   '/_authenticated/risk-center': typeof AuthenticatedRiskCenterRoute
   '/_authenticated/scanner': typeof AuthenticatedScannerRoute
   '/_authenticated/search': typeof AuthenticatedSearchRoute
@@ -250,6 +259,7 @@ export interface FileRouteTypes {
     | '/history'
     | '/journal'
     | '/notifications'
+    | '/retail'
     | '/risk-center'
     | '/scanner'
     | '/search'
@@ -275,6 +285,7 @@ export interface FileRouteTypes {
     | '/history'
     | '/journal'
     | '/notifications'
+    | '/retail'
     | '/risk-center'
     | '/scanner'
     | '/search'
@@ -301,6 +312,7 @@ export interface FileRouteTypes {
     | '/_authenticated/history'
     | '/_authenticated/journal'
     | '/_authenticated/notifications'
+    | '/_authenticated/retail'
     | '/_authenticated/risk-center'
     | '/_authenticated/scanner'
     | '/_authenticated/search'
@@ -418,6 +430,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRiskCenterRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/retail': {
+      id: '/_authenticated/retail'
+      path: '/retail'
+      fullPath: '/retail'
+      preLoaderRoute: typeof AuthenticatedRetailRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/notifications': {
       id: '/_authenticated/notifications'
       path: '/notifications'
@@ -518,6 +537,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
   AuthenticatedJournalRoute: typeof AuthenticatedJournalRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
+  AuthenticatedRetailRoute: typeof AuthenticatedRetailRoute
   AuthenticatedRiskCenterRoute: typeof AuthenticatedRiskCenterRoute
   AuthenticatedScannerRoute: typeof AuthenticatedScannerRoute
   AuthenticatedSearchRoute: typeof AuthenticatedSearchRoute
@@ -535,6 +555,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
   AuthenticatedJournalRoute: AuthenticatedJournalRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
+  AuthenticatedRetailRoute: AuthenticatedRetailRoute,
   AuthenticatedRiskCenterRoute: AuthenticatedRiskCenterRoute,
   AuthenticatedScannerRoute: AuthenticatedScannerRoute,
   AuthenticatedSearchRoute: AuthenticatedSearchRoute,
@@ -560,13 +581,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
