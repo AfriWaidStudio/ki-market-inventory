@@ -28,6 +28,7 @@ import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authen
 import { Route as AuthenticatedJournalRouteImport } from './routes/_authenticated/journal'
 import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
 import { Route as AuthenticatedHelpRouteImport } from './routes/_authenticated/help'
+import { Route as AuthenticatedFreightRouteImport } from './routes/_authenticated/freight'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCorridorsRouteImport } from './routes/_authenticated/corridors'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
@@ -131,6 +132,11 @@ const AuthenticatedHelpRoute = AuthenticatedHelpRouteImport.update({
   path: '/help',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedFreightRoute = AuthenticatedFreightRouteImport.update({
+  id: '/freight',
+  path: '/freight',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -179,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/chat': typeof AuthenticatedChatRoute
   '/corridors': typeof AuthenticatedCorridorsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/freight': typeof AuthenticatedFreightRoute
   '/help': typeof AuthenticatedHelpRoute
   '/history': typeof AuthenticatedHistoryRoute
   '/journal': typeof AuthenticatedJournalRoute
@@ -206,6 +213,7 @@ export interface FileRoutesByTo {
   '/chat': typeof AuthenticatedChatRoute
   '/corridors': typeof AuthenticatedCorridorsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/freight': typeof AuthenticatedFreightRoute
   '/help': typeof AuthenticatedHelpRoute
   '/history': typeof AuthenticatedHistoryRoute
   '/journal': typeof AuthenticatedJournalRoute
@@ -235,6 +243,7 @@ export interface FileRoutesById {
   '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/corridors': typeof AuthenticatedCorridorsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/freight': typeof AuthenticatedFreightRoute
   '/_authenticated/help': typeof AuthenticatedHelpRoute
   '/_authenticated/history': typeof AuthenticatedHistoryRoute
   '/_authenticated/journal': typeof AuthenticatedJournalRoute
@@ -264,6 +273,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/corridors'
     | '/dashboard'
+    | '/freight'
     | '/help'
     | '/history'
     | '/journal'
@@ -291,6 +301,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/corridors'
     | '/dashboard'
+    | '/freight'
     | '/help'
     | '/history'
     | '/journal'
@@ -319,6 +330,7 @@ export interface FileRouteTypes {
     | '/_authenticated/chat'
     | '/_authenticated/corridors'
     | '/_authenticated/dashboard'
+    | '/_authenticated/freight'
     | '/_authenticated/help'
     | '/_authenticated/history'
     | '/_authenticated/journal'
@@ -484,6 +496,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHelpRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/freight': {
+      id: '/_authenticated/freight'
+      path: '/freight'
+      fullPath: '/freight'
+      preLoaderRoute: typeof AuthenticatedFreightRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -552,6 +571,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedCorridorsRoute: typeof AuthenticatedCorridorsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedFreightRoute: typeof AuthenticatedFreightRoute
   AuthenticatedHelpRoute: typeof AuthenticatedHelpRoute
   AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
   AuthenticatedJournalRoute: typeof AuthenticatedJournalRoute
@@ -571,6 +591,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedCorridorsRoute: AuthenticatedCorridorsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedFreightRoute: AuthenticatedFreightRoute,
   AuthenticatedHelpRoute: AuthenticatedHelpRoute,
   AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
   AuthenticatedJournalRoute: AuthenticatedJournalRoute,
