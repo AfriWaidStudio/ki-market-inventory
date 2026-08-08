@@ -21,14 +21,19 @@ import { Route as AuthenticatedTradesRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSearchRouteImport } from './routes/_authenticated/search'
 import { Route as AuthenticatedScannerRouteImport } from './routes/_authenticated/scanner'
+import { Route as AuthenticatedSaasRouteImport } from './routes/_authenticated/saas'
 import { Route as AuthenticatedRiskCenterRouteImport } from './routes/_authenticated/risk-center'
+import { Route as AuthenticatedRetailRouteImport } from './routes/_authenticated/retail'
+import { Route as AuthenticatedOpportunitiesRouteImport } from './routes/_authenticated/opportunities'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedJournalRouteImport } from './routes/_authenticated/journal'
 import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
 import { Route as AuthenticatedHelpRouteImport } from './routes/_authenticated/help'
+import { Route as AuthenticatedFreightRouteImport } from './routes/_authenticated/freight'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCorridorsRouteImport } from './routes/_authenticated/corridors'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
+import { Route as AuthenticatedApiConsoleRouteImport } from './routes/_authenticated/api-console'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as AuthenticatedTradesTradeIdRouteImport } from './routes/_authenticated/trades.$tradeId'
 import { Route as ApiPublicV1DataRouteImport } from './routes/api/public/v1/data'
@@ -93,11 +98,27 @@ const AuthenticatedScannerRoute = AuthenticatedScannerRouteImport.update({
   path: '/scanner',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSaasRoute = AuthenticatedSaasRouteImport.update({
+  id: '/saas',
+  path: '/saas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedRiskCenterRoute = AuthenticatedRiskCenterRouteImport.update({
   id: '/risk-center',
   path: '/risk-center',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedRetailRoute = AuthenticatedRetailRouteImport.update({
+  id: '/retail',
+  path: '/retail',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedOpportunitiesRoute =
+  AuthenticatedOpportunitiesRouteImport.update({
+    id: '/opportunities',
+    path: '/opportunities',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedNotificationsRoute =
   AuthenticatedNotificationsRouteImport.update({
     id: '/notifications',
@@ -119,6 +140,11 @@ const AuthenticatedHelpRoute = AuthenticatedHelpRouteImport.update({
   path: '/help',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedFreightRoute = AuthenticatedFreightRouteImport.update({
+  id: '/freight',
+  path: '/freight',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -132,6 +158,11 @@ const AuthenticatedCorridorsRoute = AuthenticatedCorridorsRouteImport.update({
 const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
   id: '/chat',
   path: '/chat',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedApiConsoleRoute = AuthenticatedApiConsoleRouteImport.update({
+  id: '/api-console',
+  path: '/api-console',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
@@ -164,14 +195,19 @@ export interface FileRoutesByFullPath {
   '/safety': typeof SafetyRoute
   '/terms': typeof TermsRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
+  '/api-console': typeof AuthenticatedApiConsoleRoute
   '/chat': typeof AuthenticatedChatRoute
   '/corridors': typeof AuthenticatedCorridorsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/freight': typeof AuthenticatedFreightRoute
   '/help': typeof AuthenticatedHelpRoute
   '/history': typeof AuthenticatedHistoryRoute
   '/journal': typeof AuthenticatedJournalRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
+  '/opportunities': typeof AuthenticatedOpportunitiesRoute
+  '/retail': typeof AuthenticatedRetailRoute
   '/risk-center': typeof AuthenticatedRiskCenterRoute
+  '/saas': typeof AuthenticatedSaasRoute
   '/scanner': typeof AuthenticatedScannerRoute
   '/search': typeof AuthenticatedSearchRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -189,14 +225,19 @@ export interface FileRoutesByTo {
   '/safety': typeof SafetyRoute
   '/terms': typeof TermsRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
+  '/api-console': typeof AuthenticatedApiConsoleRoute
   '/chat': typeof AuthenticatedChatRoute
   '/corridors': typeof AuthenticatedCorridorsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/freight': typeof AuthenticatedFreightRoute
   '/help': typeof AuthenticatedHelpRoute
   '/history': typeof AuthenticatedHistoryRoute
   '/journal': typeof AuthenticatedJournalRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
+  '/opportunities': typeof AuthenticatedOpportunitiesRoute
+  '/retail': typeof AuthenticatedRetailRoute
   '/risk-center': typeof AuthenticatedRiskCenterRoute
+  '/saas': typeof AuthenticatedSaasRoute
   '/scanner': typeof AuthenticatedScannerRoute
   '/search': typeof AuthenticatedSearchRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -216,14 +257,19 @@ export interface FileRoutesById {
   '/safety': typeof SafetyRoute
   '/terms': typeof TermsRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
+  '/_authenticated/api-console': typeof AuthenticatedApiConsoleRoute
   '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/corridors': typeof AuthenticatedCorridorsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/freight': typeof AuthenticatedFreightRoute
   '/_authenticated/help': typeof AuthenticatedHelpRoute
   '/_authenticated/history': typeof AuthenticatedHistoryRoute
   '/_authenticated/journal': typeof AuthenticatedJournalRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
+  '/_authenticated/opportunities': typeof AuthenticatedOpportunitiesRoute
+  '/_authenticated/retail': typeof AuthenticatedRetailRoute
   '/_authenticated/risk-center': typeof AuthenticatedRiskCenterRoute
+  '/_authenticated/saas': typeof AuthenticatedSaasRoute
   '/_authenticated/scanner': typeof AuthenticatedScannerRoute
   '/_authenticated/search': typeof AuthenticatedSearchRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
@@ -243,14 +289,19 @@ export interface FileRouteTypes {
     | '/safety'
     | '/terms'
     | '/analytics'
+    | '/api-console'
     | '/chat'
     | '/corridors'
     | '/dashboard'
+    | '/freight'
     | '/help'
     | '/history'
     | '/journal'
     | '/notifications'
+    | '/opportunities'
+    | '/retail'
     | '/risk-center'
+    | '/saas'
     | '/scanner'
     | '/search'
     | '/settings'
@@ -268,14 +319,19 @@ export interface FileRouteTypes {
     | '/safety'
     | '/terms'
     | '/analytics'
+    | '/api-console'
     | '/chat'
     | '/corridors'
     | '/dashboard'
+    | '/freight'
     | '/help'
     | '/history'
     | '/journal'
     | '/notifications'
+    | '/opportunities'
+    | '/retail'
     | '/risk-center'
+    | '/saas'
     | '/scanner'
     | '/search'
     | '/settings'
@@ -294,14 +350,19 @@ export interface FileRouteTypes {
     | '/safety'
     | '/terms'
     | '/_authenticated/analytics'
+    | '/_authenticated/api-console'
     | '/_authenticated/chat'
     | '/_authenticated/corridors'
     | '/_authenticated/dashboard'
+    | '/_authenticated/freight'
     | '/_authenticated/help'
     | '/_authenticated/history'
     | '/_authenticated/journal'
     | '/_authenticated/notifications'
+    | '/_authenticated/opportunities'
+    | '/_authenticated/retail'
     | '/_authenticated/risk-center'
+    | '/_authenticated/saas'
     | '/_authenticated/scanner'
     | '/_authenticated/search'
     | '/_authenticated/settings'
@@ -411,11 +472,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedScannerRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/saas': {
+      id: '/_authenticated/saas'
+      path: '/saas'
+      fullPath: '/saas'
+      preLoaderRoute: typeof AuthenticatedSaasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/risk-center': {
       id: '/_authenticated/risk-center'
       path: '/risk-center'
       fullPath: '/risk-center'
       preLoaderRoute: typeof AuthenticatedRiskCenterRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/retail': {
+      id: '/_authenticated/retail'
+      path: '/retail'
+      fullPath: '/retail'
+      preLoaderRoute: typeof AuthenticatedRetailRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/opportunities': {
+      id: '/_authenticated/opportunities'
+      path: '/opportunities'
+      fullPath: '/opportunities'
+      preLoaderRoute: typeof AuthenticatedOpportunitiesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/notifications': {
@@ -446,6 +528,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHelpRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/freight': {
+      id: '/_authenticated/freight'
+      path: '/freight'
+      fullPath: '/freight'
+      preLoaderRoute: typeof AuthenticatedFreightRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -465,6 +554,13 @@ declare module '@tanstack/react-router' {
       path: '/chat'
       fullPath: '/chat'
       preLoaderRoute: typeof AuthenticatedChatRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/api-console': {
+      id: '/_authenticated/api-console'
+      path: '/api-console'
+      fullPath: '/api-console'
+      preLoaderRoute: typeof AuthenticatedApiConsoleRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/analytics': {
@@ -511,14 +607,19 @@ const AuthenticatedTradesRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
+  AuthenticatedApiConsoleRoute: typeof AuthenticatedApiConsoleRoute
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedCorridorsRoute: typeof AuthenticatedCorridorsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedFreightRoute: typeof AuthenticatedFreightRoute
   AuthenticatedHelpRoute: typeof AuthenticatedHelpRoute
   AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
   AuthenticatedJournalRoute: typeof AuthenticatedJournalRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
+  AuthenticatedOpportunitiesRoute: typeof AuthenticatedOpportunitiesRoute
+  AuthenticatedRetailRoute: typeof AuthenticatedRetailRoute
   AuthenticatedRiskCenterRoute: typeof AuthenticatedRiskCenterRoute
+  AuthenticatedSaasRoute: typeof AuthenticatedSaasRoute
   AuthenticatedScannerRoute: typeof AuthenticatedScannerRoute
   AuthenticatedSearchRoute: typeof AuthenticatedSearchRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
@@ -528,14 +629,19 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
+  AuthenticatedApiConsoleRoute: AuthenticatedApiConsoleRoute,
   AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedCorridorsRoute: AuthenticatedCorridorsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedFreightRoute: AuthenticatedFreightRoute,
   AuthenticatedHelpRoute: AuthenticatedHelpRoute,
   AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
   AuthenticatedJournalRoute: AuthenticatedJournalRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
+  AuthenticatedOpportunitiesRoute: AuthenticatedOpportunitiesRoute,
+  AuthenticatedRetailRoute: AuthenticatedRetailRoute,
   AuthenticatedRiskCenterRoute: AuthenticatedRiskCenterRoute,
+  AuthenticatedSaasRoute: AuthenticatedSaasRoute,
   AuthenticatedScannerRoute: AuthenticatedScannerRoute,
   AuthenticatedSearchRoute: AuthenticatedSearchRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
