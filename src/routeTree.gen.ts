@@ -21,6 +21,7 @@ import { Route as AuthenticatedTradesRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSearchRouteImport } from './routes/_authenticated/search'
 import { Route as AuthenticatedScannerRouteImport } from './routes/_authenticated/scanner'
+import { Route as AuthenticatedSaasRouteImport } from './routes/_authenticated/saas'
 import { Route as AuthenticatedRiskCenterRouteImport } from './routes/_authenticated/risk-center'
 import { Route as AuthenticatedRetailRouteImport } from './routes/_authenticated/retail'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
@@ -92,6 +93,11 @@ const AuthenticatedSearchRoute = AuthenticatedSearchRouteImport.update({
 const AuthenticatedScannerRoute = AuthenticatedScannerRouteImport.update({
   id: '/scanner',
   path: '/scanner',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSaasRoute = AuthenticatedSaasRouteImport.update({
+  id: '/saas',
+  path: '/saas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedRiskCenterRoute = AuthenticatedRiskCenterRouteImport.update({
@@ -179,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/retail': typeof AuthenticatedRetailRoute
   '/risk-center': typeof AuthenticatedRiskCenterRoute
+  '/saas': typeof AuthenticatedSaasRoute
   '/scanner': typeof AuthenticatedScannerRoute
   '/search': typeof AuthenticatedSearchRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -205,6 +212,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/retail': typeof AuthenticatedRetailRoute
   '/risk-center': typeof AuthenticatedRiskCenterRoute
+  '/saas': typeof AuthenticatedSaasRoute
   '/scanner': typeof AuthenticatedScannerRoute
   '/search': typeof AuthenticatedSearchRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -233,6 +241,7 @@ export interface FileRoutesById {
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/retail': typeof AuthenticatedRetailRoute
   '/_authenticated/risk-center': typeof AuthenticatedRiskCenterRoute
+  '/_authenticated/saas': typeof AuthenticatedSaasRoute
   '/_authenticated/scanner': typeof AuthenticatedScannerRoute
   '/_authenticated/search': typeof AuthenticatedSearchRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/retail'
     | '/risk-center'
+    | '/saas'
     | '/scanner'
     | '/search'
     | '/settings'
@@ -287,6 +297,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/retail'
     | '/risk-center'
+    | '/saas'
     | '/scanner'
     | '/search'
     | '/settings'
@@ -314,6 +325,7 @@ export interface FileRouteTypes {
     | '/_authenticated/notifications'
     | '/_authenticated/retail'
     | '/_authenticated/risk-center'
+    | '/_authenticated/saas'
     | '/_authenticated/scanner'
     | '/_authenticated/search'
     | '/_authenticated/settings'
@@ -421,6 +433,13 @@ declare module '@tanstack/react-router' {
       path: '/scanner'
       fullPath: '/scanner'
       preLoaderRoute: typeof AuthenticatedScannerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/saas': {
+      id: '/_authenticated/saas'
+      path: '/saas'
+      fullPath: '/saas'
+      preLoaderRoute: typeof AuthenticatedSaasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/risk-center': {
@@ -539,6 +558,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedRetailRoute: typeof AuthenticatedRetailRoute
   AuthenticatedRiskCenterRoute: typeof AuthenticatedRiskCenterRoute
+  AuthenticatedSaasRoute: typeof AuthenticatedSaasRoute
   AuthenticatedScannerRoute: typeof AuthenticatedScannerRoute
   AuthenticatedSearchRoute: typeof AuthenticatedSearchRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
@@ -557,6 +577,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedRetailRoute: AuthenticatedRetailRoute,
   AuthenticatedRiskCenterRoute: AuthenticatedRiskCenterRoute,
+  AuthenticatedSaasRoute: AuthenticatedSaasRoute,
   AuthenticatedScannerRoute: AuthenticatedScannerRoute,
   AuthenticatedSearchRoute: AuthenticatedSearchRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
