@@ -18,7 +18,7 @@ import {
 } from "@/lib/apiKeys.functions";
 
 export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ title: "Settings — KI Market Inventory" }] }),
+  head: () => ({ meta: [{ title: "Settings — Sabi" }] }),
   component: SettingsPage,
 });
 

@@ -17,31 +17,12 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedWorkRouteImport } from './routes/_authenticated/work'
-import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
-import { Route as AuthenticatedTradesRouteImport } from './routes/_authenticated/trades'
 import { Route as AuthenticatedShopRouteImport } from './routes/_authenticated/shop'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
-import { Route as AuthenticatedSearchRouteImport } from './routes/_authenticated/search'
-import { Route as AuthenticatedScannerRouteImport } from './routes/_authenticated/scanner'
-import { Route as AuthenticatedSaasRouteImport } from './routes/_authenticated/saas'
-import { Route as AuthenticatedRiskCenterRouteImport } from './routes/_authenticated/risk-center'
-import { Route as AuthenticatedRetailRouteImport } from './routes/_authenticated/retail'
-import { Route as AuthenticatedOpportunitiesRouteImport } from './routes/_authenticated/opportunities'
-import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedMarketRouteImport } from './routes/_authenticated/market'
-import { Route as AuthenticatedJournalRouteImport } from './routes/_authenticated/journal'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
-import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
-import { Route as AuthenticatedHelpRouteImport } from './routes/_authenticated/help'
-import { Route as AuthenticatedFreightRouteImport } from './routes/_authenticated/freight'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedCorridorsRouteImport } from './routes/_authenticated/corridors'
-import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedCareRouteImport } from './routes/_authenticated/care'
 import { Route as AuthenticatedAskRouteImport } from './routes/_authenticated/ask'
-import { Route as AuthenticatedApiConsoleRouteImport } from './routes/_authenticated/api-console'
-import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
-import { Route as AuthenticatedTradesTradeIdRouteImport } from './routes/_authenticated/trades.$tradeId'
 import { Route as ApiPublicV1DataRouteImport } from './routes/api/public/v1/data'
 import { Route as ApiPublicCronRefreshPricesRouteImport } from './routes/api/public/cron/refresh-prices'
 
@@ -84,16 +65,6 @@ const AuthenticatedWorkRoute = AuthenticatedWorkRouteImport.update({
   path: '/work',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedWalletRoute = AuthenticatedWalletRouteImport.update({
-  id: '/wallet',
-  path: '/wallet',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedTradesRoute = AuthenticatedTradesRouteImport.update({
-  id: '/trades',
-  path: '/trades',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedShopRoute = AuthenticatedShopRouteImport.update({
   id: '/shop',
   path: '/shop',
@@ -104,86 +75,14 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedSearchRoute = AuthenticatedSearchRouteImport.update({
-  id: '/search',
-  path: '/search',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedScannerRoute = AuthenticatedScannerRouteImport.update({
-  id: '/scanner',
-  path: '/scanner',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedSaasRoute = AuthenticatedSaasRouteImport.update({
-  id: '/saas',
-  path: '/saas',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedRiskCenterRoute = AuthenticatedRiskCenterRouteImport.update({
-  id: '/risk-center',
-  path: '/risk-center',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedRetailRoute = AuthenticatedRetailRouteImport.update({
-  id: '/retail',
-  path: '/retail',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedOpportunitiesRoute =
-  AuthenticatedOpportunitiesRouteImport.update({
-    id: '/opportunities',
-    path: '/opportunities',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedNotificationsRoute =
-  AuthenticatedNotificationsRouteImport.update({
-    id: '/notifications',
-    path: '/notifications',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedMarketRoute = AuthenticatedMarketRouteImport.update({
   id: '/market',
   path: '/market',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedJournalRoute = AuthenticatedJournalRouteImport.update({
-  id: '/journal',
-  path: '/journal',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   id: '/home',
   path: '/home',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedHistoryRoute = AuthenticatedHistoryRouteImport.update({
-  id: '/history',
-  path: '/history',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedHelpRoute = AuthenticatedHelpRouteImport.update({
-  id: '/help',
-  path: '/help',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedFreightRoute = AuthenticatedFreightRouteImport.update({
-  id: '/freight',
-  path: '/freight',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedCorridorsRoute = AuthenticatedCorridorsRouteImport.update({
-  id: '/corridors',
-  path: '/corridors',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
-  id: '/chat',
-  path: '/chat',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCareRoute = AuthenticatedCareRouteImport.update({
@@ -196,22 +95,6 @@ const AuthenticatedAskRoute = AuthenticatedAskRouteImport.update({
   path: '/ask',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedApiConsoleRoute = AuthenticatedApiConsoleRouteImport.update({
-  id: '/api-console',
-  path: '/api-console',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedTradesTradeIdRoute =
-  AuthenticatedTradesTradeIdRouteImport.update({
-    id: '/$tradeId',
-    path: '/$tradeId',
-    getParentRoute: () => AuthenticatedTradesRoute,
-  } as any)
 const ApiPublicV1DataRoute = ApiPublicV1DataRouteImport.update({
   id: '/api/public/v1/data',
   path: '/api/public/v1/data',
@@ -230,33 +113,14 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/safety': typeof SafetyRoute
   '/terms': typeof TermsRoute
-  '/analytics': typeof AuthenticatedAnalyticsRoute
-  '/api-console': typeof AuthenticatedApiConsoleRoute
   '/ask': typeof AuthenticatedAskRoute
   '/care': typeof AuthenticatedCareRoute
-  '/chat': typeof AuthenticatedChatRoute
-  '/corridors': typeof AuthenticatedCorridorsRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
-  '/freight': typeof AuthenticatedFreightRoute
-  '/help': typeof AuthenticatedHelpRoute
-  '/history': typeof AuthenticatedHistoryRoute
   '/home': typeof AuthenticatedHomeRoute
-  '/journal': typeof AuthenticatedJournalRoute
   '/market': typeof AuthenticatedMarketRoute
-  '/notifications': typeof AuthenticatedNotificationsRoute
-  '/opportunities': typeof AuthenticatedOpportunitiesRoute
-  '/retail': typeof AuthenticatedRetailRoute
-  '/risk-center': typeof AuthenticatedRiskCenterRoute
-  '/saas': typeof AuthenticatedSaasRoute
-  '/scanner': typeof AuthenticatedScannerRoute
-  '/search': typeof AuthenticatedSearchRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/shop': typeof AuthenticatedShopRoute
-  '/trades': typeof AuthenticatedTradesRouteWithChildren
-  '/wallet': typeof AuthenticatedWalletRoute
   '/work': typeof AuthenticatedWorkRoute
   '/api/chat': typeof ApiChatRoute
-  '/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
   '/api/public/cron/refresh-prices': typeof ApiPublicCronRefreshPricesRoute
   '/api/public/v1/data': typeof ApiPublicV1DataRoute
 }
@@ -266,33 +130,14 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/safety': typeof SafetyRoute
   '/terms': typeof TermsRoute
-  '/analytics': typeof AuthenticatedAnalyticsRoute
-  '/api-console': typeof AuthenticatedApiConsoleRoute
   '/ask': typeof AuthenticatedAskRoute
   '/care': typeof AuthenticatedCareRoute
-  '/chat': typeof AuthenticatedChatRoute
-  '/corridors': typeof AuthenticatedCorridorsRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
-  '/freight': typeof AuthenticatedFreightRoute
-  '/help': typeof AuthenticatedHelpRoute
-  '/history': typeof AuthenticatedHistoryRoute
   '/home': typeof AuthenticatedHomeRoute
-  '/journal': typeof AuthenticatedJournalRoute
   '/market': typeof AuthenticatedMarketRoute
-  '/notifications': typeof AuthenticatedNotificationsRoute
-  '/opportunities': typeof AuthenticatedOpportunitiesRoute
-  '/retail': typeof AuthenticatedRetailRoute
-  '/risk-center': typeof AuthenticatedRiskCenterRoute
-  '/saas': typeof AuthenticatedSaasRoute
-  '/scanner': typeof AuthenticatedScannerRoute
-  '/search': typeof AuthenticatedSearchRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/shop': typeof AuthenticatedShopRoute
-  '/trades': typeof AuthenticatedTradesRouteWithChildren
-  '/wallet': typeof AuthenticatedWalletRoute
   '/work': typeof AuthenticatedWorkRoute
   '/api/chat': typeof ApiChatRoute
-  '/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
   '/api/public/cron/refresh-prices': typeof ApiPublicCronRefreshPricesRoute
   '/api/public/v1/data': typeof ApiPublicV1DataRoute
 }
@@ -304,33 +149,14 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/safety': typeof SafetyRoute
   '/terms': typeof TermsRoute
-  '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
-  '/_authenticated/api-console': typeof AuthenticatedApiConsoleRoute
   '/_authenticated/ask': typeof AuthenticatedAskRoute
   '/_authenticated/care': typeof AuthenticatedCareRoute
-  '/_authenticated/chat': typeof AuthenticatedChatRoute
-  '/_authenticated/corridors': typeof AuthenticatedCorridorsRoute
-  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/freight': typeof AuthenticatedFreightRoute
-  '/_authenticated/help': typeof AuthenticatedHelpRoute
-  '/_authenticated/history': typeof AuthenticatedHistoryRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
-  '/_authenticated/journal': typeof AuthenticatedJournalRoute
   '/_authenticated/market': typeof AuthenticatedMarketRoute
-  '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
-  '/_authenticated/opportunities': typeof AuthenticatedOpportunitiesRoute
-  '/_authenticated/retail': typeof AuthenticatedRetailRoute
-  '/_authenticated/risk-center': typeof AuthenticatedRiskCenterRoute
-  '/_authenticated/saas': typeof AuthenticatedSaasRoute
-  '/_authenticated/scanner': typeof AuthenticatedScannerRoute
-  '/_authenticated/search': typeof AuthenticatedSearchRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/shop': typeof AuthenticatedShopRoute
-  '/_authenticated/trades': typeof AuthenticatedTradesRouteWithChildren
-  '/_authenticated/wallet': typeof AuthenticatedWalletRoute
   '/_authenticated/work': typeof AuthenticatedWorkRoute
   '/api/chat': typeof ApiChatRoute
-  '/_authenticated/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
   '/api/public/cron/refresh-prices': typeof ApiPublicCronRefreshPricesRoute
   '/api/public/v1/data': typeof ApiPublicV1DataRoute
 }
@@ -342,33 +168,14 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/safety'
     | '/terms'
-    | '/analytics'
-    | '/api-console'
     | '/ask'
     | '/care'
-    | '/chat'
-    | '/corridors'
-    | '/dashboard'
-    | '/freight'
-    | '/help'
-    | '/history'
     | '/home'
-    | '/journal'
     | '/market'
-    | '/notifications'
-    | '/opportunities'
-    | '/retail'
-    | '/risk-center'
-    | '/saas'
-    | '/scanner'
-    | '/search'
     | '/settings'
     | '/shop'
-    | '/trades'
-    | '/wallet'
     | '/work'
     | '/api/chat'
-    | '/trades/$tradeId'
     | '/api/public/cron/refresh-prices'
     | '/api/public/v1/data'
   fileRoutesByTo: FileRoutesByTo
@@ -378,33 +185,14 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/safety'
     | '/terms'
-    | '/analytics'
-    | '/api-console'
     | '/ask'
     | '/care'
-    | '/chat'
-    | '/corridors'
-    | '/dashboard'
-    | '/freight'
-    | '/help'
-    | '/history'
     | '/home'
-    | '/journal'
     | '/market'
-    | '/notifications'
-    | '/opportunities'
-    | '/retail'
-    | '/risk-center'
-    | '/saas'
-    | '/scanner'
-    | '/search'
     | '/settings'
     | '/shop'
-    | '/trades'
-    | '/wallet'
     | '/work'
     | '/api/chat'
-    | '/trades/$tradeId'
     | '/api/public/cron/refresh-prices'
     | '/api/public/v1/data'
   id:
@@ -415,33 +203,14 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/safety'
     | '/terms'
-    | '/_authenticated/analytics'
-    | '/_authenticated/api-console'
     | '/_authenticated/ask'
     | '/_authenticated/care'
-    | '/_authenticated/chat'
-    | '/_authenticated/corridors'
-    | '/_authenticated/dashboard'
-    | '/_authenticated/freight'
-    | '/_authenticated/help'
-    | '/_authenticated/history'
     | '/_authenticated/home'
-    | '/_authenticated/journal'
     | '/_authenticated/market'
-    | '/_authenticated/notifications'
-    | '/_authenticated/opportunities'
-    | '/_authenticated/retail'
-    | '/_authenticated/risk-center'
-    | '/_authenticated/saas'
-    | '/_authenticated/scanner'
-    | '/_authenticated/search'
     | '/_authenticated/settings'
     | '/_authenticated/shop'
-    | '/_authenticated/trades'
-    | '/_authenticated/wallet'
     | '/_authenticated/work'
     | '/api/chat'
-    | '/_authenticated/trades/$tradeId'
     | '/api/public/cron/refresh-prices'
     | '/api/public/v1/data'
   fileRoutesById: FileRoutesById
@@ -516,20 +285,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/wallet': {
-      id: '/_authenticated/wallet'
-      path: '/wallet'
-      fullPath: '/wallet'
-      preLoaderRoute: typeof AuthenticatedWalletRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/trades': {
-      id: '/_authenticated/trades'
-      path: '/trades'
-      fullPath: '/trades'
-      preLoaderRoute: typeof AuthenticatedTradesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/shop': {
       id: '/_authenticated/shop'
       path: '/shop'
@@ -544,55 +299,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/search': {
-      id: '/_authenticated/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof AuthenticatedSearchRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/scanner': {
-      id: '/_authenticated/scanner'
-      path: '/scanner'
-      fullPath: '/scanner'
-      preLoaderRoute: typeof AuthenticatedScannerRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/saas': {
-      id: '/_authenticated/saas'
-      path: '/saas'
-      fullPath: '/saas'
-      preLoaderRoute: typeof AuthenticatedSaasRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/risk-center': {
-      id: '/_authenticated/risk-center'
-      path: '/risk-center'
-      fullPath: '/risk-center'
-      preLoaderRoute: typeof AuthenticatedRiskCenterRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/retail': {
-      id: '/_authenticated/retail'
-      path: '/retail'
-      fullPath: '/retail'
-      preLoaderRoute: typeof AuthenticatedRetailRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/opportunities': {
-      id: '/_authenticated/opportunities'
-      path: '/opportunities'
-      fullPath: '/opportunities'
-      preLoaderRoute: typeof AuthenticatedOpportunitiesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/notifications': {
-      id: '/_authenticated/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/market': {
       id: '/_authenticated/market'
       path: '/market'
@@ -600,60 +306,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMarketRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/journal': {
-      id: '/_authenticated/journal'
-      path: '/journal'
-      fullPath: '/journal'
-      preLoaderRoute: typeof AuthenticatedJournalRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/home': {
       id: '/_authenticated/home'
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof AuthenticatedHomeRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/history': {
-      id: '/_authenticated/history'
-      path: '/history'
-      fullPath: '/history'
-      preLoaderRoute: typeof AuthenticatedHistoryRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/help': {
-      id: '/_authenticated/help'
-      path: '/help'
-      fullPath: '/help'
-      preLoaderRoute: typeof AuthenticatedHelpRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/freight': {
-      id: '/_authenticated/freight'
-      path: '/freight'
-      fullPath: '/freight'
-      preLoaderRoute: typeof AuthenticatedFreightRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/corridors': {
-      id: '/_authenticated/corridors'
-      path: '/corridors'
-      fullPath: '/corridors'
-      preLoaderRoute: typeof AuthenticatedCorridorsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/chat': {
-      id: '/_authenticated/chat'
-      path: '/chat'
-      fullPath: '/chat'
-      preLoaderRoute: typeof AuthenticatedChatRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/care': {
@@ -669,27 +326,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/ask'
       preLoaderRoute: typeof AuthenticatedAskRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/api-console': {
-      id: '/_authenticated/api-console'
-      path: '/api-console'
-      fullPath: '/api-console'
-      preLoaderRoute: typeof AuthenticatedApiConsoleRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/analytics': {
-      id: '/_authenticated/analytics'
-      path: '/analytics'
-      fullPath: '/analytics'
-      preLoaderRoute: typeof AuthenticatedAnalyticsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/trades/$tradeId': {
-      id: '/_authenticated/trades/$tradeId'
-      path: '/$tradeId'
-      fullPath: '/trades/$tradeId'
-      preLoaderRoute: typeof AuthenticatedTradesTradeIdRouteImport
-      parentRoute: typeof AuthenticatedTradesRoute
     }
     '/api/public/v1/data': {
       id: '/api/public/v1/data'
@@ -708,70 +344,23 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AuthenticatedTradesRouteChildren {
-  AuthenticatedTradesTradeIdRoute: typeof AuthenticatedTradesTradeIdRoute
-}
-
-const AuthenticatedTradesRouteChildren: AuthenticatedTradesRouteChildren = {
-  AuthenticatedTradesTradeIdRoute: AuthenticatedTradesTradeIdRoute,
-}
-
-const AuthenticatedTradesRouteWithChildren =
-  AuthenticatedTradesRoute._addFileChildren(AuthenticatedTradesRouteChildren)
-
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
-  AuthenticatedApiConsoleRoute: typeof AuthenticatedApiConsoleRoute
   AuthenticatedAskRoute: typeof AuthenticatedAskRoute
   AuthenticatedCareRoute: typeof AuthenticatedCareRoute
-  AuthenticatedChatRoute: typeof AuthenticatedChatRoute
-  AuthenticatedCorridorsRoute: typeof AuthenticatedCorridorsRoute
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedFreightRoute: typeof AuthenticatedFreightRoute
-  AuthenticatedHelpRoute: typeof AuthenticatedHelpRoute
-  AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
-  AuthenticatedJournalRoute: typeof AuthenticatedJournalRoute
   AuthenticatedMarketRoute: typeof AuthenticatedMarketRoute
-  AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
-  AuthenticatedOpportunitiesRoute: typeof AuthenticatedOpportunitiesRoute
-  AuthenticatedRetailRoute: typeof AuthenticatedRetailRoute
-  AuthenticatedRiskCenterRoute: typeof AuthenticatedRiskCenterRoute
-  AuthenticatedSaasRoute: typeof AuthenticatedSaasRoute
-  AuthenticatedScannerRoute: typeof AuthenticatedScannerRoute
-  AuthenticatedSearchRoute: typeof AuthenticatedSearchRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedShopRoute: typeof AuthenticatedShopRoute
-  AuthenticatedTradesRoute: typeof AuthenticatedTradesRouteWithChildren
-  AuthenticatedWalletRoute: typeof AuthenticatedWalletRoute
   AuthenticatedWorkRoute: typeof AuthenticatedWorkRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
-  AuthenticatedApiConsoleRoute: AuthenticatedApiConsoleRoute,
   AuthenticatedAskRoute: AuthenticatedAskRoute,
   AuthenticatedCareRoute: AuthenticatedCareRoute,
-  AuthenticatedChatRoute: AuthenticatedChatRoute,
-  AuthenticatedCorridorsRoute: AuthenticatedCorridorsRoute,
-  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedFreightRoute: AuthenticatedFreightRoute,
-  AuthenticatedHelpRoute: AuthenticatedHelpRoute,
-  AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
-  AuthenticatedJournalRoute: AuthenticatedJournalRoute,
   AuthenticatedMarketRoute: AuthenticatedMarketRoute,
-  AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
-  AuthenticatedOpportunitiesRoute: AuthenticatedOpportunitiesRoute,
-  AuthenticatedRetailRoute: AuthenticatedRetailRoute,
-  AuthenticatedRiskCenterRoute: AuthenticatedRiskCenterRoute,
-  AuthenticatedSaasRoute: AuthenticatedSaasRoute,
-  AuthenticatedScannerRoute: AuthenticatedScannerRoute,
-  AuthenticatedSearchRoute: AuthenticatedSearchRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedShopRoute: AuthenticatedShopRoute,
-  AuthenticatedTradesRoute: AuthenticatedTradesRouteWithChildren,
-  AuthenticatedWalletRoute: AuthenticatedWalletRoute,
   AuthenticatedWorkRoute: AuthenticatedWorkRoute,
 }
 
@@ -792,3 +381,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
