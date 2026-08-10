@@ -2570,6 +2570,422 @@ export type Database = {
           },
         ]
       }
+      sabi_debtors: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          due_date: string | null
+          id: string
+          name: string
+          phone: string | null
+          settled: boolean
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          due_date?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          settled?: boolean
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          due_date?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          settled?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sabi_facilities: {
+        Row: {
+          area: string | null
+          city: string
+          country: string
+          created_at: string
+          hours: string | null
+          id: string
+          kind: string
+          name: string
+          open_24h: boolean
+          phone: string | null
+        }
+        Insert: {
+          area?: string | null
+          city?: string
+          country?: string
+          created_at?: string
+          hours?: string | null
+          id?: string
+          kind?: string
+          name: string
+          open_24h?: boolean
+          phone?: string | null
+        }
+        Update: {
+          area?: string | null
+          city?: string
+          country?: string
+          created_at?: string
+          hours?: string | null
+          id?: string
+          kind?: string
+          name?: string
+          open_24h?: boolean
+          phone?: string | null
+        }
+        Relationships: []
+      }
+      sabi_gigs: {
+        Row: {
+          category: string
+          city: string
+          contact: string | null
+          country: string
+          created_at: string
+          currency: string
+          id: string
+          location: string | null
+          pay_amount: number
+          pay_unit: string
+          posted_at: string
+          remote: boolean
+          skill_level: string
+          source: string | null
+          title: string
+        }
+        Insert: {
+          category?: string
+          city?: string
+          contact?: string | null
+          country?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          location?: string | null
+          pay_amount: number
+          pay_unit?: string
+          posted_at?: string
+          remote?: boolean
+          skill_level?: string
+          source?: string | null
+          title: string
+        }
+        Update: {
+          category?: string
+          city?: string
+          contact?: string | null
+          country?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          location?: string | null
+          pay_amount?: number
+          pay_unit?: string
+          posted_at?: string
+          remote?: boolean
+          skill_level?: string
+          source?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      sabi_income_logs: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          hours: number
+          id: string
+          notes: string | null
+          source: string
+          user_id: string
+          work_date: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          hours?: number
+          id?: string
+          notes?: string | null
+          source: string
+          user_id: string
+          work_date?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          hours?: number
+          id?: string
+          notes?: string | null
+          source?: string
+          user_id?: string
+          work_date?: string
+        }
+        Relationships: []
+      }
+      sabi_med_prices: {
+        Row: {
+          area: string | null
+          city: string
+          country: string
+          created_at: string
+          currency: string
+          drug: string
+          form: string
+          id: string
+          in_stock: boolean
+          observed_at: string
+          pack_size: string | null
+          pharmacy: string
+          phone: string | null
+          price: number
+          user_id: string | null
+        }
+        Insert: {
+          area?: string | null
+          city?: string
+          country?: string
+          created_at?: string
+          currency?: string
+          drug: string
+          form?: string
+          id?: string
+          in_stock?: boolean
+          observed_at?: string
+          pack_size?: string | null
+          pharmacy: string
+          phone?: string | null
+          price: number
+          user_id?: string | null
+        }
+        Update: {
+          area?: string | null
+          city?: string
+          country?: string
+          created_at?: string
+          currency?: string
+          drug?: string
+          form?: string
+          id?: string
+          in_stock?: boolean
+          observed_at?: string
+          pack_size?: string | null
+          pharmacy?: string
+          phone?: string | null
+          price?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      sabi_price_reports: {
+        Row: {
+          area: string | null
+          category: string
+          city: string
+          country: string
+          created_at: string
+          currency: string
+          id: string
+          item: string
+          observed_at: string
+          price: number
+          unit: string
+          user_id: string | null
+          vendor: string | null
+        }
+        Insert: {
+          area?: string | null
+          category?: string
+          city?: string
+          country?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          item: string
+          observed_at?: string
+          price: number
+          unit?: string
+          user_id?: string | null
+          vendor?: string | null
+        }
+        Update: {
+          area?: string | null
+          category?: string
+          city?: string
+          country?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          item?: string
+          observed_at?: string
+          price?: number
+          unit?: string
+          user_id?: string | null
+          vendor?: string | null
+        }
+        Relationships: []
+      }
+      sabi_reminders: {
+        Row: {
+          active: boolean
+          created_at: string
+          dose: string | null
+          id: string
+          kind: string
+          label: string
+          next_at: string
+          times_per_day: number
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          dose?: string | null
+          id?: string
+          kind?: string
+          label: string
+          next_at?: string
+          times_per_day?: number
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          dose?: string | null
+          id?: string
+          kind?: string
+          label?: string
+          next_at?: string
+          times_per_day?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sabi_saved_items: {
+        Row: {
+          city: string | null
+          created_at: string
+          id: string
+          item: string
+          user_id: string
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          id?: string
+          item: string
+          user_id: string
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          id?: string
+          item?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sabi_shop_products: {
+        Row: {
+          cost_price: number
+          created_at: string
+          currency: string
+          id: string
+          low_stock_at: number
+          name: string
+          sell_price: number
+          stock: number
+          unit: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cost_price?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          low_stock_at?: number
+          name: string
+          sell_price?: number
+          stock?: number
+          unit?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cost_price?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          low_stock_at?: number
+          name?: string
+          sell_price?: number
+          stock?: number
+          unit?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sabi_shop_sales: {
+        Row: {
+          created_at: string
+          currency: string
+          id: string
+          product_id: string | null
+          product_name: string
+          qty: number
+          sold_at: string
+          unit_cost: number
+          unit_price: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          id?: string
+          product_id?: string | null
+          product_name: string
+          qty?: number
+          sold_at?: string
+          unit_cost?: number
+          unit_price?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          id?: string
+          product_id?: string | null
+          product_name?: string
+          qty?: number
+          sold_at?: string
+          unit_cost?: number
+          unit_price?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sabi_shop_sales_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "sabi_shop_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       telegram_connections: {
         Row: {
           chat_id: number | null
