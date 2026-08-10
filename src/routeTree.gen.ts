@@ -35,6 +35,7 @@ import { Route as AuthenticatedFreightRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCorridorsRouteImport } from './routes/_authenticated/corridors'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
+import { Route as AuthenticatedCareRouteImport } from './routes/_authenticated/care'
 import { Route as AuthenticatedApiConsoleRouteImport } from './routes/_authenticated/api-console'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as AuthenticatedTradesTradeIdRouteImport } from './routes/_authenticated/trades.$tradeId'
@@ -172,6 +173,11 @@ const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCareRoute = AuthenticatedCareRouteImport.update({
+  id: '/care',
+  path: '/care',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedApiConsoleRoute = AuthenticatedApiConsoleRouteImport.update({
   id: '/api-console',
   path: '/api-console',
@@ -208,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/api-console': typeof AuthenticatedApiConsoleRoute
+  '/care': typeof AuthenticatedCareRoute
   '/chat': typeof AuthenticatedChatRoute
   '/corridors': typeof AuthenticatedCorridorsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -240,6 +247,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/api-console': typeof AuthenticatedApiConsoleRoute
+  '/care': typeof AuthenticatedCareRoute
   '/chat': typeof AuthenticatedChatRoute
   '/corridors': typeof AuthenticatedCorridorsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -274,6 +282,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/api-console': typeof AuthenticatedApiConsoleRoute
+  '/_authenticated/care': typeof AuthenticatedCareRoute
   '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/corridors': typeof AuthenticatedCorridorsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -308,6 +317,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/analytics'
     | '/api-console'
+    | '/care'
     | '/chat'
     | '/corridors'
     | '/dashboard'
@@ -340,6 +350,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/analytics'
     | '/api-console'
+    | '/care'
     | '/chat'
     | '/corridors'
     | '/dashboard'
@@ -373,6 +384,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/analytics'
     | '/_authenticated/api-console'
+    | '/_authenticated/care'
     | '/_authenticated/chat'
     | '/_authenticated/corridors'
     | '/_authenticated/dashboard'
@@ -594,6 +606,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/care': {
+      id: '/_authenticated/care'
+      path: '/care'
+      fullPath: '/care'
+      preLoaderRoute: typeof AuthenticatedCareRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/api-console': {
       id: '/_authenticated/api-console'
       path: '/api-console'
@@ -646,6 +665,7 @@ const AuthenticatedTradesRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
   AuthenticatedApiConsoleRoute: typeof AuthenticatedApiConsoleRoute
+  AuthenticatedCareRoute: typeof AuthenticatedCareRoute
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedCorridorsRoute: typeof AuthenticatedCorridorsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
@@ -670,6 +690,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
   AuthenticatedApiConsoleRoute: AuthenticatedApiConsoleRoute,
+  AuthenticatedCareRoute: AuthenticatedCareRoute,
   AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedCorridorsRoute: AuthenticatedCorridorsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
