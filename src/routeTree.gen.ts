@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AuthenticatedWorkRouteImport } from './routes/_authenticated/work'
 import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
 import { Route as AuthenticatedTradesRouteImport } from './routes/_authenticated/trades'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
@@ -75,6 +76,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedWorkRoute = AuthenticatedWorkRouteImport.update({
+  id: '/work',
+  path: '/work',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedWalletRoute = AuthenticatedWalletRouteImport.update({
   id: '/wallet',
@@ -234,6 +240,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/trades': typeof AuthenticatedTradesRouteWithChildren
   '/wallet': typeof AuthenticatedWalletRoute
+  '/work': typeof AuthenticatedWorkRoute
   '/api/chat': typeof ApiChatRoute
   '/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
   '/api/public/cron/refresh-prices': typeof ApiPublicCronRefreshPricesRoute
@@ -267,6 +274,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/trades': typeof AuthenticatedTradesRouteWithChildren
   '/wallet': typeof AuthenticatedWalletRoute
+  '/work': typeof AuthenticatedWorkRoute
   '/api/chat': typeof ApiChatRoute
   '/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
   '/api/public/cron/refresh-prices': typeof ApiPublicCronRefreshPricesRoute
@@ -302,6 +310,7 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/trades': typeof AuthenticatedTradesRouteWithChildren
   '/_authenticated/wallet': typeof AuthenticatedWalletRoute
+  '/_authenticated/work': typeof AuthenticatedWorkRoute
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/trades/$tradeId': typeof AuthenticatedTradesTradeIdRoute
   '/api/public/cron/refresh-prices': typeof ApiPublicCronRefreshPricesRoute
@@ -337,6 +346,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/trades'
     | '/wallet'
+    | '/work'
     | '/api/chat'
     | '/trades/$tradeId'
     | '/api/public/cron/refresh-prices'
@@ -370,6 +380,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/trades'
     | '/wallet'
+    | '/work'
     | '/api/chat'
     | '/trades/$tradeId'
     | '/api/public/cron/refresh-prices'
@@ -404,6 +415,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/trades'
     | '/_authenticated/wallet'
+    | '/_authenticated/work'
     | '/api/chat'
     | '/_authenticated/trades/$tradeId'
     | '/api/public/cron/refresh-prices'
@@ -472,6 +484,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/chat'
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/work': {
+      id: '/_authenticated/work'
+      path: '/work'
+      fullPath: '/work'
+      preLoaderRoute: typeof AuthenticatedWorkRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/wallet': {
       id: '/_authenticated/wallet'
@@ -685,6 +704,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTradesRoute: typeof AuthenticatedTradesRouteWithChildren
   AuthenticatedWalletRoute: typeof AuthenticatedWalletRoute
+  AuthenticatedWorkRoute: typeof AuthenticatedWorkRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -710,6 +730,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTradesRoute: AuthenticatedTradesRouteWithChildren,
   AuthenticatedWalletRoute: AuthenticatedWalletRoute,
+  AuthenticatedWorkRoute: AuthenticatedWorkRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
