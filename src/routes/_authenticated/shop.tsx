@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/shop")({
       { title: "My Shop — stock, sales and daily profit | Sabi" },
       {
         name: "description",
-        content: "A shop book that adds itself up: stock levels,每 sale, who owes you, and today's real profit.",
+        content: "A shop book that adds itself up: stock levels, every sale, who owes you, and today's real profit.",
       },
       { property: "og:title", content: "My Shop — stock, sales and daily profit | Sabi" },
       { property: "og:description", content: "Know your profit today, not at the end of the month." },

@@ -27,47 +27,34 @@ export const Route = createFileRoute("/api/chat")({
           { global: { headers: { Authorization: authHeader } }, auth: { persistSession: false } },
         );
 
-        const [{ data: trades }, { data: alerts }, { data: snaps }] = await Promise.all([
-          supabase
-            .from("market_inventory_trades")
-            .select("id, route, status, amount, buy_price, expected_sell_price, actual_sell_price, expected_profit, actual_profit, duration_minutes, ki_accuracy_verdict, buy_time, sell_time, currency, confidence_score, risk_score")
-            .order("created_at", { ascending: false })
-            .limit(100),
-          supabase
-            .from("market_inventory_risk_alerts")
-            .select("severity, message, created_at")
-            .is("dismissed_at", null)
-            .order("created_at", { ascending: false })
-            .limit(20),
-          supabase
-            .from("market_inventory_price_snapshots")
-            .select("exchange, side, price, currency, liquidity_score, merchant_count, merchant_rating, captured_at")
-            .order("captured_at", { ascending: false })
-            .limit(60),
+        const [prices, meds, sales, income, reminders, gigs] = await Promise.all([
+          supabase.from("sabi_price_reports").select("item, category, unit, price, currency, vendor, area, city, observed_at").order("observed_at", { ascending: false }).limit(150),
+          supabase.from("sabi_med_prices").select("drug, form, pharmacy, price, currency, in_stock, area, city, observed_at").order("observed_at", { ascending: false }).limit(80),
+          supabase.from("sabi_shop_sales").select("product_name, qty, unit_price, unit_cost, currency, sold_at").order("sold_at", { ascending: false }).limit(80),
+          supabase.from("sabi_income_logs").select("work_date, source, amount, currency, hours").order("work_date", { ascending: false }).limit(60),
+          supabase.from("sabi_reminders").select("label, kind, dose, times_per_day, next_at, active").limit(20),
+          supabase.from("sabi_gigs").select("title, category, pay_amount, pay_unit, currency, city, remote, contact").order("posted_at", { ascending: false }).limit(40),
         ]);
 
-        // Keep only the latest snapshot per (exchange, side) — chat cares about "now"
-        type Snap = NonNullable<typeof snaps>[number];
-        const latestPrices = new Map<string, Snap>();
-        for (const s of snaps ?? []) {
-          const k = `${s.exchange}::${s.side}`;
-          if (!latestPrices.has(k)) latestPrices.set(k, s);
-        }
-
         const grounding = {
-          trades: trades ?? [],
-          risk_alerts: alerts ?? [],
-          live_prices: Array.from(latestPrices.values()),
+          community_prices: prices.data ?? [],
+          medicine_prices: meds.data ?? [],
+          my_shop_sales: sales.data ?? [],
+          my_earnings: income.data ?? [],
+          my_reminders: reminders.data ?? [],
+          jobs_and_gigs: gigs.data ?? [],
           generated_at: new Date().toISOString(),
         };
 
-        const system = `You are Waides KI, a P2P arbitrage intelligence analyst.
-You NEVER execute trades. Your job is decision support grounded in the user's actual tracked data.
-When answering, use only the JSON grounding below — do not invent numbers.
-If the user asks about profitability, timing, best route, or specific trades, cite the actual data.
-Be direct, communicate uncertainty, and refuse to guarantee outcomes.
+        const system = `You are Sabi, a practical money assistant for everyday people in Nigeria, Africa and beyond.
+Sabi means "to know". You answer in plain, simple language a first-time smartphone user understands.
+Use ONLY the JSON below — never invent prices, pharmacies or jobs.
+Always answer with a concrete action: where to buy, what it costs, how much is saved.
+Convert pay to per-hour when comparing jobs (hour=1, day=8h, month=176h).
+You are not a doctor: for symptoms, suggest seeing a clinic in the data and never diagnose or prescribe.
+State clearly when the data is old or missing.
 
-USER_DATA (JSON):
+DATA (JSON):
 ${JSON.stringify(grounding).slice(0, 20000)}`;
 
         const gateway = createLovableAiGatewayProvider(key);

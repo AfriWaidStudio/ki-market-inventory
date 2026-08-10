@@ -38,6 +38,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedCorridorsRouteImport } from './routes/_authenticated/corridors'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedCareRouteImport } from './routes/_authenticated/care'
+import { Route as AuthenticatedAskRouteImport } from './routes/_authenticated/ask'
 import { Route as AuthenticatedApiConsoleRouteImport } from './routes/_authenticated/api-console'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as AuthenticatedTradesTradeIdRouteImport } from './routes/_authenticated/trades.$tradeId'
@@ -190,6 +191,11 @@ const AuthenticatedCareRoute = AuthenticatedCareRouteImport.update({
   path: '/care',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAskRoute = AuthenticatedAskRouteImport.update({
+  id: '/ask',
+  path: '/ask',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedApiConsoleRoute = AuthenticatedApiConsoleRouteImport.update({
   id: '/api-console',
   path: '/api-console',
@@ -226,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/api-console': typeof AuthenticatedApiConsoleRoute
+  '/ask': typeof AuthenticatedAskRoute
   '/care': typeof AuthenticatedCareRoute
   '/chat': typeof AuthenticatedChatRoute
   '/corridors': typeof AuthenticatedCorridorsRoute
@@ -261,6 +268,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/api-console': typeof AuthenticatedApiConsoleRoute
+  '/ask': typeof AuthenticatedAskRoute
   '/care': typeof AuthenticatedCareRoute
   '/chat': typeof AuthenticatedChatRoute
   '/corridors': typeof AuthenticatedCorridorsRoute
@@ -298,6 +306,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/api-console': typeof AuthenticatedApiConsoleRoute
+  '/_authenticated/ask': typeof AuthenticatedAskRoute
   '/_authenticated/care': typeof AuthenticatedCareRoute
   '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/corridors': typeof AuthenticatedCorridorsRoute
@@ -335,6 +344,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/analytics'
     | '/api-console'
+    | '/ask'
     | '/care'
     | '/chat'
     | '/corridors'
@@ -370,6 +380,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/analytics'
     | '/api-console'
+    | '/ask'
     | '/care'
     | '/chat'
     | '/corridors'
@@ -406,6 +417,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/analytics'
     | '/_authenticated/api-console'
+    | '/_authenticated/ask'
     | '/_authenticated/care'
     | '/_authenticated/chat'
     | '/_authenticated/corridors'
@@ -651,6 +663,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCareRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/ask': {
+      id: '/_authenticated/ask'
+      path: '/ask'
+      fullPath: '/ask'
+      preLoaderRoute: typeof AuthenticatedAskRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/api-console': {
       id: '/_authenticated/api-console'
       path: '/api-console'
@@ -703,6 +722,7 @@ const AuthenticatedTradesRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
   AuthenticatedApiConsoleRoute: typeof AuthenticatedApiConsoleRoute
+  AuthenticatedAskRoute: typeof AuthenticatedAskRoute
   AuthenticatedCareRoute: typeof AuthenticatedCareRoute
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedCorridorsRoute: typeof AuthenticatedCorridorsRoute
@@ -730,6 +750,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
   AuthenticatedApiConsoleRoute: AuthenticatedApiConsoleRoute,
+  AuthenticatedAskRoute: AuthenticatedAskRoute,
   AuthenticatedCareRoute: AuthenticatedCareRoute,
   AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedCorridorsRoute: AuthenticatedCorridorsRoute,
