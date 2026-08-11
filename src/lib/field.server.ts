@@ -93,7 +93,7 @@ export async function attest(
     sources: number;
     beingCode?: number | null;
     onyixConsumed: number;
-    evidence?: Record<string, unknown>;
+    evidence?: unknown;
   },
 ) {
   const { error } = await sb.from("waidespruf_records").insert({
@@ -106,7 +106,7 @@ export async function attest(
     sources: rec.sources,
     being_code: rec.beingCode ?? null,
     onyix_consumed: rec.onyixConsumed,
-    evidence: rec.evidence ?? {},
+    evidence: (rec.evidence ?? {}) as never,
   });
   if (error) throw new Error(error.message);
 }
