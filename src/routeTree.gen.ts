@@ -22,6 +22,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedMarketRouteImport } from './routes/_authenticated/market'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedCareRouteImport } from './routes/_authenticated/care'
+import { Route as AuthenticatedBeingsRouteImport } from './routes/_authenticated/beings'
 import { Route as AuthenticatedAskRouteImport } from './routes/_authenticated/ask'
 import { Route as ApiPublicV1DataRouteImport } from './routes/api/public/v1/data'
 import { Route as ApiPublicCronRefreshPricesRouteImport } from './routes/api/public/cron/refresh-prices'
@@ -90,6 +91,11 @@ const AuthenticatedCareRoute = AuthenticatedCareRouteImport.update({
   path: '/care',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedBeingsRoute = AuthenticatedBeingsRouteImport.update({
+  id: '/beings',
+  path: '/beings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAskRoute = AuthenticatedAskRouteImport.update({
   id: '/ask',
   path: '/ask',
@@ -114,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/safety': typeof SafetyRoute
   '/terms': typeof TermsRoute
   '/ask': typeof AuthenticatedAskRoute
+  '/beings': typeof AuthenticatedBeingsRoute
   '/care': typeof AuthenticatedCareRoute
   '/home': typeof AuthenticatedHomeRoute
   '/market': typeof AuthenticatedMarketRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByTo {
   '/safety': typeof SafetyRoute
   '/terms': typeof TermsRoute
   '/ask': typeof AuthenticatedAskRoute
+  '/beings': typeof AuthenticatedBeingsRoute
   '/care': typeof AuthenticatedCareRoute
   '/home': typeof AuthenticatedHomeRoute
   '/market': typeof AuthenticatedMarketRoute
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/safety': typeof SafetyRoute
   '/terms': typeof TermsRoute
   '/_authenticated/ask': typeof AuthenticatedAskRoute
+  '/_authenticated/beings': typeof AuthenticatedBeingsRoute
   '/_authenticated/care': typeof AuthenticatedCareRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/market': typeof AuthenticatedMarketRoute
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/safety'
     | '/terms'
     | '/ask'
+    | '/beings'
     | '/care'
     | '/home'
     | '/market'
@@ -186,6 +196,7 @@ export interface FileRouteTypes {
     | '/safety'
     | '/terms'
     | '/ask'
+    | '/beings'
     | '/care'
     | '/home'
     | '/market'
@@ -204,6 +215,7 @@ export interface FileRouteTypes {
     | '/safety'
     | '/terms'
     | '/_authenticated/ask'
+    | '/_authenticated/beings'
     | '/_authenticated/care'
     | '/_authenticated/home'
     | '/_authenticated/market'
@@ -320,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCareRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/beings': {
+      id: '/_authenticated/beings'
+      path: '/beings'
+      fullPath: '/beings'
+      preLoaderRoute: typeof AuthenticatedBeingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/ask': {
       id: '/_authenticated/ask'
       path: '/ask'
@@ -346,6 +365,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAskRoute: typeof AuthenticatedAskRoute
+  AuthenticatedBeingsRoute: typeof AuthenticatedBeingsRoute
   AuthenticatedCareRoute: typeof AuthenticatedCareRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedMarketRoute: typeof AuthenticatedMarketRoute
@@ -356,6 +376,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAskRoute: AuthenticatedAskRoute,
+  AuthenticatedBeingsRoute: AuthenticatedBeingsRoute,
   AuthenticatedCareRoute: AuthenticatedCareRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedMarketRoute: AuthenticatedMarketRoute,
@@ -381,13 +402,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -33,7 +33,7 @@ function BeingsPage() {
   const run = useServerFn(runAssembly);
   const qc = useQueryClient();
 
-  const { data, isLoading } = useQuery({ queryKey: ["beings"], queryFn: () => list({ data: {} }) });
+  const { data, isLoading } = useQuery({ queryKey: ["beings"], queryFn: () => list() });
   const [tab, setTab] = useState<Tab>("workforce");
   const [domain, setDomain] = useState<BeingDomain | "all">("all");
   const [q, setQ] = useState("");
