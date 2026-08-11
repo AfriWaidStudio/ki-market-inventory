@@ -27,6 +27,23 @@ export const Route = createFileRoute("/api/chat")({
           { global: { headers: { Authorization: authHeader } }, auth: { persistSession: false } },
         );
 
+        // Every Ask Sabi turn is Field work: it must be paid for in Onyix.
+        const { data: userRes } = await supabase.auth.getUser();
+        const uid = userRes.user?.id;
+        if (!uid) return new Response("Unauthorized", { status: 401 });
+
+        const { consumeOnyix, OutOfOnyix } = await import("@/lib/field.server");
+        try {
+          await consumeOnyix(supabase as never, uid, {
+            onyix: 12,
+            reason: "Ask Sabi — Personal KI conversation turn",
+            beingCode: 98,
+          });
+        } catch (err) {
+          if (err instanceof OutOfOnyix) return new Response(err.message, { status: 402 });
+          throw err;
+        }
+
         const [prices, meds, sales, income, reminders, gigs] = await Promise.all([
           supabase.from("sabi_price_reports").select("item, category, unit, price, currency, vendor, area, city, observed_at").order("observed_at", { ascending: false }).limit(150),
           supabase.from("sabi_med_prices").select("drug, form, pharmacy, price, currency, in_stock, area, city, observed_at").order("observed_at", { ascending: false }).limit(80),
