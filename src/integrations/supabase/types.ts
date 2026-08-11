@@ -2232,6 +2232,75 @@ export type Database = {
           },
         ]
       }
+      onyix_ledger: {
+        Row: {
+          being_code: number | null
+          created_at: string
+          id: string
+          kind: string
+          onyix_delta: number
+          reason: string
+          smaisika_delta: number
+          source: string
+          tank_after: number
+          user_id: string
+        }
+        Insert: {
+          being_code?: number | null
+          created_at?: string
+          id?: string
+          kind: string
+          onyix_delta?: number
+          reason: string
+          smaisika_delta?: number
+          source?: string
+          tank_after?: number
+          user_id: string
+        }
+        Update: {
+          being_code?: number | null
+          created_at?: string
+          id?: string
+          kind?: string
+          onyix_delta?: number
+          reason?: string
+          smaisika_delta?: number
+          source?: string
+          tank_after?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      onyix_wallets: {
+        Row: {
+          created_at: string
+          id: string
+          lifetime_consumed: number
+          onyix_tank: number
+          smaisika_balance: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lifetime_consumed?: number
+          onyix_tank?: number
+          smaisika_balance?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lifetime_consumed?: number
+          onyix_tank?: number
+          smaisika_balance?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       password_reset_tokens: {
         Row: {
           consumed_at: string | null
@@ -2986,6 +3055,129 @@ export type Database = {
           },
         ]
       }
+      smai_assemblies: {
+        Row: {
+          answer: string | null
+          being_codes: number[]
+          confidence: number
+          created_at: string
+          domain: string
+          findings: Json
+          id: string
+          onyix_consumed: number
+          question: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          answer?: string | null
+          being_codes?: number[]
+          confidence?: number
+          created_at?: string
+          domain?: string
+          findings?: Json
+          id?: string
+          onyix_consumed?: number
+          question: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          answer?: string | null
+          being_codes?: number[]
+          confidence?: number
+          created_at?: string
+          domain?: string
+          findings?: Json
+          id?: string
+          onyix_consumed?: number
+          question?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      smai_beings: {
+        Row: {
+          code: number
+          created_at: string
+          domain: string
+          id: string
+          is_commander: boolean
+          name: string
+          onyix_cost: number
+          origin: string
+          purpose: string
+          tred_beings: string[]
+          updated_at: string
+        }
+        Insert: {
+          code: number
+          created_at?: string
+          domain: string
+          id?: string
+          is_commander?: boolean
+          name: string
+          onyix_cost?: number
+          origin?: string
+          purpose: string
+          tred_beings?: string[]
+          updated_at?: string
+        }
+        Update: {
+          code?: number
+          created_at?: string
+          domain?: string
+          id?: string
+          is_commander?: boolean
+          name?: string
+          onyix_cost?: number
+          origin?: string
+          purpose?: string
+          tred_beings?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      smai_employments: {
+        Row: {
+          active: boolean
+          being_code: number
+          created_at: string
+          employed_at: string
+          id: string
+          onyix_spent: number
+          runs: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          being_code: number
+          created_at?: string
+          employed_at?: string
+          id?: string
+          onyix_spent?: number
+          runs?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          being_code?: number
+          created_at?: string
+          employed_at?: string
+          id?: string
+          onyix_spent?: number
+          runs?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       telegram_connections: {
         Row: {
           chat_id: number | null
@@ -3058,6 +3250,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      waidespruf_records: {
+        Row: {
+          being_code: number | null
+          claim: string
+          confidence: number
+          created_at: string
+          evidence: Json
+          id: string
+          onyix_consumed: number
+          sources: number
+          subject: string
+          subject_kind: string
+          user_id: string
+          verification_level: string
+        }
+        Insert: {
+          being_code?: number | null
+          claim: string
+          confidence?: number
+          created_at?: string
+          evidence?: Json
+          id?: string
+          onyix_consumed?: number
+          sources?: number
+          subject: string
+          subject_kind?: string
+          user_id: string
+          verification_level?: string
+        }
+        Update: {
+          being_code?: number | null
+          claim?: string
+          confidence?: number
+          created_at?: string
+          evidence?: Json
+          id?: string
+          onyix_consumed?: number
+          sources?: number
+          subject?: string
+          subject_kind?: string
+          user_id?: string
+          verification_level?: string
+        }
+        Relationships: []
       }
     }
     Views: {

@@ -19,9 +19,11 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedWorkRouteImport } from './routes/_authenticated/work'
 import { Route as AuthenticatedShopRouteImport } from './routes/_authenticated/shop'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedOnyixRouteImport } from './routes/_authenticated/onyix'
 import { Route as AuthenticatedMarketRouteImport } from './routes/_authenticated/market'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedCareRouteImport } from './routes/_authenticated/care'
+import { Route as AuthenticatedBeingsRouteImport } from './routes/_authenticated/beings'
 import { Route as AuthenticatedAskRouteImport } from './routes/_authenticated/ask'
 import { Route as ApiPublicV1DataRouteImport } from './routes/api/public/v1/data'
 import { Route as ApiPublicCronRefreshPricesRouteImport } from './routes/api/public/cron/refresh-prices'
@@ -75,6 +77,11 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedOnyixRoute = AuthenticatedOnyixRouteImport.update({
+  id: '/onyix',
+  path: '/onyix',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMarketRoute = AuthenticatedMarketRouteImport.update({
   id: '/market',
   path: '/market',
@@ -88,6 +95,11 @@ const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
 const AuthenticatedCareRoute = AuthenticatedCareRouteImport.update({
   id: '/care',
   path: '/care',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedBeingsRoute = AuthenticatedBeingsRouteImport.update({
+  id: '/beings',
+  path: '/beings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAskRoute = AuthenticatedAskRouteImport.update({
@@ -114,9 +126,11 @@ export interface FileRoutesByFullPath {
   '/safety': typeof SafetyRoute
   '/terms': typeof TermsRoute
   '/ask': typeof AuthenticatedAskRoute
+  '/beings': typeof AuthenticatedBeingsRoute
   '/care': typeof AuthenticatedCareRoute
   '/home': typeof AuthenticatedHomeRoute
   '/market': typeof AuthenticatedMarketRoute
+  '/onyix': typeof AuthenticatedOnyixRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/shop': typeof AuthenticatedShopRoute
   '/work': typeof AuthenticatedWorkRoute
@@ -131,9 +145,11 @@ export interface FileRoutesByTo {
   '/safety': typeof SafetyRoute
   '/terms': typeof TermsRoute
   '/ask': typeof AuthenticatedAskRoute
+  '/beings': typeof AuthenticatedBeingsRoute
   '/care': typeof AuthenticatedCareRoute
   '/home': typeof AuthenticatedHomeRoute
   '/market': typeof AuthenticatedMarketRoute
+  '/onyix': typeof AuthenticatedOnyixRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/shop': typeof AuthenticatedShopRoute
   '/work': typeof AuthenticatedWorkRoute
@@ -150,9 +166,11 @@ export interface FileRoutesById {
   '/safety': typeof SafetyRoute
   '/terms': typeof TermsRoute
   '/_authenticated/ask': typeof AuthenticatedAskRoute
+  '/_authenticated/beings': typeof AuthenticatedBeingsRoute
   '/_authenticated/care': typeof AuthenticatedCareRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/market': typeof AuthenticatedMarketRoute
+  '/_authenticated/onyix': typeof AuthenticatedOnyixRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/shop': typeof AuthenticatedShopRoute
   '/_authenticated/work': typeof AuthenticatedWorkRoute
@@ -169,9 +187,11 @@ export interface FileRouteTypes {
     | '/safety'
     | '/terms'
     | '/ask'
+    | '/beings'
     | '/care'
     | '/home'
     | '/market'
+    | '/onyix'
     | '/settings'
     | '/shop'
     | '/work'
@@ -186,9 +206,11 @@ export interface FileRouteTypes {
     | '/safety'
     | '/terms'
     | '/ask'
+    | '/beings'
     | '/care'
     | '/home'
     | '/market'
+    | '/onyix'
     | '/settings'
     | '/shop'
     | '/work'
@@ -204,9 +226,11 @@ export interface FileRouteTypes {
     | '/safety'
     | '/terms'
     | '/_authenticated/ask'
+    | '/_authenticated/beings'
     | '/_authenticated/care'
     | '/_authenticated/home'
     | '/_authenticated/market'
+    | '/_authenticated/onyix'
     | '/_authenticated/settings'
     | '/_authenticated/shop'
     | '/_authenticated/work'
@@ -299,6 +323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/onyix': {
+      id: '/_authenticated/onyix'
+      path: '/onyix'
+      fullPath: '/onyix'
+      preLoaderRoute: typeof AuthenticatedOnyixRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/market': {
       id: '/_authenticated/market'
       path: '/market'
@@ -318,6 +349,13 @@ declare module '@tanstack/react-router' {
       path: '/care'
       fullPath: '/care'
       preLoaderRoute: typeof AuthenticatedCareRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/beings': {
+      id: '/_authenticated/beings'
+      path: '/beings'
+      fullPath: '/beings'
+      preLoaderRoute: typeof AuthenticatedBeingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/ask': {
@@ -346,9 +384,11 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAskRoute: typeof AuthenticatedAskRoute
+  AuthenticatedBeingsRoute: typeof AuthenticatedBeingsRoute
   AuthenticatedCareRoute: typeof AuthenticatedCareRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedMarketRoute: typeof AuthenticatedMarketRoute
+  AuthenticatedOnyixRoute: typeof AuthenticatedOnyixRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedShopRoute: typeof AuthenticatedShopRoute
   AuthenticatedWorkRoute: typeof AuthenticatedWorkRoute
@@ -356,9 +396,11 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAskRoute: AuthenticatedAskRoute,
+  AuthenticatedBeingsRoute: AuthenticatedBeingsRoute,
   AuthenticatedCareRoute: AuthenticatedCareRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedMarketRoute: AuthenticatedMarketRoute,
+  AuthenticatedOnyixRoute: AuthenticatedOnyixRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedShopRoute: AuthenticatedShopRoute,
   AuthenticatedWorkRoute: AuthenticatedWorkRoute,
