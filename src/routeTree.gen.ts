@@ -19,6 +19,7 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedWorkRouteImport } from './routes/_authenticated/work'
 import { Route as AuthenticatedShopRouteImport } from './routes/_authenticated/shop'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedOnyixRouteImport } from './routes/_authenticated/onyix'
 import { Route as AuthenticatedMarketRouteImport } from './routes/_authenticated/market'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedCareRouteImport } from './routes/_authenticated/care'
@@ -76,6 +77,11 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedOnyixRoute = AuthenticatedOnyixRouteImport.update({
+  id: '/onyix',
+  path: '/onyix',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMarketRoute = AuthenticatedMarketRouteImport.update({
   id: '/market',
   path: '/market',
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/care': typeof AuthenticatedCareRoute
   '/home': typeof AuthenticatedHomeRoute
   '/market': typeof AuthenticatedMarketRoute
+  '/onyix': typeof AuthenticatedOnyixRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/shop': typeof AuthenticatedShopRoute
   '/work': typeof AuthenticatedWorkRoute
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/care': typeof AuthenticatedCareRoute
   '/home': typeof AuthenticatedHomeRoute
   '/market': typeof AuthenticatedMarketRoute
+  '/onyix': typeof AuthenticatedOnyixRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/shop': typeof AuthenticatedShopRoute
   '/work': typeof AuthenticatedWorkRoute
@@ -162,6 +170,7 @@ export interface FileRoutesById {
   '/_authenticated/care': typeof AuthenticatedCareRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/market': typeof AuthenticatedMarketRoute
+  '/_authenticated/onyix': typeof AuthenticatedOnyixRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/shop': typeof AuthenticatedShopRoute
   '/_authenticated/work': typeof AuthenticatedWorkRoute
@@ -182,6 +191,7 @@ export interface FileRouteTypes {
     | '/care'
     | '/home'
     | '/market'
+    | '/onyix'
     | '/settings'
     | '/shop'
     | '/work'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/care'
     | '/home'
     | '/market'
+    | '/onyix'
     | '/settings'
     | '/shop'
     | '/work'
@@ -219,6 +230,7 @@ export interface FileRouteTypes {
     | '/_authenticated/care'
     | '/_authenticated/home'
     | '/_authenticated/market'
+    | '/_authenticated/onyix'
     | '/_authenticated/settings'
     | '/_authenticated/shop'
     | '/_authenticated/work'
@@ -311,6 +323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/onyix': {
+      id: '/_authenticated/onyix'
+      path: '/onyix'
+      fullPath: '/onyix'
+      preLoaderRoute: typeof AuthenticatedOnyixRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/market': {
       id: '/_authenticated/market'
       path: '/market'
@@ -369,6 +388,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCareRoute: typeof AuthenticatedCareRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedMarketRoute: typeof AuthenticatedMarketRoute
+  AuthenticatedOnyixRoute: typeof AuthenticatedOnyixRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedShopRoute: typeof AuthenticatedShopRoute
   AuthenticatedWorkRoute: typeof AuthenticatedWorkRoute
@@ -380,6 +400,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCareRoute: AuthenticatedCareRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedMarketRoute: AuthenticatedMarketRoute,
+  AuthenticatedOnyixRoute: AuthenticatedOnyixRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedShopRoute: AuthenticatedShopRoute,
   AuthenticatedWorkRoute: AuthenticatedWorkRoute,

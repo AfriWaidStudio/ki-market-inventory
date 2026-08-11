@@ -2,7 +2,7 @@ import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Sun, ShoppingBasket, HeartPulse, Briefcase, Store, MessageCircle, Settings, LogOut } from "lucide-react";
+import { Sun, ShoppingBasket, HeartPulse, Briefcase, Store, MessageCircle, Bot, Fuel, Settings, LogOut } from "lucide-react";
 
 const NAV = [
   { to: "/home", label: "Today", icon: Sun, blurb: "What to do now" },
@@ -11,8 +11,11 @@ const NAV = [
   { to: "/work", label: "Work", icon: Briefcase, blurb: "Jobs & earnings" },
   { to: "/shop", label: "My Shop", icon: Store, blurb: "Stock & profit" },
   { to: "/ask", label: "Ask Sabi", icon: MessageCircle, blurb: "Your assistant" },
+  { to: "/beings", label: "SmaiBeings", icon: Bot, blurb: "Your workforce" },
+  { to: "/onyix", label: "Onyix", icon: Fuel, blurb: "Fuel & wallet" },
   { to: "/settings", label: "Settings", icon: Settings, blurb: "Money & account" },
 ] as const;
+
 
 export function AppShell({ children, title, subtitle }: { children: ReactNode; title?: string; subtitle?: string }) {
   const navigate = useNavigate();
