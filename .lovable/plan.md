@@ -1,89 +1,41 @@
-# KI Market Inventory — Consolidation, Wiring & Live Price Intelligence
+# Sabi Real Prices — truth-first local market pricing
 
-Goal: stop adding surfaces. Take what exists and make it **actually work end-to-end** — every button, every route, every link, every setting — and give Waides KI **real live prices** from Binance, Bybit, and OKX so it can reason on real data instead of only what the user typed.
+## Honest answer first
+Right now Sabi does NOT know the real price of Pampers, Action Bitters or mango in Ubani (Umuahia) or Onitsha. The prices shown today are sample rows added to demo the app, plus anything users report. The AI does not "know" market prices — no AI does. Open markets like Ubani and Onitsha Main Market publish no price list online, so the only way to get real prices is people in those markets reporting what they saw, and Sabi checking those reports against each other.
 
-Purpose reminder (from your original brief): this is a **personal P2P/arbitrage command center** and intelligence analyst. It tracks trades, explains opportunities, learns from behavior, and never executes real orders. Everything we do here serves that.
+This plan makes Sabi honest about that, and builds the machinery to collect real, checked, local prices.
 
----
+## What users will see
+1. **Markets you can pick** — Ubani Market (Umuahia), Onitsha Main Market, Ariaria (Aba), Balogun, Mile 12, Oyingbo, Wuse, Kurmi, Oja Oba, Ogbete, plus "add my market".
+2. **Search any item in any market** — e.g. "Pampers size 4" in Onitsha shows:
+   - Wholesale price range (carton/bag) and retail price range (pack/piece), shown separately
+   - How many people reported it, how recently, and a trust level (Confirmed / Likely / Single report / No data)
+   - The unit clearly stated (carton of 6 packs, per bottle, per basket, per piece)
+3. **"No real price yet"** — if nobody has reported it, Sabi says so plainly and offers "Ask someone in this market". Never a guessed number.
+4. **Report a price in 10 seconds** — item, market, wholesale or retail, unit, price, optional photo of price tag or receipt.
+5. **"I saw this price too" / "Price is wrong"** buttons on every price, so buyers confirm or dispute.
+6. **Price requests** — a buyer asks "What is mango per basket in Ubani today?"; users in that market get notified and can answer.
+7. **Reporter trust** — people whose prices keep getting confirmed gain a badge and their reports count more.
+8. **Sample data clearly labelled** — existing demo prices are marked "Sample — not real" and excluded from Ask Sabi answers and trust scores.
+9. **Ask Sabi rules** — answers quote only checked prices, always saying "3 people reported ₦X–₦Y in Onitsha, last seen 2 days ago". If none exist it says "I don't have a real price for that yet" instead of inventing one.
+10. **Services too** — same flow for services (tailoring, barbing, okada/keke fares, mechanic, phone repair).
 
-## Phase 1 — Full audit & repair pass (no new features)
-
-Walk every existing route as a real user, in a browser, signed in, and fix what's broken:
-
-- `/auth` — email/password sign-up, sign-in, Google OAuth round-trip, redirect back to `/dashboard`, session persistence on reload.
-- `/dashboard` — every stat card pulls from `analytics.functions.ts` and renders correctly (0-state, 1-trade state, many-trades state).
-- `/scanner` — submit price snapshot form works, opportunities list refreshes, KI recommendation badges render, "Mark Bought" creates a trade and lands you on `/trades`.
-- `/trades` — Update Price / Mark Closed / Cancel / Ask KI actions all round-trip to DB and invalidate the list.
-- `/trades/$tradeId` — timeline, price updates, notes add/save, KI accuracy verdict appears after close.
-- `/history` — filters (date, exchange, route, P/L, status) actually filter.
-- `/analytics` — every chart renders with real data, empty states are clear.
-- `/chat` — Waides KI answers stream, session token attaches, grounding JSON includes trades + alerts + **live prices** (Phase 2).
-- `/risk-center` — dismiss works, list refreshes.
-- `/journal`, `/search`, `/notifications`, `/wallet`, `/help` — links, empty states, "coming soon" labels honest.
-- `/settings` — currency preference saves and is reflected everywhere (`currency.ts` formatter reads it); exchange accounts add/remove; API keys form shows the read-only warning and the audit log entry appears.
-- Header/sidebar — every nav link routes, active state highlights, sign-out tears down cache and redirects to `/auth`.
-- Legal `/privacy`, `/terms`, `/safety` — footer links reach them.
-
-Fix any hydration errors, 500s, broken invalidations, missing empty states, and mislabeled buttons found along the way.
-
-## Phase 2 — Live price intelligence (auto-fetch, no manual entry required)
-
-Give KI real market awareness. Public P2P endpoints from Binance, Bybit, OKX don't need API keys — they're the same ones the exchange websites use.
-
-- New server function `prices.functions.ts`:
-  - `fetchLivePrices({ asset, fiat, side })` — server-side `fetch` to:
-    - Binance P2P: `https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search`
-    - Bybit P2P: `https://api2.bybit.com/fiat/otc/item/online`
-    - OKX P2P: `https://www.okx.com/v3/c2c/tradingOrders/books`
-  - Normalize each response to a common shape: `{ exchange, side, price, currency, liquidity_score, merchant_count, merchant_rating, captured_at }`.
-  - Insert into existing `market_inventory_price_snapshots` (already scaffolded) so all downstream code keeps working.
-- New public server route `/api/public/cron/refresh-prices` (signed with `CRON_SECRET`) that calls the fetcher for the user's watched pairs. Scheduled via pg_cron every 2–5 min.
-- `/scanner` gets a "Live" toggle — when on, prices auto-refresh from snapshots instead of requiring manual entry. Manual entry remains as fallback.
-- Waides KI grounding in `/api/chat` gets the latest live snapshots injected alongside trades and alerts, so it can answer "what's the spread on Binance→Bybit right now" against real data.
-- Add a **freshness badge** on every price ("Live · 42s ago" / "Stale · 6m ago") so nothing looks more certain than it is.
-- Store failures in `market_inventory_audit_log` (source: `price_fetch`) so you can see when an exchange endpoint blocks us.
-
-Rate-limit: 1 call per exchange per minute per user. If an exchange 429s or geo-blocks, mark that exchange as "unavailable" in the UI rather than silently failing.
-
-## Phase 3 — End-to-end test pass (Playwright)
-
-Automated flow that proves the whole loop, run headless in the sandbox:
-
-1. Sign up → land on dashboard.
-2. Add currency preference in settings → verify it's applied.
-3. Trigger a live-price refresh → verify snapshots appear.
-4. Open scanner → best opportunity shows → "Mark Bought" → land on trades.
-5. Update price on the active trade → Mark Closed → verify actual_profit + KI accuracy verdict.
-6. Open `/chat` → ask "how did my last trade do?" → verify the reply cites the real trade.
-7. Dismiss a risk alert → verify it disappears.
-8. Sign out → verify redirect to `/auth` and cache is torn down.
-
-Screenshot each step under `/tmp/browser/e2e/`. Any red step blocks the phase from being called done.
-
-## Phase 4 — Cross-cutting polish (only after 1–3 are green)
-
-- Consistent empty/loading/error states across every route.
-- Every mutation invalidates the right queries (no stale UI).
-- Every money value uses the decimal-safe formatter in `currency.ts`.
-- Every "estimate" is visibly labeled as an estimate, never a guarantee.
-- Mobile layout sweep on the top 5 routes.
-
----
+## How a price becomes trusted (the logic)
+- Only reports from the last 14 days count; older ones fade out.
+- Extreme outliers (far outside the middle of other reports) are set aside, not deleted.
+- Shown price = middle value (median) of the remaining reports, with the low–high range.
+- Trust level:
+  - Confirmed: 3+ different people, or 2 plus a photo, within 7 days
+  - Likely: 2 people, or 1 trusted reporter
+  - Single report: 1 person — shown with a warning
+- One person cannot confirm their own price or flood reports (daily limits per item/market).
+- Disputes lower trust; many disputes hide the price until re-confirmed.
 
 ## Technical details
-
-- No new pages/routes get added in this pass except `prices.functions.ts` and `/api/public/cron/refresh-prices`.
-- P2P endpoints called server-side only (CORS + IP diversity). Cloudflare Worker `fetch` is fine.
-- pg_cron schedule installed via migration; secret via `generate_secret` for `CRON_SECRET`.
-- No exchange API keys required for public P2P data. The existing `market_inventory_api_keys` table stays for future read-only account features.
-- Chat grounding stays under 20KB; live prices summarized (latest per exchange/side) before injection.
-
-## Out of scope (still)
-
-- Real order execution, withdrawals, fund movement.
-- Auto-buy / auto-sell.
-- Third-party paid data providers.
-
----
-
-Approve this and I'll start with Phase 1 (audit/repair), then Phase 2 (live prices), then Phase 3 (E2E tests). No new product surfaces will be built in this pass.
+- New tables: `sabi_markets` (name, city, state, country, lat/lng), `sabi_items` (canonical name, aliases, category, default units, kind goods/service), price reports gain `market_id`, `price_type` (wholesale/retail), `unit_qty`, `is_sample`, `photo_path`, `status`; `sabi_price_votes` (confirm/dispute, one per user per report), `sabi_price_requests` + answers, `sabi_reporter_stats`. GRANTs + owner/authenticated RLS; storage bucket for price photos.
+- Mark all existing seeded rows `is_sample = true`.
+- Aggregation done in a server function (median, outlier filter via IQR, trust level, freshness); pure logic in `src/lib/sabi.ts` with unit tests.
+- Item search with alias matching ("pampers" = "Pampers Baby Dry", "action bitter" = "Action Bitters").
+- `/market` rebuilt around market picker + search + wholesale/retail cards; new report, confirm, dispute and request flows; notifications for requests in a user's markets.
+- `/api/chat` grounding switched to trusted aggregates only (non-sample), with explicit "no data" instructions; Onyix metering unchanged.
+- No fake seeding of "real" prices. Markets list is seeded (they are real places); prices start empty until people report.
