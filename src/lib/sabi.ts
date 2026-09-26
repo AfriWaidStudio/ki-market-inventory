@@ -239,3 +239,61 @@ export const GIG_CATEGORIES = [
   "crafts",
   "general",
 ] as const;
+
+/* ---------------- Real-price trust engine ---------------- */
+
+export type TrustLevel = "confirmed" | "likely" | "single" | "none";
+
+export interface TrustInput {
+  price: number;
+  observed_at: string;
+  user_id: string | null;
+  has_photo?: boolean;
+  confirms?: number;
+  disputes?: number;
+}
+
+export interface TrustResult {
+  level: TrustLevel;
+  median: number | null;
+  low: number | null;
+  high: number | null;
+  reporters: number;
+  used: number;
+  outliers: number;
+  lastSeen: string | null;
+}
+
+/** Only real (non-sample), recent, undisputed reports count. Outliers set aside by IQR. */
+export function trustAggregate(rows: TrustInput[], windowDays = 14): TrustResult {
+  const real = rows.filter(
+    (r) => r.user_id && hoursAgo(r.observed_at) <= windowDays * 24 && (r.disputes ?? 0) < 3 + (r.confirms ?? 0),
+  );
+  if (!real.length) return { level: "none", median: null, low: null, high: null, reporters: 0, used: 0, outliers: 0, lastSeen: null };
+  const prices = real.map((r) => r.price).sort((a, b) => a - b);
+  let kept = real;
+  if (prices.length >= 4) {
+    const q1 = median(prices.slice(0, Math.floor(prices.length / 2)));
+    const q3 = median(prices.slice(Math.ceil(prices.length / 2)));
+    const iqr = q3 - q1;
+    kept = real.filter((r) => r.price >= q1 - 1.5 * iqr && r.price <= q3 + 1.5 * iqr);
+  }
+  const kp = kept.map((r) => r.price);
+  const people = new Set(kept.map((r) => r.user_id)).size;
+  const confirms = kept.reduce((a, r) => a + (r.confirms ?? 0), 0);
+  const photo = kept.some((r) => r.has_photo);
+  const recent = kept.filter((r) => hoursAgo(r.observed_at) <= 7 * 24);
+  const evidence = people + confirms;
+  const level: TrustLevel =
+    recent.length && (evidence >= 3 || (evidence >= 2 && photo)) ? "confirmed" : evidence >= 2 ? "likely" : "single";
+  return {
+    level,
+    median: median(kp),
+    low: Math.min(...kp),
+    high: Math.max(...kp),
+    reporters: people,
+    used: kept.length,
+    outliers: real.length - kept.length,
+    lastSeen: kept.reduce((a, r) => (Date.parse(r.observed_at) > Date.parse(a) ? r.observed_at : a), kept[0]!.observed_at),
+  };
+}

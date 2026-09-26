@@ -45,7 +45,8 @@ export const Route = createFileRoute("/api/chat")({
         }
 
         const [prices, meds, sales, income, reminders, gigs] = await Promise.all([
-          supabase.from("sabi_price_reports").select("item, category, unit, price, currency, vendor, area, city, observed_at").order("observed_at", { ascending: false }).limit(150),
+          // Real community reports only — seeded demo rows (no reporter) are never quoted as real prices.
+          supabase.from("sabi_price_reports").select("item, category, unit, price, currency, vendor, area, city, observed_at").not("user_id", "is", null).order("observed_at", { ascending: false }).limit(150),
           supabase.from("sabi_med_prices").select("drug, form, pharmacy, price, currency, in_stock, area, city, observed_at").order("observed_at", { ascending: false }).limit(80),
           supabase.from("sabi_shop_sales").select("product_name, qty, unit_price, unit_cost, currency, sold_at").order("sold_at", { ascending: false }).limit(80),
           supabase.from("sabi_income_logs").select("work_date, source, amount, currency, hours").order("work_date", { ascending: false }).limit(60),
@@ -70,6 +71,7 @@ Always answer with a concrete action: where to buy, what it costs, how much is s
 Convert pay to per-hour when comparing jobs (hour=1, day=8h, month=176h).
 You are not a doctor: for symptoms, suggest seeing a clinic in the data and never diagnose or prescribe.
 State clearly when the data is old or missing.
+PRICE HONESTY RULES: community_prices are real reports from people in markets. When quoting a price, say how many reports, the range, the city/market and how old they are. If an item or market is not in the data, say exactly: "I don't have a real price for that yet" and suggest the user report or request it. Never estimate, guess or use general knowledge for prices.
 
 DATA (JSON):
 ${JSON.stringify(grounding).slice(0, 20000)}`;
